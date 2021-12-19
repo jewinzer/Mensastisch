@@ -1,3 +1,9 @@
+var elems = document.querySelectorAll('.dropdown-trigger');
+var instances = M.Dropdown.init(elems, {
+    coverTrigger: false,
+    hover: true,
+});
+
 //returns JSON of nearby canteens; @params (latitude, longitude, distance)
 async function getCanteens(lat, lng, dist) {
     const url = 'https://openmensa.org/api/v2/canteens?near[lat]=' + lat + '&near[lng]=' + lng + '&near[dist]=' + dist;
