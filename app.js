@@ -1,3 +1,6 @@
+//set up environment variables
+require('dotenv').config();
+
 // create an express app
 const express = require('express');
 const path = require('path');
@@ -30,7 +33,26 @@ app.get('/mensa', function(req, res){
     res.render('find-mensa');
 });
 
+//set up database connection
+const {Pool} = require('pg');
+const pool = new Pool({
+ connectionString: process.env.DATABASE_URL,
+ ssl: {
+ rejectUnauthorized: false
+ }
+});
+
+// query db, console.log entries
+pool.query(`SELECT * FROM Users;`, (err, res) => {
+    if (err) {
+        console.log("Error - Failed to select all from Users");
+        console.log(err);
+    }
+    else{
+        console.log(res.rows);
+    }
+});
 
 // start the server listening for requests
-app.listen(process.env.PORT || 3000,
+app.listen(process.env.PORT,
     () => console.log("Server is listening on port 3000"));
