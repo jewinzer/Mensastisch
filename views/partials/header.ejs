@@ -1,9 +1,30 @@
 <!DOCTYPE html>
 
 <head>
-    <link href="https://fonts.googleapis.com/css?family=Alegreya|Source+Sans+Pro&display=swap" rel="stylesheet">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="icon" href="img/utensils-solid.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="img/utensils-solid-192.png">
+  <link rel='manifest' href='js/manifest.json'>
+  <link rel='stylesheet' type='text/css' href='css/materialize.css'>
+  <meta name="description" content="Mensastisch PWA, PROGMOBA WS 21/22, Gruppe 5"/>
+  <meta name="theme-color" content="#421c4a"/>
 
-    <link rel="stylesheet" type="text/css" href="css/materialize.css">
+  <!-- register service worker -->
+  <script type="text/javascript">
+      (function() {
+        console.log("Attempting to register service worker");
+        //service worker support?
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register('js/serviceworker.js').then(function(reg) {
+              console.log('service worker registered successfully', reg);
+            })
+            .catch(function(error) {
+              console.log("service worker registration failed with ", error);
+            });
+        }
+      })();;
+  </script>
 </head>
 <html>
 
