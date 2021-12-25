@@ -16,7 +16,7 @@
           console.log("Attempting to register service worker");
           //service worker support?
           if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register('js/serviceworker.js').then(function(reg) {
+            navigator.serviceWorker.register('serviceworker.js').then(function(reg) {
                 console.log('service worker registered successfully', reg);
               })
               .catch(function(error) {

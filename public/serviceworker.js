@@ -5,7 +5,7 @@ const filesToCache = [
 ];
 
 self.addEventListener("install", async event => {
-  // store offline.html to cache
+  // populate cache
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(filesToCache)));
 });
 
