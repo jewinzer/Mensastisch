@@ -10,10 +10,8 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-//set static path
+//set static path, use the express-static middleware
 app.use(express.static(path.join(__dirname, 'public')));
-
-// use the express-static middleware
 app.use(express.static('public'));
 
 // use urlencoded middleware
@@ -53,6 +51,10 @@ pool.query(`SELECT * FROM Users;`, (err, res) => {
     }
 });
 
+
+
 // start the server listening for requests
-app.listen(process.env.PORT,
+app.listen(process.env.PORT || 3000,
     () => console.log("Server is listening on port 3000"));
+
+

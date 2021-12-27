@@ -1,4 +1,4 @@
-const CACHE = "pwa-cache";
+const CACHE = "mensastischCache";
 const filesToCache = [
     '/',
     '/css/materialize.css'
@@ -8,6 +8,7 @@ self.addEventListener("install", async event => {
   // populate cache
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(filesToCache)));
 });
+
 
 self.addEventListener("fetch", event => {
   if (event.request.mode === "navigate") {
