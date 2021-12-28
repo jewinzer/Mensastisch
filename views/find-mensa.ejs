@@ -1,7 +1,7 @@
 <%- include('partials/header.ejs') %>
-<div class="container">
-    <h4>Find your Mensa</h4>
-   
+    <div class="container">
+        <h4>Find your Mensa</h4>
+
         <h6>Where are you?</h6>
         <div>
             <input type="text" placeholder="52517037 lat" readonly/>
@@ -9,24 +9,28 @@
         </div>
         <div>
             <input type="text" placeholder="13404954 lng" readonly/>
-            <input id="lng" name="lng" type="range" value="13404954" min="5000000" max="15000000" oninput="this.previousElementSibling.value = this.value+' lng'">  
+            <input id="lng" name="lng" type="range" value="13404954" min="5000000" max="15000000" oninput="this.previousElementSibling.value = this.value+' lng'">
         </div>
         <h6>Please enter search radius</h6>
         <div>
             <input type="text" placeholder="5 km" readonly/> <br>
-            <input id="dist" name="dist" type="range" value="5" min="1" max="100" oninput="this.previousElementSibling.value = this.value+' km';updateCanteens()">  
+            <input id="dist" name="dist" type="range" value="5" min="1" max="100" oninput="this.previousElementSibling.value = this.value+' km';updateCanteens()">
         </div>
         <button id="search" style="margin: 1rem 0">Find Mensa</button>
         <div class="input-field>
-        <select name="selection" id="selection">
+        <select name=" selection " id="selection ">
             <option>Please select Mensa from list </option>
         </select>
         </div>
+<<<<<<< HEAD
     <h6 id="canteen"></h6>
     <div>
         <input type="text" placeholder="Search Mensa"/>
     </div>
+=======
+    <h6 id="canteen "></h6>
+    <div id="datepicker "></div>
+    <div id="menu "></div>
+>>>>>>> 81bb670e5cbeb82e846f224cd370258707be758e
 </div>
-
-<script type="text/javascript" src="js/script.js" defer></script> 
 <%- include('partials/footer.ejs') %>

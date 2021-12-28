@@ -1,15 +1,11 @@
 @charset "UTF-8";
-
 // Color
 @import "components/color-variables";
 @import "components/color-classes";
-
 // Variables;
 @import "components/variables";
-
 // Reset
 @import "components/normalize";
-
 // components
 @import "components/global";
 //@import "components/badges";
@@ -39,3 +35,20 @@
 @import "components/pulse";
 @import "components/datepicker";
 //@import "components/timepicker";
+.logo.right {
+    display: inline-block;
+    height: 100%;
+    margin: 0 15px;
+}
+
+.logo>img {
+    vertical-align: middle;
+    position: relative;
+    height: 80%;
+    object-fit: contain;
+}
+
+#dropdown-menu {
+    width: 100% !important;
+    background-color: $primary-color;
+}
