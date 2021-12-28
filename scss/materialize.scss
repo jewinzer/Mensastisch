@@ -45,16 +45,10 @@
     vertical-align: middle;
     position: relative;
     height: 80%;
-    // width: 80%;
     object-fit: contain;
 }
 
 #dropdown-menu {
-    width: 100% !important;
-    background-color: $primary-color;
-}
-
-#dropdown-profil {
     width: 100% !important;
     background-color: $primary-color;
 }
