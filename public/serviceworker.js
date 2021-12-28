@@ -1,7 +1,8 @@
 const CACHE = "mensastischCache";
 const filesToCache = [
     '/',
-    '/css/materialize.css'
+    '/css/materialize.css',
+    '/js/indb.js'
 ];
 
 self.addEventListener("install", async event => {
