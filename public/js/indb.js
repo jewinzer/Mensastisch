@@ -18,6 +18,34 @@ getCanteens().then(canteens =>{
     console.warn("Oops... " + err);
 });
 
+//show canteen search results
+async function showCanteens(str){
+    const results = await findCanteens(str);
+    let resultList = document.getElementById('searchResults');
+    resultList.setAttribute('class','collection');
+    resultList.innerHTML='';
+    results.forEach(result =>{
+        let entry = document.createElement('li');
+        entry.setAttribute('class', 'collection-item');
+        let icon = document.createElement('i');
+        icon.setAttribute('class', 'material-icons');
+        icon.innerHTML='send';
+        let a = document.createElement('a');
+        a.href='#!';
+        a.setAttribute('class', 'secondary-content');
+        let div = document.createElement('div');
+        div.innerText=result.name;
+        a.appendChild(icon);
+        div.appendChild(a);
+        entry.appendChild(div);
+        resultList.appendChild(entry);
+    })
+
+}
+
+//<li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
+
+
 //find canteens in indb by string input
 async function findCanteens(str) {
     const result = await db.canteensStore.where('name').startsWithIgnoreCase(str).toArray();
