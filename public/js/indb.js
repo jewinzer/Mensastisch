@@ -43,12 +43,9 @@ async function showCanteens(str){
 
 }
 
-//<li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
-
-
 //find canteens in indb by string input
 async function findCanteens(str) {
-    const result = await db.canteensStore.where('name').startsWithIgnoreCase(str).toArray();
+    const result = await db.canteensStore.where('city').startsWithIgnoreCase(str).toArray();
     return result;
 };
 
