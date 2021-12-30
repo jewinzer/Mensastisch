@@ -1,0 +1,22 @@
+<%- include('partials/header.ejs') %>
+    <div class="container">
+        <div class ="row">
+            <div class ="col s12 center-align">
+                <i class="material-icons">location_on</i>
+            </div>
+        </div>
+        <div class ="row">
+            <div id="msgGPS" class="col s4 offset-s4 center-align">
+                <div class="progress"><div class="indeterminate"></div></div>
+            </div>
+            <div class="col s2 offset-s2 right-align">
+                <div class="switch">
+                    <label>
+                      <input id="allowGPS" type="checkbox" checked>
+                      <span class="lever"></span>
+                    </label>
+                  </div>
+            </div>
+        </div>
+    </div>
+<%- include('partials/footer.ejs') %>

@@ -1,3 +1,4 @@
+
 //set up environment variables
 require('dotenv').config();
 
@@ -5,6 +6,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
+const mensa = require('./routes/mensa');
 
 //set ejs view engine, folder
 app.set('view engine', 'ejs');
@@ -27,10 +29,18 @@ app.get('/', function(req, res) {
 });
 
 //find mensa form
-app.get('/mensa', function(req, res){
-    res.render('find-mensa');
+app.get('/mensa/search', function(req, res){
+    res.render('mensa-search');
+});
+app.get('/mensa/locate', function(req, res){
+    res.render('mensa-locate');
 });
 
+
+
+
+
+/*
 //set up database connection
 const {Pool} = require('pg');
 const pool = new Pool({
@@ -50,7 +60,7 @@ pool.query(`SELECT * FROM Users;`, (err, res) => {
         console.log(res.rows);
     }
 });
-
+*/
 
 
 // start the server listening for requests
