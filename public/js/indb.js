@@ -1,22 +1,35 @@
-var db = new Dexie("MensastischINDB");
- 
-// create DB with table "canteensStore"
-db.version(1).stores({
-    canteensStore: 'id,name,city,address,coordinates, distance',
+
+
+    //set up indexedDB
+    const db = new Dexie("MensastischINDB");
+    // create table "canteensStore"
+    db.version(1).stores({
+        canteensStore: 'id,name,city,address,coordinates',
+        });
+    // populate canteensStore
+    getCanteens().then(canteens =>{
+        canteens.forEach(canteen =>{
+            db.canteensStore.put({
+                id:canteen.id,
+                name: canteen.name,
+                city: canteen.city,
+                address: canteen.address,
+                coordinates: checkCoords(canteen.coordinates)
+            });
+        })
+    }).then(() => {
+        return db.canteensStore;
+    }).catch(err => {
+        console.warn("Oops... " + err);
     });
 
-// populate canteensStore
-getCanteens().then(canteens =>{
-    canteens.forEach(canteen =>{
-        db.canteensStore.put({
-            id:canteen.id, name: canteen.name, city: canteen.city, address: canteen.address, coordinates: canteen.coordinates, distance: 0
-        });
-    })
-}).then(() => {
-    return db.canteensStore;
-}).catch(err => {
-    console.warn("Oops... " + err);
-});
+
+//checkCoords
+function checkCoords(data){
+    if (data != null){
+        return data;
+    } else return [0,0];
+}
 
 //show canteen search results
 async function showCanteens(str){
@@ -48,7 +61,7 @@ async function showCanteens(str){
         resultList.appendChild(entry);
     })
 
-}
+};
 
 
 //find canteens in indb by string input
@@ -56,16 +69,6 @@ async function findCanteens(str) {
     const result = await db.canteensStore.where('city').startsWithIgnoreCase(str).toArray();
     return result;
 };
-
-//handle allowGPS checkbox events
-document.getElementById('allowGPS').addEventListener('change', (event) => {
-  if (event.currentTarget.checked) {
-    document.location = '../mensa/locate';
-  } else {
-    document.location = '../mensa/search';
-  }
-});
-
 
 
 //returns JSON of all listed canteens
@@ -76,54 +79,74 @@ async function getCanteens() {
     return canteens;
 };
 
-// update indb with distances from current geolocation
-function addDistance() {
-    db.canteensStore.toCollection().modify(canteen => {
-        canteen.distance = canteen.coordinates[1]; // ()
-    });
-    };
+
     
-    
-    //get user's gps coordinates
-    function getUserLocation(){
-        if("geolocation" in navigator){
-            navigator.geolocation.getCurrentPosition(geo_success, geo_error, {
-                enableHighAccuracy: false, 
-                timeout: 1000*30, maximumAge: 
-                1000*60*60});
-        } else {
-            document.getElementById('msgGPS').innerText = 'Please use a 21st century browser';
-        }
-    
+//get user's gps coordinates
+function getUserLocation(){
+    document.getElementById('msgGPS').innerHTML ='<div class="progress"><div class="indeterminate"></div></div>';
+    if("geolocation" in navigator){
+        navigator.geolocation.getCurrentPosition(geo_success, geo_error, {
+            enableHighAccuracy: false, 
+            timeout: 1000*30, maximumAge: 
+            1000*60*60});
+    } else {
+        document.getElementById('msgGPS').innerText = 'Please use a 21st century browser';
     }
-    //callback function if GPS coordinates success
-    function geo_success(position){
-        document.getElementById('msgGPS').innerText = 'lat: '+position.coords.latitude+'; lng: '+position.coords.longitude;
+};
+
+//expand indexedDB, add column "distance"
+async function addDistance(lat, lng){
+    const db = new Dexie("MensastischINDB");
+    await db.version(2).stores({
+        canteensStore: 'id,name,city,address,coordinates,distance',
+        });
+    await db.canteensStore.toCollection().modify(canteen => {
+        canteen.distance = getDistance(lat, lng, canteen.coordinates[0], canteen.coordinates[1]);
+        });
+    return db.canteensStore;
+};
+
+//get x nearest Canteens
+async function getNearestCanteens(int) {
+    const result = await db.canteensStore.orderBy('distance').limit(int).toArray();
+    return result;
+};
+
+//callback function if GPS coordinates available
+async function geo_success(position){
+    await addDistance(position.coords.latitude, position.coords.longitude);
+};
+
     
-    };
-    
-    //callback function if GPS coordinates fail
-    function geo_error(err){
-        //document.getElementById('allowGPS').checked = false;
-      // Display error based on the error code.
-      const { code } = err;
-      switch (code) {
+//callback function if getLocation throws error
+function geo_error(err){
+    const { code } = err;
+    switch (code) {
         case GeolocationPositionError.TIMEOUT:
             document.getElementById('msgGPS').innerText = "timeout";
-          break;
+            break;
         case GeolocationPositionError.PERMISSION_DENIED:
             document.getElementById('msgGPS').innerText = "permission denied";
-          break;
+            break;
         case GeolocationPositionError.POSITION_UNAVAILABLE:
             document.getElementById('msgGPS').innerText = "position unavailable";
           break;
-      }
-    };
+    }
+};
 
-    // update indb with distances from current geolocation
-function addDistance() {
-    var db = new Dexie("MensastischINDB");
-    db.canteensStore.toCollection().modify(canteen => {
-        canteen.distance = canteen.coordinates[1]; // ()
-    });
-    };
+// calculate distance between 2 coordinates, credits: http://jsfiddle.net/edgren/gAHJB/
+function getDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2-lat1);  // deg2rad below
+    const dLng = deg2rad(lng2-lng1); 
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLng/2) * Math.sin(dLng/2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const distance = R * c;
+    return distance.toFixed(1);
+  }
+  function deg2rad(deg) {
+    return deg * (Math.PI/180)
+  }

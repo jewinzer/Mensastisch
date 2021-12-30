@@ -12,17 +12,19 @@
             <div class="col s2 offset-s2 right-align">
                 <div class="switch">
                     <label>
-                      <input id="allowGPS" type="checkbox">
-                      <span class="lever"></span>
-                    </label>
+                        <input id="allowGPS" type="checkbox"
+                          onchange="if (event.currentTarget.checked) {getUserLocation();}
+                              else {document.location = '../mensa/search';}">
+                        <span class="lever"></span>
+                      </label>
                   </div>
             </div>
         </div>
-        
         <div class="input-field">
             <input id="findMensa" type="text" onkeyup="showCanteens(this.value)"/>
             <label for="findMensa">Enter City</label>
         </div>
         <ul id="searchResults"></ul>
     </div>
+
 <%- include('partials/footer.ejs') %>

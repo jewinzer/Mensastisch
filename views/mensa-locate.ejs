@@ -7,16 +7,18 @@
         </div>
         <div class ="row">
             <div id="msgGPS" class="col s4 offset-s4 center-align">
-                <div class="progress"><div class="indeterminate"></div></div>
             </div>
             <div class="col s2 offset-s2 right-align">
                 <div class="switch">
                     <label>
-                      <input id="allowGPS" type="checkbox" checked>
+                      <input id="allowGPS" type="checkbox" checked
+                        onchange="if (event.currentTarget.checked) {getUserLocation();}
+                            else {document.location = '../mensa/search';}">
                       <span class="lever"></span>
                     </label>
                   </div>
             </div>
+          <!--  <button onclick="getUserLocation()">Locate user</button>-->
         </div>
     </div>
 <%- include('partials/footer.ejs') %>

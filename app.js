@@ -6,7 +6,10 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
-const mensa = require('./routes/mensa');
+
+//import routes and use them
+const mensa = require('./routes/mensa.js');
+app.use('/mensa', mensa);
 
 //set ejs view engine, folder
 app.set('view engine', 'ejs');
@@ -28,13 +31,7 @@ app.get('/', function(req, res) {
     });
 });
 
-//find mensa form
-app.get('/mensa/search', function(req, res){
-    res.render('mensa-search');
-});
-app.get('/mensa/locate', function(req, res){
-    res.render('mensa-locate');
-});
+
 
 
 

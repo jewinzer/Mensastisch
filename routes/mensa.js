@@ -1,6 +1,12 @@
 'use strict';
+
 const express = require('express');
 let router = express.Router();
+
+// use urlencoded middleware
+router.use(express.urlencoded({
+    extended: true
+  }));
 
 //text search mensa
 router.get('/search', function(req, res){
