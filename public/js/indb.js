@@ -1,10 +1,10 @@
 
 
     //set up indexedDB
-    const db = new Dexie("MensastischINDB");
+    var db = new Dexie("MensastischINDB");
     // create table "canteensStore"
     db.version(1).stores({
-        canteensStore: 'id,name,city,address,coordinates',
+        canteensStore: 'id,name,city,address,coordinates, distance',
         });
     // populate canteensStore
     getCanteens().then(canteens =>{
@@ -14,7 +14,8 @@
                 name: canteen.name,
                 city: canteen.city,
                 address: canteen.address,
-                coordinates: checkCoords(canteen.coordinates)
+                coordinates: checkCoords(canteen.coordinates),
+                distance: 999
             });
         })
     }).then(() => {
@@ -66,6 +67,7 @@ async function showCanteens(str){
 
 //find canteens in indb by string input
 async function findCanteens(str) {
+    await db.open();
     const result = await db.canteensStore.where('city').startsWithIgnoreCase(str).toArray();
     return result;
 };
@@ -96,25 +98,47 @@ function getUserLocation(){
 
 //expand indexedDB, add column "distance"
 async function addDistance(lat, lng){
-    const db = new Dexie("MensastischINDB");
-    await db.version(2).stores({
-        canteensStore: 'id,name,city,address,coordinates,distance',
-        });
-    await db.canteensStore.toCollection().modify(canteen => {
+    await db.open();
+    await db.canteensStore
+        .orderBy('name')
+        .modify(canteen => {
         canteen.distance = getDistance(lat, lng, canteen.coordinates[0], canteen.coordinates[1]);
-        });
-    return db.canteensStore;
+    });
 };
 
 //get x nearest Canteens
 async function getNearestCanteens(int) {
-    const result = await db.canteensStore.orderBy('distance').limit(int).toArray();
-    return result;
+    db.open().then(function(){
+        return db.canteensStore.orderBy('distance').limit(int).toArray();
+    }).then(function(canteensStore){
+        postData('../mensa/locate', canteensStore);
+        console.log(JSON.stringify(canteensStore));
+    }).catch (Dexie.MissingAPIError, function (e) {
+        log ("Couldn't find indexedDB API");
+    }).catch ('SecurityError', function(e) {
+      log ("SecurityError - This browser doesn't like indexedDB.");
+    });
 };
+
+// post data
+function postData(url,data){
+    fetch(url, {method: 'POST',headers: {'Content-Type': 'application/json',},
+    body: JSON.stringify(data),
+    }).then(response => response.json()
+    ).then(data => {
+    console.log('Success:', data);
+    }).catch((error) => {
+    console.error('Error:', error);
+    });
+};
+
+
+
 
 //callback function if GPS coordinates available
 async function geo_success(position){
     await addDistance(position.coords.latitude, position.coords.longitude);
+    getNearestCanteens(10);
 };
 
     
@@ -145,8 +169,11 @@ function getDistance(lat1, lng1, lat2, lng2) {
       Math.sin(dLng/2) * Math.sin(dLng/2); 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
     const distance = R * c;
-    return distance.toFixed(1);
+    return roundToTwo(distance);
   }
   function deg2rad(deg) {
     return deg * (Math.PI/180)
   }
+  function roundToTwo(num) {
+    return +(Math.round(num + "e+2")  + "e-2");
+}

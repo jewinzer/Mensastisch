@@ -3,7 +3,8 @@
 const express = require('express');
 let router = express.Router();
 
-// use urlencoded middleware
+// middleware
+router.use(express.json());
 router.use(express.urlencoded({
     extended: true
   }));
@@ -16,6 +17,9 @@ router.get('/search', function(req, res){
 //geolocate mensa
 router.get('/locate', function(req, res){
     res.render('mensa-locate');
+});
+router.post('/locate', function(req,res){
+    const nearest = req.body;
 });
 
 module.exports = router;
