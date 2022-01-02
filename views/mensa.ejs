@@ -1,40 +1,50 @@
+<%- include('partials/header.ejs') %>
+    <div class="container">
+        <div class ="row">
+            <div class ="col s12 center-align">
+                <i class="material-icons">location_on</i>
+            </div>
+        </div>
+        <div class ="row">
+            <div id="msgGPS" class="col s4 offset-s4 center-align">
+                <% if (title) { %>
+                    <%- title %>
+                <% } %>
+            </div>
+            <div class="col s2 offset-s2 right-align">
+                <div class="switch">
+                    <label>
+                        <input id="allowGPS" type="checkbox" <% if (checked) { %><%= checked %> <% } %>
+                          onchange="if (event.currentTarget.checked) {document.location = '../mensa/locate';}
+                              else {document.location = '../mensa/search';}">
+                        <span class="lever"></span>
+                    </label>
+                  </div>
+            </div>
+        </div>
+        <% if (content) { %>
+            <%- content %>
+        <% } %>
+    </div>
 
-
-    //set up indexedDB
-    var db = new Dexie("MensastischINDB");
-    // create table "canteensStore"
-    db.version(1).stores({
-        canteensStore: 'id,name,city,address,coordinates, distance',
-        });
-    // populate canteensStore
-    getCanteens().then(canteens =>{
-        canteens.forEach(canteen =>{
-            db.canteensStore.put({
-                id:canteen.id,
-                name: canteen.name,
-                city: canteen.city,
-                address: canteen.address,
-                coordinates: checkCoords(canteen.coordinates),
-                distance: 999
-            });
-        })
-    }).then(() => {
-        return db.canteensStore;
-    }).catch(err => {
-        console.warn("Oops... " + err);
-    });
-
-
-//checkCoords
-function checkCoords(data){
-    if (data != null){
-        return data;
-    } else return [0,0];
-}
+<script>
+window.onload = <%= onload %>;
 
 //show canteen search results
-async function showCanteens(str){
-    const results = await findCanteens(str);
+async function showCanteensByCity(str){
+    const results = await getCanteensByCity(str);
+    showCanteens(results);
+};
+
+//
+async function showCanteensByLocation(lat,lng,x){
+    await addDistance(lat,lng);
+    const results = await getNearestCanteens(x);
+    showCanteens(results);
+};
+
+// show query results in DOM
+function showCanteens(results){
     let resultList = document.getElementById('searchResults');
     resultList.setAttribute('class','collection');
     resultList.innerHTML='';
@@ -48,12 +58,16 @@ async function showCanteens(str){
         a.href='#!';
         a.setAttribute('class', 'secondary-content');
         let div = document.createElement('div');
+        let dist = document.createElement('span');
+        dist.setAttribute('class', '');
+        dist.innerHTML=result.distance+' km<br>';
         let name = document.createElement('span');
         name.setAttribute('class', 'title');
         name.innerText=result.name;
         let address = document.createElement('span');
         address.setAttribute('class', '');
         address.innerHTML='<br>'+result.address;
+        if(result.distance < 999){div.appendChild(dist)};
         div.appendChild(name);
         div.appendChild(address);
         a.appendChild(icon);
@@ -61,36 +75,23 @@ async function showCanteens(str){
         entry.appendChild(div);
         resultList.appendChild(entry);
     })
-
 };
 
-
-//find canteens in indb by string input
-async function findCanteens(str) {
-    await db.open();
-    const result = await db.canteensStore.where('city').startsWithIgnoreCase(str).toArray();
-    return result;
+//find canteens in indb by City
+async function getCanteensByCity(str) {
+    const results = await db.canteensStore.where('city').startsWithIgnoreCase(str).toArray();
+    return results;
 };
 
-
-//returns JSON of all listed canteens
-async function getCanteens() {
-    const url = 'https://openmensa.org/api/v2/canteens';
-    const response = await fetch(url);
-    const canteens = await response.json();
-    return canteens;
-};
-
-
-    
 //get user's gps coordinates
 function getUserLocation(){
-    document.getElementById('msgGPS').innerHTML ='<div class="progress"><div class="indeterminate"></div></div>';
+    console.log('locating User');
     if("geolocation" in navigator){
         navigator.geolocation.getCurrentPosition(geo_success, geo_error, {
             enableHighAccuracy: false, 
-            timeout: 1000*30, maximumAge: 
-            1000*60*60});
+            timeout: 1000*30, 
+            maximumAge: 1000*60*60
+        });
     } else {
         document.getElementById('msgGPS').innerText = 'Please use a 21st century browser';
     }
@@ -108,37 +109,16 @@ async function addDistance(lat, lng){
 
 //get x nearest Canteens
 async function getNearestCanteens(int) {
-    db.open().then(function(){
-        return db.canteensStore.orderBy('distance').limit(int).toArray();
-    }).then(function(canteensStore){
-        postData('../mensa/locate', canteensStore);
-        console.log(JSON.stringify(canteensStore));
-    }).catch (Dexie.MissingAPIError, function (e) {
-        log ("Couldn't find indexedDB API");
-    }).catch ('SecurityError', function(e) {
-      log ("SecurityError - This browser doesn't like indexedDB.");
-    });
+    const results = await db.canteensStore.orderBy('distance').limit(10).toArray();
+    return results;
 };
-
-// post data
-function postData(url,data){
-    fetch(url, {method: 'POST',headers: {'Content-Type': 'application/json',},
-    body: JSON.stringify(data),
-    }).then(response => response.json()
-    ).then(data => {
-    console.log('Success:', data);
-    }).catch((error) => {
-    console.error('Error:', error);
-    });
-};
-
-
 
 
 //callback function if GPS coordinates available
 async function geo_success(position){
-    await addDistance(position.coords.latitude, position.coords.longitude);
-    getNearestCanteens(10);
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    document.location='/mensa/?lat='+lat+'&lng='+lng;
 };
 
     
@@ -158,22 +138,26 @@ function geo_error(err){
     }
 };
 
+
 // calculate distance between 2 coordinates, credits: http://jsfiddle.net/edgren/gAHJB/
 function getDistance(lat1, lng1, lat2, lng2) {
     const R = 6371; // Radius of the earth in km
     const dLat = deg2rad(lat2-lat1);  // deg2rad below
     const dLng = deg2rad(lng2-lng1); 
     const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-      Math.sin(dLng/2) * Math.sin(dLng/2); 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+        Math.sin(dLng/2) * Math.sin(dLng/2); 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
     const distance = R * c;
     return roundToTwo(distance);
-  }
-  function deg2rad(deg) {
+};
+function deg2rad(deg) {
     return deg * (Math.PI/180)
-  }
-  function roundToTwo(num) {
+};
+function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
-}
+};
+</script>
+
+<%- include('partials/footer.ejs') %>

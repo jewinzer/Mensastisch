@@ -1,28 +1,22 @@
-
 //set up environment variables
 require('dotenv').config();
 
 // create an express app
 const express = require('express');
-const path = require('path');
 const app = express();
+const path = require('path');
 
 //import routes and use them
 const mensa = require('./routes/mensa.js');
 app.use('/mensa', mensa);
 
-//set ejs view engine, folder
+//set ejs template engine, folder
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 //set static path, use the express-static middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
-
-// use urlencoded middleware
-app.use(express.urlencoded({
-    extended: true
-  }));
 
 // define the first route via EJS template engine
 app.get('/', function(req, res) {
@@ -31,6 +25,9 @@ app.get('/', function(req, res) {
     });
 });
 
+// start the server listening for requests
+app.listen(process.env.PORT,
+    () => console.log("Server is listening…"));
 
 
 
@@ -60,8 +57,6 @@ pool.query(`SELECT * FROM Users;`, (err, res) => {
 */
 
 
-// start the server listening for requests
-app.listen(process.env.PORT || 3000,
-    () => console.log("Server is listening on port 3000"));
+
 
 
