@@ -42,7 +42,7 @@ router.get('', function(req,res){
     if(req.query.id){
         const id = req.query.id;
         return res.render('home',{
-            id: id
+            header: id
         });
     }
     //case incorrect params
