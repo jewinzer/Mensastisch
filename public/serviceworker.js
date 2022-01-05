@@ -1,21 +1,22 @@
-//imports indexedDB script, initilializes indexedDB schema
+//import indexedDB script, initilialize indexedDB schema
 importScripts('../js/dexie.min.js');
 
-//set up cache, define files to cach
+//set up cache
 const CACHE = "mensastischCache";
+
+//define files to be cached
 const filesToCache = [
     '/',
     '/css/materialize.css'
   ];
 
-// populate cache on installing sw
+//populate cache on sw installation
 self.addEventListener("install", async event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(filesToCache)));
-  console.log('sw:cache populated');
 });
 
-//complete indexedDB creation on sw activation
-self.addEventListener('activate', function(event) {
+//finalize indexedDB creation on sw activation
+self.addEventListener('activate', async event => {
   event.waitUntil(
     createDB()
   );
@@ -44,7 +45,7 @@ self.addEventListener("fetch", event => {
   }
 });
 
-// populate indexedDB, finalize indexedDB creation
+//populate indexedDB, finalize indexedDB creation
 async function createDB(){
   getCanteens().then(canteens =>{
       canteens.forEach(canteen =>{
@@ -60,11 +61,11 @@ async function createDB(){
   }).then(() => {
           return db.canteensStore;
   }).catch(err => {
-          console.warn("Oops... " + err);
+          console.warn(`Oops... ${err}`);
   });
 };
 
-//returns JSON of all listed canteens
+//return JSON of all listed canteens
 async function getCanteens() {
   const url = 'https://openmensa.org/api/v2/canteens';
   const response = await fetch(url);
@@ -72,9 +73,9 @@ async function getCanteens() {
   return canteens;
 };
 
-//checkCoords data in Canteens
+//check Coords data in Canteens
 function checkCoords(data){
   if (data != null){
       return data;
   } else return [0,0];
-}
+};

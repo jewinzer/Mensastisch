@@ -1,35 +1,37 @@
 //set up environment variables
 require('dotenv').config();
 
-// create an express app
+// create express app
 const express = require('express');
 const app = express();
 const path = require('path');
 
-//import routes and use them
-const mensa = require('./routes/mensa.js');
-app.use('/mensa', mensa);
+//import routes
+const canteen = require('./routes/canteen.js');
+
+//use routes
+app.use('/canteen', canteen);
 
 //set ejs template engine, folder
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-//set static path, use the express-static middleware
+//set static path, use express-static middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 
-// define the first route via EJS template engine
+// define first route via EJS template engine
 app.get('/', function(req, res) {
     res.render('index', {
         title: 'Hello from EJS template engine'
     });
 });
 
-// start the server listening for requests
-app.listen(process.env.PORT,
-    () => console.log("Server is listening…"));
-
-
+// start server listening for requests
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`server listening on port ${port}`);
+});
 
 
 
