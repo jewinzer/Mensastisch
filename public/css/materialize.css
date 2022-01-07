@@ -892,15 +892,15 @@ i.tiny {
 }
 
 i.small {
-  font-size: 2rem;
+  font-size: 2.5rem;
 }
 
 i.medium {
-  font-size: 4rem;
+  font-size: 3rem;
 }
 
 i.large {
-  font-size: 6rem;
+  font-size: 4rem;
 }
 
 img.responsive-img,
@@ -1579,7 +1579,6 @@ input[type=range] + .thumb {
 
 .container {
   margin: 1rem;
-  max-width: 1280px;
   border-radius: .5rem;
 }
 
@@ -7179,7 +7178,7 @@ input[type=range]::-ms-thumb {
 }
 
 .hero-section {
-  height: 12rem;
+  height: 13rem;
   padding: 1rem;
   margin-bottom: 2rem;
   display: -webkit-box;
@@ -7195,7 +7194,7 @@ input[type=range]::-ms-thumb {
 }
 
 .input-field {
-  margin: 0;
+  margin: 0 0 1rem 0;
 }
 
 h2 {
