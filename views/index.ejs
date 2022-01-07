@@ -1,3 +1,39 @@
 <%- include('partials/header.ejs') -%>
-    <h1><%= title %></h1>
+<div class="container hero-section bg-light">
+    <div class ="row">
+        <div class ="col s9">
+            <%- heroContentPrimary %>
+        </div>
+        <div class="col s3">
+            <%- heroContentSecondary %>
+        </div>
+    </div>
+</div>
+<div class= "container">
+    <div class ="row">
+        <%- mainContent %>
+    </div>
+</div>
+
+
+<script>
+window.onload = <%= onload %>;
+//
+async function showCanteenData(id){
+    const canteen = await getCanteenById(id);
+    let hero = document.querySelector('.col');
+    let name = document.createElement('h4');
+    name.innerText = canteen.name;
+    let address = document.createElement('h5');
+    address.innerText = canteen.address;
+    hero.appendChild(name);
+    hero.appendChild(address);
+}
+
+//get canteen from indb by Id
+async function getCanteenById(id) {
+    const canteen = await db.canteensStore.where('id').equals(id).toArray();
+    return canteen[0];
+};
+</script>
 <%- include('partials/footer.ejs') -%>

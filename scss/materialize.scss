@@ -15,7 +15,7 @@
 @import "components/typography";
 @import "components/transitions";
 @import "components/cards";
-//@import "components/toast";
+@import "components/toast";
 @import "components/tabs";
 @import "components/tooltip";
 @import "components/buttons";
@@ -34,7 +34,61 @@
 @import "components/tapTarget";
 @import "components/pulse";
 @import "components/datepicker";
-//@import "components/timepicker";
+@import "components/timepicker";
+
+//Flexbox
+.d-flex{
+    display: flex;
+}
+.d-flex-column{
+    display: flex;
+    flex-direction: column;
+}
+.margin-05{
+    margin: .5rem;
+}
+.margin-bottom-3{
+    margin-bottom: 3rem;
+}
+.justify-content-center{
+    justify-content: center;
+}
+.justify-content-end{
+    justify-content: flex-end;
+}
+.text-primary{
+    color: $primary-color;
+}
+.bg-light{
+    background-color: $grey-color-light;
+}
+.hero-section{
+    height: 12rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+    .input-field{
+        margin: 0;
+    }
+    h2{
+        margin: 0;
+    }
+    h4{
+        margin: .5rem 0;
+    }
+#findCanteen{
+    margin: 0;
+}
+/*
+.hero-content{
+    align-content: stretch;
+}
+*/
+
+
 .logo.right {
     display: inline-block;
     height: 100%;

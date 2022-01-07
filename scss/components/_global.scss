@@ -517,7 +517,7 @@ td, th{
 // Collections
 .collection {
   margin: $element-top-margin 0 $element-bottom-margin 0;
-  border: 1px solid $collection-border-color;
+  //border: 1px solid $collection-border-color;
   border-radius: 2px;
   overflow: hidden;
   position: relative;
@@ -525,10 +525,34 @@ td, th{
   .collection-item {
     background-color: $collection-bg-color;
     line-height: $collection-line-height;
-    padding: 10px 20px;
-    margin: 0;
-    border-bottom: 1px solid $collection-border-color;
+    padding: .75rem 0;
+    border-top: 1px solid $collection-border-color;
+    display: flex;
+    flex-flow: row nowrap;
 
+    div {
+      display: flex;
+      flex-flow: column nowrap;
+      margin-right: 1rem;  
+    }
+      .line-above{
+        font-size: $h6-fontsize;
+        line-height: $h4-fontsize;
+      }
+      .title{
+        font-size: $h5-fontsize;
+      }
+      .line-below{
+        font-size: $h6-fontsize;
+        line-height: $h4-fontsize;
+      }
+      p {
+        margin: 0;
+      }
+      .secondary-content {
+        margin: 0 1rem 0 auto;
+        align-self: center;
+      }
     // Avatar Collection
     &.avatar {
       min-height: 84px;
@@ -552,21 +576,6 @@ td, th{
         color: #fff;
         background-color: #999;
         text-align: center;
-      }
-
-
-      .title {
-        font-size: 16px;
-      }
-
-      p {
-        margin: 0;
-      }
-
-      .secondary-content {
-        position: absolute;
-        top: 16px;
-        right: 16px;
       }
 
     }
@@ -613,8 +622,8 @@ td, th{
 }
 // Made less specific to allow easier overriding
 .secondary-content {
-  float: right;
-  color: $secondary-color;
+  margin-left: auto;
+  color: $primary-color;
 }
 .collapsible .collection {
   margin: 0;
