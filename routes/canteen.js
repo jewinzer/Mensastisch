@@ -11,11 +11,11 @@ router.use(express.urlencoded({extended: true}));
 router.get('/search', function(req,res){
     res.render('canteen', {
         checked: '',
-        message: 'Allow location tracking via GPS',
-        content: '<div class="input-field">'+
-                '<input id="findCanteen" type="text" onkeyup="showCanteensByCity(this.value)"/>'+
-                '<label for="findCanteen">Enter City</label>'+
-                '</div><ul id="searchResults"></ul>',
+        heroMessage: 'Allow location tracking via GPS',
+        heroContent: '<div class="input-field">'+
+                    '<input id="findCanteen" type="text" autocomplete="off" onkeyup="showCanteensByCity(this.value)"/>'+
+                    '<label class="active" for="findCanteen">Enter City</label></div>',
+        mainContent: '<ul id="searchResults"></ul>',
         onload: 'null'
     })
 });
@@ -24,10 +24,10 @@ router.get('/search', function(req,res){
 router.get('/locate', function(req,res){
     res.render('canteen', {
         checked: 'checked',
-        message: 'Trying to locate you …',
-        content: '<div class="progress">'+
-                '<div class="indeterminate"></div>'+
-                '</div>',
+        heroMessage: 'Locating your device. Please bear with us.',
+        heroContent: '<div class="progress">'+
+                '<div class="indeterminate"></div></div>',
+        mainContent: '',
         onload: 'getUserLocation()'
     })
 });
@@ -37,13 +37,6 @@ router.get('', function(req,res){
     // case no params
     if(Object.keys(req.query).length === 0){ 
         return res.redirect('canteen/search');
-    }
-    // case param id
-    if(req.query.id){
-        const id = req.query.id;
-        return res.render('home',{
-            header: id
-        });
     }
     //case incorrect params
     if (!req.query.lat || !req.query.lng){
@@ -55,11 +48,12 @@ router.get('', function(req,res){
     const lng = req.query.lng;
     return res.render('canteen', {
         checked: 'checked',
-        message: 'Listing canteens closest to your Location',
-        content: '<ul id="searchResults"></ul>',
+        heroMessage: 'Allow location tracking via GPS',
+        heroContent: '<h3>Canteens closest to you</h3>',
+        mainContent: '<ul id="searchResults"></ul>',
         onload: `showCanteensByLocation(${lat},${lng},${x})`
     });
 });
 
-
 module.exports = router;
+

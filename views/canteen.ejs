@@ -1,15 +1,11 @@
 <%- include('partials/header.ejs') %>
-<div class="container">
-    <div class ="row">
-        <div class ="col s12 center-align">
-            <i class="material-icons">location_on</i>
-        </div>
-    </div>
+<div class="container hero-section bg-light">
     <div class ="row">
         <div id="msgGPS" class="col s6 offset-s3 center-align">
-            <%- message %>
+            <i class="small material-icons text-primary">place</i>
+            <h5><%- heroMessage %></h5>
         </div>
-        <div class="col s2">
+        <div class="col s3 d-flex-column justify-content-end">
             <div class="switch">
                 <label>
                     <input id="allowGPS" type="checkbox" <%= checked %>
@@ -20,11 +16,20 @@
             </div>
         </div>
     </div>
-    <%- content %>
+    <div class ="row hero-content center-align">
+        <div class="col s12">
+            <%- heroContent %>
+        </div>
+    </div>
+
+</div>
+<div class="container">
+    <%- mainContent %>
 </div>
 
 <script>
 window.onload = <%= onload %>;
+window.onload = M.updateTextFields();
 
 
 //get canteens from indb by City
@@ -66,28 +71,28 @@ function addToDOM(results){
         entry.setAttribute('class', 'collection-item');
         let icon = document.createElement('i');
         icon.setAttribute('class', 'material-icons');
-        icon.innerHTML= 'send';
+        icon.innerHTML= 'play_arrow';
         let a = document.createElement('a');
-        a.href = `/canteen?id=${result.id}`;
+        a.href = `../?canteenId=${result.id}`;
         a.setAttribute('class', 'secondary-content');
         let div = document.createElement('div');
         let name = document.createElement('span');
         name.setAttribute('class', 'title');
         name.innerText= result.name;
         let address = document.createElement('span');
-        address.setAttribute('class', '');
-        address.innerHTML= `<br>${result.address}`;
+        address.setAttribute('class', 'line-below');
+        address.innerHTML= result.address;
         if(addToDOM.caller.name == 'showCanteensByLocation'){
             let dist = document.createElement('span');
-            dist.setAttribute('class', '');
-            dist.innerHTML= `${result.distance} km<br>`;
+            dist.setAttribute('class', 'line-above');
+            dist.innerHTML= `${result.distance} km`;
             div.appendChild(dist)
         };
         div.appendChild(name);
         div.appendChild(address);
         a.appendChild(icon);
-        div.appendChild(a);
         entry.appendChild(div);
+        entry.appendChild(a);
         resultList.appendChild(entry);
     })
 };
