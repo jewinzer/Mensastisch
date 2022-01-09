@@ -1,9 +1,9 @@
 <%- include('partials/header.ejs') %>
 <div class="container hero-section bg-light">
     <div class ="row">
-        <div id="msgGPS" class="col s6 offset-s3 center-align">
+        <div class="col s6 offset-s3 center-align">
             <i class="small material-icons text-primary">place</i>
-            <h5><%- heroMessage %></h5>
+            <h5 id="msgGPS"><%- heroMessage %></h5>
         </div>
         <div class="col s3 d-flex-column justify-content-end">
             <div class="switch">
@@ -29,7 +29,6 @@
 
 <script>
 window.onload = <%= onload %>;
-window.onload = M.updateTextFields();
 
 
 //get canteens from indb by City
@@ -86,7 +85,7 @@ function addToDOM(results){
             let dist = document.createElement('span');
             dist.setAttribute('class', 'line-above');
             dist.innerHTML= `${result.distance} km`;
-            div.appendChild(dist)
+            div.appendChild(dist);
         };
         div.appendChild(name);
         div.appendChild(address);
@@ -108,7 +107,7 @@ function getUserLocation(){
             maximumAge: 1000*60*60
         });
     } else {
-        document.getElementById('msgGPS').innerText = 'Please use a 21st century browser';
+        document.getElementById('msgGPS').innerText = 'GPS unavailable. Please update browser.';
     }
 };
 
@@ -124,13 +123,13 @@ function geo_error(err){
     const {code} = err;
     switch (code) {
         case GeolocationPositionError.TIMEOUT:
-            document.getElementById('msgGPS').innerText = "timeout";
+            document.getElementById('msgGPS').innerText = "That took too long. Please try again.";
             break;
         case GeolocationPositionError.PERMISSION_DENIED:
-            document.getElementById('msgGPS').innerText = "permission denied";
+            document.getElementById('msgGPS').innerText = "Please allow GPS in system preferences.";
             break;
         case GeolocationPositionError.POSITION_UNAVAILABLE:
-            document.getElementById('msgGPS').innerText = "position unavailable";
+            document.getElementById('msgGPS').innerText = "Position unavailable. Please try again.";
             break;
     }
 };

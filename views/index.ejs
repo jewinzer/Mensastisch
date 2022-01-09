@@ -4,13 +4,22 @@
         <div class ="col s9">
             <%- heroContentPrimary %>
         </div>
-        <div class="col s3">
+        <div class="col s3 center-align" id="heroSecondary">
             <%- heroContentSecondary %>
         </div>
     </div>
 </div>
 <div class= "container">
-    <div class ="row">
+    <div class="row">
+        <div class ="col s12">
+            <div class="btn-group">
+                <button class="btn" onclick="refreshDateBtn(this.nextElementSibling.innerHTML, false)"><i class="material-icons">chevron_left</i></button>
+                <button class ="btn" id="dateBtn"></button>
+                <button class="btn" onclick="refreshDateBtn(this.previousElementSibling.innerHTML, true)"><i class="material-icons">chevron_right</i></button>
+            </div>
+        </div>
+    </div>
+    <div class ="row" id="mainContent">
         <%- mainContent %>
     </div>
 </div>
@@ -18,7 +27,92 @@
 
 <script>
 window.onload = <%= onload %>;
-//
+
+
+//add menu to DOM
+async function showMenu(date, id){
+    let main = document.getElementById('mainContent');
+    main.innerHTML='';
+    const menu = await getMenu(date, id);
+    console.log(menu);
+    if (menu.length !== 0) {
+        menu.forEach( meal =>{
+            let col = document.createElement('div');
+            col.setAttribute('class', 'col s6');
+            let card = document.createElement('div');
+            card.setAttribute('class', 'card small');
+            let title = document.createElement('span');
+            title.setAttribute('class', 'card-title');
+            title.innerText=meal.name;
+
+            card.appendChild(title);
+            col.appendChild(card);
+            main.appendChild(col);
+        })
+    } else {
+        main.innerHTML='No Menu available. Please pick another date.';
+    }   
+};
+
+
+//get Menu by id, date
+async function getMenu(date, id){
+    const url = `https://openmensa.org/api/v2/canteens/${id}/days/${date}/meals`;
+    const response = await fetch(url);
+    const menu = await response.json();
+    return menu;
+};
+
+
+//populate date field
+function populateDateBtn(date, id){
+    document.getElementById('dateBtn').innerHTML = date.toLocaleDateString("ru-RU");
+    isBusinessDay(date,id);
+    showMenu(date,id);
+};
+
+
+//adds business day data to DOM
+async function isBusinessDay(date, id){
+    const opDays = await getDatesById(id);
+    const opDay = opDays.find(element => element.date == date.toLocaleDateString("en-CA"));
+    let opImg = document.getElementById('opImg');
+    let opMsg = document.getElementById('opMsg');
+    if (opDay === undefined){
+        opImg.innerText='sentiment_neutral';
+        opMsg.innerText='NO DATA';
+    } else if (opDay.closed){
+        opImg.innerText='sentiment_very_dissatisfied';
+        opMsg.innerText='CLOSED';
+    } else {
+        opImg.innerText='sentiment_very_satisfied';
+        opMsg.innerText='OPEN';
+    }
+};
+
+
+//refresh date field
+function refreshDateBtn(datestring, add){
+    const parts = datestring.split('.');
+    const oldDate = new Date(parts[2], parts[1], parts[0]);
+    const newDate = new Date();
+    if(add){
+        newDate.setDate(oldDate.getDate() + 1);
+    } else {
+        newDate.setDate(oldDate.getDate() - 1);
+    }
+    populateDateBtn(newDate, getIdFromUrl());
+};
+
+
+//return canteen id from Url search parameters
+function getIdFromUrl(){
+    const params = new URLSearchParams(window.location.search);
+    return params.get("canteenId");
+};
+
+
+//show canteen Data by Id
 async function showCanteenData(id){
     const canteen = await getCanteenById(id);
     let hero = document.querySelector('.col');
@@ -28,12 +122,24 @@ async function showCanteenData(id){
     address.innerText = canteen.address;
     hero.appendChild(name);
     hero.appendChild(address);
-}
+    populateDateBtn(new Date(), id);
+};
+
 
 //get canteen from indb by Id
 async function getCanteenById(id) {
     const canteen = await db.canteensStore.where('id').equals(id).toArray();
     return canteen[0];
 };
+
+
+//get canteen's opening dates by canteen id
+async function getDatesById(id) {
+    const url = `https://openmensa.org/api/v2/canteens/${id}/days`;
+    const response = await fetch(url);
+    const dates = await response.json();
+    return dates;
+};
+
 </script>
 <%- include('partials/footer.ejs') -%>

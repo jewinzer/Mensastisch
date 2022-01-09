@@ -13,7 +13,7 @@ router.get('/search', function(req,res){
         checked: '',
         heroMessage: 'Allow location tracking via GPS',
         heroContent: '<div class="input-field">'+
-                    '<input id="findCanteen" type="text" autocomplete="off" onkeyup="showCanteensByCity(this.value)"/>'+
+                    '<input id="findCanteen" type="text" autocomplete="off" oninput="showCanteensByCity(this.value)"/>'+
                     '<label class="active" for="findCanteen">Enter City</label></div>',
         mainContent: '<ul id="searchResults"></ul>',
         onload: 'null'
@@ -25,8 +25,7 @@ router.get('/locate', function(req,res){
     res.render('canteen', {
         checked: 'checked',
         heroMessage: 'Locating your device. Please bear with us.',
-        heroContent: '<div class="progress">'+
-                '<div class="indeterminate"></div></div>',
+        heroContent: '<div class="progress"><div class="indeterminate"></div></div>',
         mainContent: '',
         onload: 'getUserLocation()'
     })

@@ -82,11 +82,12 @@
 #findCanteen{
     margin: 0;
 }
-/*
-.hero-content{
-    align-content: stretch;
+.btn-group{
+    display: flex;
 }
-*/
+    .btn, .btn-flat{
+        padding: 0;
+    }
 
 
 .logo.right {

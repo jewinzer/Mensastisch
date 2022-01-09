@@ -23,22 +23,7 @@ app.set('views', path.join(__dirname, 'views'));
 //set static path, use express-static middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
-/*
-//define first route via EJS template engine
-app.get('/', function(req, res) {
-    if(req.query.canteenId){
-        const id = req.query.canteenId;
-        return res.render('index',{
-            header: `<h1>${id}</h1>`,
-            content: 'Index showing Canteen'
-        });
-    }
-    res.render('index', {
-        header: '<h1>Hello from EJS template engine</h1>',
-        content: 'Index first view'
-    })
-}); 
- */   
+
 //start server listening for requests
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

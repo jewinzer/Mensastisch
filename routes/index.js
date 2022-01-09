@@ -1,7 +1,9 @@
 'use strict';
+
+//imports
 const express = require('express');
 let router = express.Router();
-const fetch = require('node-fetch');
+
 
 //middleware
 router.use(express.json());
@@ -12,11 +14,10 @@ router.use(express.urlencoded({extended: true}));
 router.get('', async function(req, res) {
     if(req.query.canteenId){
         const id = req.query.canteenId;
-        const menu = await getMenuById(id);
         return res.render('index',{
             heroContentPrimary: '<h2>Menu</h2>',
-            heroContentSecondary: 'Hello',
-            mainContent: menu,
+            heroContentSecondary: '<i id="opImg" class="large material-icons"></i><h6 id ="opMsg"></h6>',
+            mainContent: '',
             onload: `showCanteenData(${id})`
         });
     }
@@ -27,15 +28,5 @@ router.get('', async function(req, res) {
         onload: 'null'
     })
 });
-
-//return JSON of canteen Menu
-async function getMenuById(id){
-    const date = '2022-01-10';
-    const url = 'https://openmensa.org/api/v2/canteens';
-    //const url = `https://openmensa.org/api/v2/canteens/:${id}/days/:${date}/meals`;
-    const response = await fetch(url);
-    const menu = await response.json();
-    return menu;
-  };
 
 module.exports = router;
