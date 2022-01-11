@@ -1,6 +1,6 @@
 <%- include('partials/header.ejs') %>
 <div class="container hero-section bg-light">
-    <div class ="row">
+    <div class ="row d-flex">
         <div class="col s6 offset-s3 center-align">
             <i class="small material-icons text-primary">place</i>
             <h5 id="msgGPS"><%- heroMessage %></h5>
@@ -29,7 +29,6 @@
 
 <script>
 window.onload = <%= onload %>;
-
 
 //get canteens from indb by City
 async function getCanteensByCity(str) {

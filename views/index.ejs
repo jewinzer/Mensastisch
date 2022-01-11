@@ -27,33 +27,70 @@
 
 <script>
 window.onload = <%= onload %>;
-
+//
+//1. Mensa-Daten (indb)
+//2. Daten zu Öffnungzeiten (indb / api)
+//3. Daten zu Gerichten (indb / api)
 
 //add menu to DOM
 async function showMenu(date, id){
     let main = document.getElementById('mainContent');
-    main.innerHTML='';
+    main.innerHTML= '';
     const menu = await getMenu(date, id);
     console.log(menu);
-    if (menu.length !== 0) {
-        menu.forEach( meal =>{
-            let col = document.createElement('div');
-            col.setAttribute('class', 'col s6');
-            let card = document.createElement('div');
-            card.setAttribute('class', 'card small');
-            let title = document.createElement('span');
-            title.setAttribute('class', 'card-title');
-            title.innerText=meal.name;
-
-            card.appendChild(title);
-            col.appendChild(card);
-            main.appendChild(col);
+    if (menu.length) {
+        const categories = getMenuCategories(menu);
+        console.log(categories);
+        categories.forEach(category =>{
+            console.log(category);
+            let menuCategory = menu.filter(meal => meal.category == category);
+            console.log(menuCategory);
+            if (menuCategory.length){
+                let resultList = document.createElement('ul');
+                resultList.setAttribute('class','collection with-header');
+                let title = document.createElement('li');
+                title.setAttribute('class', 'collection-header');
+                title.innerText = category;
+                resultList.appendChild(title);
+                menuCategory.forEach(meal =>{
+                    let entry = document.createElement('li');
+                    entry.setAttribute('class', 'collection-item');
+                    let icon = document.createElement('i');
+                    icon.setAttribute('class', 'material-icons');
+                    icon.innerHTML= 'play_arrow';
+                    let a = document.createElement('a');
+                    //a.href = `../?canteenId=${result.id}`;
+                    a.setAttribute('class', 'secondary-content');
+                    let div = document.createElement('div');
+                    let name = document.createElement('span');
+                    name.setAttribute('class', 'title');
+                    name.innerText= meal.name;
+                    let prices = document.createElement('span');
+                    prices.setAttribute('class', 'line-below');
+                    //prices.innerHTML= meal.address;
+                    div.appendChild(name);
+                    div.appendChild(prices);
+                    a.appendChild(icon);
+                    entry.appendChild(div);
+                    entry.appendChild(a);
+                    resultList.appendChild(entry);           
+                })
+                main.appendChild(resultList);
+            };
         })
     } else {
         main.innerHTML='No Menu available. Please pick another date.';
-    }   
+    };  
 };
 
+//get Categories from a menu
+function getMenuCategories(menu){
+    let categories = [];
+    menu.forEach(meal =>{
+        categories.push(meal.category);
+    })
+    return new Set(categories);
+};
 
 //get Menu by id, date
 async function getMenu(date, id){
@@ -79,8 +116,8 @@ async function isBusinessDay(date, id){
     let opImg = document.getElementById('opImg');
     let opMsg = document.getElementById('opMsg');
     if (opDay === undefined){
-        opImg.innerText='sentiment_neutral';
-        opMsg.innerText='NO DATA';
+        opImg.innerText='';
+        opMsg.innerText='';
     } else if (opDay.closed){
         opImg.innerText='sentiment_very_dissatisfied';
         opMsg.innerText='CLOSED';

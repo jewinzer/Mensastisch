@@ -13,7 +13,8 @@ router.get('/search', function(req,res){
         checked: '',
         heroMessage: 'Allow location tracking via GPS',
         heroContent: '<div class="input-field">'+
-                    '<input id="findCanteen" type="text" autocomplete="off" oninput="showCanteensByCity(this.value)"/>'+
+                    '<input id="findCanteen" type="text" autocomplete="off" '+
+                    'onkeyup="showCanteensByCity(this.value)"/>'+
                     '<label class="active" for="findCanteen">Enter City</label></div>',
         mainContent: '<ul id="searchResults"></ul>',
         onload: 'null'

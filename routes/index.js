@@ -11,13 +11,13 @@ router.use(express.urlencoded({extended: true}));
 
 
 //root route
-router.get('', async function(req, res) {
+router.get('', function(req, res) {
     if(req.query.canteenId){
         const id = req.query.canteenId;
         return res.render('index',{
             heroContentPrimary: '<h2>Menu</h2>',
             heroContentSecondary: '<i id="opImg" class="large material-icons"></i><h6 id ="opMsg"></h6>',
-            mainContent: '',
+            mainContent: '<ul id="searchResults"></ul>',
             onload: `showCanteenData(${id})`
         });
     }
