@@ -4,20 +4,20 @@
     "lang": "de",
     "start_url": "/",
     "display": "standalone",
-    "theme_color": "#421c4a",
-    "background_color": "#421c4a",
+    "theme_color": "#00695C",
+    "background_color": "#00695C",
     "icons": [
       {
-        "src": "/img/utensils-solid-192.png",
+        "src": "/img/icon-192x192.png",
         "sizes": "192x192",
         "purpose": "any maskable"
       },
       {
-        "src": "/img/utensils-solid-512.png",
+        "src": "/img/icon-512x512.png",
         "sizes": "512x512"
       },
       {
-        "src": "/img/utensils-solid.svg",
+        "src": "/img/Logo.svg",
         "sizes": "513x513"
       }
     ]
