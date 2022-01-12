@@ -59,40 +59,68 @@
 .text-primary{
     color: $primary-color;
 }
+.text-grey-dark{
+    color: $grey-color-dark;
+}
 .bg-light{
     background-color: $grey-color-light;
 }
-.hero-section{
+
+//Hero Section custom flex
+.hero{
     height: 13rem;
     padding: 1rem;
     margin-bottom: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    overflow: hidden;
 }
     .input-field{
         margin: 0 0 1rem 0;
     }
     h2{
-        margin: 0;
+        margin: 0 0 .25rem 0;
     }
     h4{
         margin: .5rem 0;
     }
-    .row{
-        margin: 0 0 1rem 0;
+
+.heroPrimary{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}    
+
+.btn-group{
+    border: 1px solid $primary-color;
+    border-radius: .25rem;
+    width: fit-content;
+    margin: auto 0 0 0;
+    order: 2;
+}
+    .btn-flat, .btn-flat:active{
+        border-radius: 0;
+        margin: 0;
+        height: 2rem;
+        line-height: 2rem;
+        background-color: $primary-color !important;
+        color: #fff;
+        padding: 0 .5rem;
     }
+    #dateBtn{
+        color: inherit !important;
+        margin:0 !important;
+        min-width: 7rem;    
+    }
+
+.operating-hours{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-top: 5rem;
+}
 
 #findCanteen{
     margin: 0;
 }
-.btn-group{
-    display: flex;
-}
-    .btn, .btn-flat{
-        padding: 0;
-    }
-
 
 .logo.right {
     display: inline-block;

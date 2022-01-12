@@ -900,7 +900,7 @@ i.medium {
 }
 
 i.large {
-  font-size: 4rem;
+  font-size: 8rem;
 }
 
 img.responsive-img,
@@ -1259,7 +1259,7 @@ td, th {
 }
 
 .collection {
-  margin: 0.5rem 0 1rem 0;
+  margin: 1rem 0 2rem 0;
   border-radius: 2px;
   overflow: hidden;
   position: relative;
@@ -1366,12 +1366,27 @@ td, th {
 
 .collection.with-header .collection-header {
   background-color: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 10px 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row nowrap;
+          flex-flow: row nowrap;
+  padding: .75rem 0 .75rem 0rem;
+  font-weight: 600;
+  font-size: 1.25rem;
 }
 
 .collection.with-header .collection-item {
-  padding-left: 30px;
+  padding: .75rem 0 .75rem 1rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row nowrap;
+          flex-flow: row nowrap;
 }
 
 .collection.with-header .collection-item.avatar {
@@ -1410,7 +1425,7 @@ td, th {
   width: 100%;
   background-color: white;
   border-radius: 2px;
-  margin: 0.5rem 0 1rem 0;
+  margin: 1rem 0 2rem 0;
   overflow: hidden;
 }
 
@@ -1594,8 +1609,8 @@ input[type=range] + .thumb {
   }
 }*/
 .col .row {
-  margin-left: -0.75rem;
-  margin-right: -0.75rem;
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
 }
 
 .section {
@@ -1631,7 +1646,7 @@ input[type=range] + .thumb {
   float: left;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
-  padding: 0 0.75rem;
+  padding: 0 1.5rem;
   min-height: 1px;
 }
 
@@ -2884,14 +2899,14 @@ small {
   transition: box-shadow .25s;
   transition: box-shadow .25s, -webkit-box-shadow .25s;
   padding: 24px;
-  margin: 0.5rem 0 1rem 0;
+  margin: 1rem 0 2rem 0;
   border-radius: 2px;
   background-color: #fff;
 }
 
 .card {
   position: relative;
-  margin: 0.5rem 0 1rem 0;
+  margin: 1rem 0 2rem 0;
   background-color: #fff;
   -webkit-transition: -webkit-box-shadow .25s;
   transition: -webkit-box-shadow .25s;
@@ -3977,7 +3992,7 @@ body.keyboard-focused .dropdown-content li:focus {
   border-top: 1px solid #ddd;
   border-right: 1px solid #ddd;
   border-left: 1px solid #ddd;
-  margin: 0.5rem 0 1rem 0;
+  margin: 1rem 0 2rem 0;
 }
 
 .collapsible-header {
@@ -4612,12 +4627,12 @@ textarea.materialize-textarea + label:after, .select-wrapper + label:after {
 }
 
 .input-field.col label {
-  left: 0.75rem;
+  left: 1.5rem;
 }
 
 .input-field.col .prefix ~ label,
 .input-field.col .prefix ~ .validate ~ label {
-  width: calc(100% - 3rem - 1.5rem);
+  width: calc(100% - 3rem - 3rem);
 }
 
 .input-field > label {
@@ -7171,24 +7186,19 @@ input[type=range]::-ms-thumb {
   color: #00695c;
 }
 
+.text-grey-dark {
+  color: #bababa;
+}
+
 .bg-light {
   background-color: #f7f7f7;
 }
 
-.hero-section {
+.hero {
   height: 13rem;
   padding: 1rem;
   margin-bottom: 2rem;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+  overflow: hidden;
 }
 
 .input-field {
@@ -7196,30 +7206,66 @@ input[type=range]::-ms-thumb {
 }
 
 h2 {
-  margin: 0;
+  margin: 0 0 .25rem 0;
 }
 
 h4 {
   margin: .5rem 0;
 }
 
-.row {
-  margin: 0 0 1rem 0;
+.heroPrimary {
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.btn-group {
+  border: 1px solid #00695c;
+  border-radius: .25rem;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: auto 0 0 0;
+  -webkit-box-ordinal-group: 3;
+      -ms-flex-order: 2;
+          order: 2;
+}
+
+.btn-flat, .btn-flat:active {
+  border-radius: 0;
+  margin: 0;
+  height: 2rem;
+  line-height: 2rem;
+  background-color: #00695c !important;
+  color: #fff;
+  padding: 0 .5rem;
+}
+
+#dateBtn {
+  color: inherit !important;
+  margin: 0 !important;
+  min-width: 7rem;
+}
+
+.operating-hours {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  text-align: center;
+  margin-top: 5rem;
 }
 
 #findCanteen {
   margin: 0;
-}
-
-.btn-group {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.btn, .btn-large, .btn-small,
-.btn-flat {
-  padding: 0;
 }
 
 .logo.right {

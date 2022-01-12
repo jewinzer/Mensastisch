@@ -49,7 +49,7 @@ router.get('', function(req,res){
     return res.render('canteen', {
         checked: 'checked',
         heroMessage: 'Allow location tracking via GPS',
-        heroContent: '<h3>Canteens closest to you</h3>',
+        heroContent: '',
         mainContent: '<ul id="searchResults"></ul>',
         onload: `showCanteensByLocation(${lat},${lng},${x})`
     });

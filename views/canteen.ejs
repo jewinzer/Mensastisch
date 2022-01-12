@@ -1,5 +1,5 @@
 <%- include('partials/header.ejs') %>
-<div class="container hero-section bg-light">
+<div class="container hero bg-light">
     <div class ="row d-flex">
         <div class="col s6 offset-s3 center-align">
             <i class="small material-icons text-primary">place</i>
@@ -62,8 +62,16 @@ async function showCanteensByLocation(lat,lng,x){
 // append query results to DOM
 function addToDOM(results){
     let resultList = document.getElementById('searchResults');
-    resultList.setAttribute('class','collection');
+    resultList.setAttribute('class','collection with-header');
     resultList.innerHTML= '';
+    let title = document.createElement('li');
+    title.setAttribute('class', 'collection-header');
+    if(addToDOM.caller.name == 'showCanteensByLocation'){
+        title.innerText='Closest Canteens';
+    } else {
+        title.innerText='Canteens found';
+    };
+    resultList.appendChild(title);
     results.forEach(result => {
         let entry = document.createElement('li');
         entry.setAttribute('class', 'collection-item');
@@ -158,9 +166,13 @@ function getDistance(lat1, lng1, lat2, lng2) {
     const distance = R * c;
     return roundToTwo(distance);
 };
+
+//helper, radius
 function deg2rad(deg) {
     return deg * (Math.PI/180)
 };
+
+//helper, rounding
 function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 };

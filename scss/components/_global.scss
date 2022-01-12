@@ -149,7 +149,7 @@ i {
     font-size: 3rem;
   }
   &.large {
-    font-size: 4rem;
+    font-size: 8rem;
   }
 }
 
@@ -608,11 +608,17 @@ td, th{
   &.with-header {
     .collection-header {
       background-color: $collection-bg-color;
-      border-bottom: 1px solid $collection-border-color;
-      padding: 10px 20px;
+      //border-bottom: 1px solid $collection-border-color;
+      display: flex;
+      flex-flow: row nowrap;
+      padding: .75rem 0 .75rem 0rem;
+      font-weight: 600;
+      font-size: 1.25rem
     }
     .collection-item {
-      padding-left: 30px;
+      padding: .75rem 0 .75rem 1rem;
+      display: flex;
+      flex-flow: row nowrap;
     }
     .collection-item.avatar {
       padding-left: 72px;

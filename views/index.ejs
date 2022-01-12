@@ -1,96 +1,102 @@
 <%- include('partials/header.ejs') -%>
-<div class="container hero-section bg-light">
-    <div class ="row">
-        <div class ="col s9">
-            <%- heroContentPrimary %>
-        </div>
-        <div class="col s3 center-align" id="heroSecondary">
-            <%- heroContentSecondary %>
-        </div>
+
+<div class="container hero bg-light">
+    <div class="heroPrimary">
+            <%- heroContentPrimary %>         
     </div>
 </div>
-<div class= "container">
-    <div class="row">
-        <div class ="col s12">
-            <div class="btn-group">
-                <button class="btn" onclick="refreshDateBtn(this.nextElementSibling.innerHTML, false)"><i class="material-icons">chevron_left</i></button>
-                <button class ="btn" id="dateBtn"></button>
-                <button class="btn" onclick="refreshDateBtn(this.previousElementSibling.innerHTML, true)"><i class="material-icons">chevron_right</i></button>
-            </div>
-        </div>
-    </div>
+<div class="container">
     <div class ="row" id="mainContent">
         <%- mainContent %>
     </div>
 </div>
 
-
 <script>
 window.onload = <%= onload %>;
-//
-//1. Mensa-Daten (indb)
-//2. Daten zu Öffnungzeiten (indb / api)
-//3. Daten zu Gerichten (indb / api)
+
 
 //add menu to DOM
 async function showMenu(date, id){
-    let main = document.getElementById('mainContent');
-    main.innerHTML= '';
     const menu = await getMenu(date, id);
     console.log(menu);
+    let main = document.getElementById('mainContent');
+    main.innerHTML= '';
     if (menu.length) {
         const categories = getMenuCategories(menu);
-        console.log(categories);
         categories.forEach(category =>{
-            console.log(category);
             let menuCategory = menu.filter(meal => meal.category == category);
-            console.log(menuCategory);
             if (menuCategory.length){
-                let resultList = document.createElement('ul');
-                resultList.setAttribute('class','collection with-header');
-                let title = document.createElement('li');
-                title.setAttribute('class', 'collection-header');
-                title.innerText = category;
-                resultList.appendChild(title);
-                menuCategory.forEach(meal =>{
-                    let entry = document.createElement('li');
-                    entry.setAttribute('class', 'collection-item');
-                    let icon = document.createElement('i');
-                    icon.setAttribute('class', 'material-icons');
-                    icon.innerHTML= 'play_arrow';
-                    let a = document.createElement('a');
-                    //a.href = `../?canteenId=${result.id}`;
-                    a.setAttribute('class', 'secondary-content');
-                    let div = document.createElement('div');
-                    let name = document.createElement('span');
-                    name.setAttribute('class', 'title');
-                    name.innerText= meal.name;
-                    let prices = document.createElement('span');
-                    prices.setAttribute('class', 'line-below');
-                    //prices.innerHTML= meal.address;
-                    div.appendChild(name);
-                    div.appendChild(prices);
-                    a.appendChild(icon);
-                    entry.appendChild(div);
-                    entry.appendChild(a);
-                    resultList.appendChild(entry);           
+                let collection = createMenuCollection(category);
+                menuCategory.forEach(meal =>{   
+                    collection.append(createMenuCollectionItem(meal));       
                 })
-                main.appendChild(resultList);
+                main.appendChild(collection);
             };
         })
     } else {
-        main.innerHTML='No Menu available. Please pick another date.';
-    };  
+        const operationMessage = await createOperationData(date,id);
+        main.appendChild(operationMessage);
+    };
 };
 
-//get Categories from a menu
+//return string of meal pricing
+function getMealPricing(meal){
+    let resultStr ='';
+    for (const [key, value] of Object.entries(meal.prices)) {
+        if(value){
+            resultStr += `${value.toLocaleString("de-DE", {style: "currency", currency: "EUR"})}&nbsp;| `;
+        };
+    };
+    return resultStr.slice(0, -2);
+};
+
+//create collection element, collection title named after category
+function createMenuCollection(category){
+    let collection = document.createElement('ul');
+    collection.setAttribute('class','collection with-header');
+    let title = document.createElement('li');
+    title.setAttribute('class', 'collection-header');
+    title.innerText = category;
+    collection.appendChild(title);
+    return collection;
+};
+
+
+// create and append entry to menu collection
+function createMenuCollectionItem(meal){
+    let entry = document.createElement('li');
+    entry.setAttribute('class', 'collection-item');
+    let icon = document.createElement('i');
+    icon.setAttribute('class', 'material-icons');
+    icon.innerHTML= 'bookmark_border';
+    let a = document.createElement('a');
+    //a.href = `../?canteenId=${result.id}`;
+    a.setAttribute('class', 'secondary-content');
+    let div = document.createElement('div');
+    let name = document.createElement('span');
+    name.setAttribute('class', 'title');
+    name.innerText= meal.name;
+    let prices = document.createElement('span');
+    prices.setAttribute('class', 'line-below');
+    prices.innerHTML= getMealPricing(meal);
+    div.appendChild(name);
+    div.appendChild(prices);
+    a.appendChild(icon);
+    entry.appendChild(div);
+    entry.appendChild(a);
+    return entry;
+};
+
+
+//get Categories from menu
 function getMenuCategories(menu){
     let categories = [];
     menu.forEach(meal =>{
         categories.push(meal.category);
-    })
+    });
     return new Set(categories);
 };
+
 
 //get Menu by id, date
 async function getMenu(date, id){
@@ -104,36 +110,46 @@ async function getMenu(date, id){
 //populate date field
 function populateDateBtn(date, id){
     document.getElementById('dateBtn').innerHTML = date.toLocaleDateString("ru-RU");
-    isBusinessDay(date,id);
     showMenu(date,id);
 };
 
 
-//adds business day data to DOM
-async function isBusinessDay(date, id){
+//adds business day data 
+async function createOperationData(date, id){
     const opDays = await getDatesById(id);
     const opDay = opDays.find(element => element.date == date.toLocaleDateString("en-CA"));
-    let opImg = document.getElementById('opImg');
-    let opMsg = document.getElementById('opMsg');
+    let opDiv = document.createElement('div');
+    opDiv.setAttribute('class','operating-hours');
+    let opIcon = document.createElement('i');
+    let opMsg = document.createElement('h4');
     if (opDay === undefined){
-        opImg.innerText='';
-        opMsg.innerText='';
+        opIcon.setAttribute('class', 'large material-icons text-grey-dark');
+        opMsg.setAttribute('class','text-grey-dark');
+        opIcon.innerText= 'sentiment_very_dissatisfied';
+        opMsg.innerHTML='No Data.<br>Please pick another day.'
     } else if (opDay.closed){
-        opImg.innerText='sentiment_very_dissatisfied';
-        opMsg.innerText='CLOSED';
+        opIcon.setAttribute('class', 'large material-icons text-grey-dark');
+        opMsg.setAttribute('class','text-grey-dark');
+        opIcon.innerText= 'sentiment_very_dissatisfied';
+        opMsg.innerHTML='Canteen closed.<br>Please pick another day.'
     } else {
-        opImg.innerText='sentiment_very_satisfied';
-        opMsg.innerText='OPEN';
+        opIcon.setAttribute('class', 'large material-icons text-primary');
+        opIcon.innerText= 'sentiment_very_satisfied';
+        opMsg.innerHTML='Canteen OPEN.<br>Come along!'
+        opMsg.setAttribute('class','text-primary');
     }
+    opDiv.appendChild(opIcon);
+    opDiv.appendChild(opMsg);
+    return opDiv;
 };
 
 
 //refresh date field
-function refreshDateBtn(datestring, add){
+function refreshDateBtn(datestring, isAddition){
     const parts = datestring.split('.');
     const oldDate = new Date(parts[2], parts[1], parts[0]);
     const newDate = new Date();
-    if(add){
+    if(isAddition){
         newDate.setDate(oldDate.getDate() + 1);
     } else {
         newDate.setDate(oldDate.getDate() - 1);
@@ -152,7 +168,7 @@ function getIdFromUrl(){
 //show canteen Data by Id
 async function showCanteenData(id){
     const canteen = await getCanteenById(id);
-    let hero = document.querySelector('.col');
+    let hero = document.querySelector('.heroPrimary');
     let name = document.createElement('h4');
     name.innerText = canteen.name;
     let address = document.createElement('h5');
