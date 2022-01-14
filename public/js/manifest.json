@@ -7,29 +7,6 @@
     "start_url": "/",
     "name": "Mensastisch PWA, PROGMOBA WS 21/22, Gruppe 5",
     "short_name": "Mensastisch",
-<<<<<<< HEAD
-    "lang": "de",
-    "start_url": "/",
-    "display": "standalone",
-    "theme_color": "#00695C",
-    "background_color": "#00695C",
-    "icons": [
-      {
-        "src": "/img/icon-192x192.png",
-        "sizes": "192x192",
-        "purpose": "any maskable"
-      },
-      {
-        "src": "/img/icon-512x512.png",
-        "sizes": "512x512"
-      },
-      {
-        "src": "/img/Logo.svg",
-        "sizes": "513x513"
-      }
-    ]
-  }
-=======
     "icons": [
         {
           "src": "/img/mensastisch-192.png",
@@ -46,4 +23,3 @@
         }
       ]
 }
->>>>>>> 9858deaafc0acecb28089f319b71ace800cae5c0
