@@ -326,6 +326,13 @@
   color: transparent !important;
 }
 
+.responsive {
+  width:"600";
+  height:"350";
+  max-width: 100%;
+  height: auto;
+}
+
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */

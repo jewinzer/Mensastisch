@@ -28,7 +28,7 @@ router.get('', function(req, res) {
     }
     return res.render('index', {
         heroContentPrimary: '<h1>Hello from EJS template engine</h1>',
-        mainContent: 'Index first view',
+        mainContent: '<img class="responsive" src="/img/mensastisch.svg" alt="SVG mit img Tag laden">',
         onload: 'null'
     })
 });
