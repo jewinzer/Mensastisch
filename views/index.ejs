@@ -16,21 +16,27 @@ window.onload = <%= onload %>;
 
 // add/remove meal to/from indb column "planned Meals"
 async function updateMeal(mealId){
-    const userData = await db.userStore.toArray();
-    const oldMeals = userData[0].plannedMeals;
+    const oldMeals = await getPlannedMeals();
     let newMeals = [];
     if (!oldMeals.length || !oldMeals.includes(mealId)){
         oldMeals.push(mealId);
         newMeals=[...oldMeals];
     } else {
-         newMeals = oldMeals.filter(item => item !== mealId);
+        newMeals = oldMeals.filter(item => item !== mealId);
     };
     await db.userStore
         .orderBy('id')
         .modify(userData =>{
-            userData.plannedMeals = newMeals
+            userData.plannedMeals = newMeals.sort();
         });    
 };
+
+//get user data from indb
+async function getPlannedMeals(){
+    const userData = await db.userStore.toArray();
+    return userData[0].plannedMeals;
+}
+
 
 //get canteen from indb by Id
 async function getCanteenById(id) {
@@ -86,32 +92,11 @@ function createMenuCollection(category){
     return collection;
 };
 
-//create collapsible
-function createMenuCollapsible(category){
-    let coll = document.createElement('ul');
-    coll.setAttribute('class','collapsible');
-    coll.setAttribute('data-collapsible','accordion');
-    return coll;
-}
-
-//create entry for menu collapsible
-function createMenuCollapsibleItem(meal){
-    let entry = document.createElement('li');
-    let head = document.createElement('div');
-    head.setAttribute('class', 'collapsible-header');
-    head.innerText = meal.name;
-    entry.appendChild(head);
-    let body = document.createElement('div');
-    body.setAttribute('class', 'collapsible-body');
-    let span = document.createElement('span');
-    span.innerText = getMealPricing(meal);
-    body.appendChild(span);
-    entry.appendChild(body);
-    return entry;
-}
 
 // create entry for menu collection
 function createMenuCollectionItem(meal){
+    
+    
     let entry = document.createElement('li');
     entry.setAttribute('class', 'collection-item');
     

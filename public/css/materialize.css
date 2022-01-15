@@ -7286,4 +7286,11 @@ h4 {
   width: 100% !important;
   background-color: #00695c;
 }
+
+#mensastisch-logo {
+  width: 3rem;
+  height: 3rem;
+  vertical-align: middle;
+  fill: #d4e157;
+}
 /*# sourceMappingURL=materialize.css.map */

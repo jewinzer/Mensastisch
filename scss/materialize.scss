@@ -36,6 +36,10 @@
 @import "components/datepicker";
 @import "components/timepicker";
 
+
+
+
+
 //Flexbox
 .d-flex{
     display: flex;
@@ -138,4 +142,11 @@
 #dropdown-menu {
     width: 100% !important;
     background-color: $primary-color;
+}
+
+#mensastisch-logo{
+    width: 3rem;
+    height: 3rem;
+    vertical-align: middle;
+    fill: $secondary-color;
 }

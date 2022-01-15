@@ -7,7 +7,13 @@ const CACHE = "mensastischCache";
 //define files to be cached
 const filesToCache = [
     '/',
-    '/css/materialize.css'
+    '/css/materialize.css',
+    '/js/script.js',
+    'js/dexie.min.js',
+    'js/manifest.json',
+    'img/mensastisch-192.png',
+    'img/mensastisch-512.png',
+    'img/mensastisch.svg'
   ];
 
 //populate cache on sw installation
