@@ -12,10 +12,12 @@
 </div>
 
 <script>
+"use strict";
+
 window.onload = <%= onload %>;
 
 // add/remove meal to/from indb column "planned Meals"
-async function updateMeal(mealId){
+async function updatePlannedMeals(mealId){
     const oldMeals = await getPlannedMeals();
     let newMeals = [];
     if (!oldMeals.length || !oldMeals.includes(mealId)){
@@ -35,7 +37,7 @@ async function updateMeal(mealId){
 async function getPlannedMeals(){
     const userData = await db.userStore.toArray();
     return userData[0].plannedMeals;
-}
+};
 
 
 //get canteen from indb by Id
@@ -107,7 +109,7 @@ function createMenuCollectionItem(meal){
     let checkbox = document.createElement('input');
     checkbox.setAttribute('class', 'filled-in');
     checkbox.setAttribute('type', 'checkbox');
-    checkbox.setAttribute('onchange', `updateMeal(${meal.id})`);
+    checkbox.setAttribute('onchange', `updatePlannedMeals(${meal.id})`);
 
     let label = document.createElement('label');
     let span = document.createElement('span');

@@ -1,6 +1,12 @@
+"use strict";
+
+// import Workbox
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-sw.js');
+
 //import indexedDB script, initilialize indexedDB schema
 importScripts('../js/dexie.min.js');
 
+/*
 //set up cache
 const CACHE = "mensastischCache";
 
@@ -20,6 +26,7 @@ const filesToCache = [
 self.addEventListener("install", async event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(filesToCache)));
 });
+*/
 
 //finalize indexedDB creation on sw activation
 self.addEventListener('activate', async event => {
@@ -27,6 +34,52 @@ self.addEventListener('activate', async event => {
     createDB()
   );
 });
+
+//cache css, js resources, serve from cache if available, update cache from network
+workbox.routing.registerRoute(
+    /\.(?:css|js|json)$/,
+    new workbox.strategies.StaleWhileRevalidate({
+      "cacheName": "static-resources",
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 20,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        })
+      ]
+    })
+);
+
+//cache images, cache first, if !cache, fill cache, then serve from cache
+workbox.routing.registerRoute(
+  /\.(?:png|jpg|jpeg|svg)$/,
+  new workbox.strategies.CacheFirst({
+    "cacheName": "images",
+    plugins: [
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 20,
+        maxAgeSeconds: 30 * 24 * 60 * 60 // 1 month
+      }),
+    ],
+  })
+);
+
+//cache external api requests: network first
+workbox.routing.registerRoute(
+  new RegExp('https:\/\/openmensa.org\/api\/v2\/canteens\/.*'),
+  new workbox.strategies.NetworkFirst({
+      networkTimeoutSeconds: 3,
+      cacheName: 'api-requests',
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 2000,
+          maxAgeSeconds: 2*24 * 60 * 60 // 2 days
+        }),
+      ],
+  })
+);
+
+
+/*
 
 //manage fetch requests online/offline
 self.addEventListener("fetch", event => {
@@ -50,7 +103,7 @@ self.addEventListener("fetch", event => {
     );
   }
 });
-
+*/
 //populate indexedDB, finalize indexedDB creation
 async function createDB(){
   getCanteens().then(canteens =>{

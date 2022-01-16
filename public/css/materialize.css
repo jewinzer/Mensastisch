@@ -1288,6 +1288,7 @@ td, th {
       -ms-flex-flow: column nowrap;
           flex-flow: column nowrap;
   margin-right: 1rem;
+  width: 100%;
 }
 
 .collection .collection-item .line-above {
