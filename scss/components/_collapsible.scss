@@ -1,23 +1,37 @@
 .collapsible {
-  border-top: 1px solid $collapsible-border-color;
-  border-right: 1px solid $collapsible-border-color;
-  border-left: 1px solid $collapsible-border-color;
+  border-bottom: 1px solid $collapsible-border-color;
   margin: $element-top-margin 0 $element-bottom-margin 0;
-  @extend .z-depth-1;
+  //@extend .z-depth-1;
 }
+  .collapsible-title{
+    padding: 1rem;
+    font-weight: 800;
+  }
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid $collapsible-border-color;
+
+    >i{
+      font-size: 1.5rem;
+      padding: 1rem 1rem 0 1rem;
+      margin-left: 1rem;
+      color: $grey-color-dark;
+      cursor: pointer;
+    }
+  }
 
 .collapsible-header {
   &:focus {
     outline: 0
   }
 
-  display: flex;
+  flex-grow: 4;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  line-height: 1.5;
+  line-height: 1.5rem;
   padding: 1rem;
   background-color: $collapsible-header-color;
-  border-bottom: 1px solid $collapsible-border-color;
 
   i {
     width: 2rem;
@@ -33,9 +47,9 @@
 
 .collapsible-body {
   display: none;
-  border-bottom: 1px solid $collapsible-border-color;
+  //border-bottom: 1px solid $collapsible-border-color;
   box-sizing: border-box;
-  padding: 2rem;
+  padding: 0 1rem 1rem 1rem;
 }
 
 // Sidenav collapsible styling

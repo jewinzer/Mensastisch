@@ -34,7 +34,7 @@ self.addEventListener('activate', async event => {
     createDB()
   );
 });
-
+/*
 //cache css, js resources, serve from cache if available, update cache from network
 workbox.routing.registerRoute(
     /\.(?:css|js|json)$/,
@@ -48,7 +48,7 @@ workbox.routing.registerRoute(
       ]
     })
 );
-
+*/
 //cache images, cache first, if !cache, fill cache, then serve from cache
 workbox.routing.registerRoute(
   /\.(?:png|jpg|jpeg|svg)$/,
@@ -72,7 +72,7 @@ workbox.routing.registerRoute(
       plugins: [
         new workbox.expiration.ExpirationPlugin({
           maxEntries: 2000,
-          maxAgeSeconds: 2*24 * 60 * 60 // 2 days
+          maxAgeSeconds: 7 * 24 * 60 * 60 // 1 week
         }),
       ],
   })
