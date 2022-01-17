@@ -152,6 +152,9 @@ i {
     font-size: 8rem;
   }
 }
+.icon-on{
+  color: $primary-color !important;
+}
 
 // Images
 img.responsive-img,
@@ -533,7 +536,8 @@ td, th{
     div {
       display: flex;
       flex-flow: column nowrap;
-      margin-right: 1rem;  
+      margin-right: 1rem;
+      width: 100%;
     }
       .line-above{
         font-size: $h6-fontsize;

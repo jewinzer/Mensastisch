@@ -822,7 +822,7 @@ a {
 }
 
 /* 2dp elevation modified*/
-.z-depth-1, nav, .card-panel, .card, .toast, .btn, .btn-large, .btn-small, .btn-floating, .dropdown-content, .collapsible, .sidenav {
+.z-depth-1, nav, .card-panel, .card, .toast, .btn, .btn-large, .btn-small, .btn-floating, .dropdown-content, .sidenav {
   -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
           box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
 }
@@ -908,6 +908,10 @@ i.medium {
 
 i.large {
   font-size: 8rem;
+}
+
+.icon-on {
+  color: #00695c !important;
 }
 
 img.responsive-img,
@@ -1295,6 +1299,7 @@ td, th {
       -ms-flex-flow: column nowrap;
           flex-flow: column nowrap;
   margin-right: 1rem;
+  width: 100%;
 }
 
 .collection .collection-item .line-above {
@@ -3996,22 +4001,42 @@ body.keyboard-focused .dropdown-content li:focus {
 }
 
 .collapsible {
-  border-top: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
   margin: 1rem 0 2rem 0;
 }
 
-.collapsible-header {
+.collapsible-title {
+  padding: 1rem;
+  font-weight: 800;
+}
+
+.wrapper {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  border-top: 1px solid #ddd;
+}
+
+.wrapper > i {
+  font-size: 1.5rem;
+  padding: 1rem 1rem 0 1rem;
+  margin-left: 1rem;
+  color: #bababa;
+  cursor: pointer;
+}
+
+.collapsible-header {
+  -webkit-box-flex: 4;
+      -ms-flex-positive: 4;
+          flex-grow: 4;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  line-height: 1.5;
+  line-height: 1.5rem;
   padding: 1rem;
   background-color: #fff;
-  border-bottom: 1px solid #ddd;
 }
 
 .collapsible-header:focus {
@@ -4032,10 +4057,9 @@ body.keyboard-focused .dropdown-content li:focus {
 
 .collapsible-body {
   display: none;
-  border-bottom: 1px solid #ddd;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
-  padding: 2rem;
+  padding: 0 1rem 1rem 1rem;
 }
 
 .sidenav .collapsible,
@@ -7292,5 +7316,12 @@ h4 {
 #dropdown-menu {
   width: 100% !important;
   background-color: #00695c;
+}
+
+#mensastisch-logo {
+  width: 3rem;
+  height: 3rem;
+  vertical-align: middle;
+  fill: #d4e157;
 }
 /*# sourceMappingURL=materialize.css.map */
