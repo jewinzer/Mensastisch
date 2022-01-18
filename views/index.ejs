@@ -1,8 +1,13 @@
 <%- include('partials/header.ejs') -%>
 
 <div class="container hero bg-light">
-    <div class="heroPrimary">
+    <div class="d-flex h-100">
+        <div class="heroPrimary">
             <%- heroContentPrimary %>         
+        </div>
+        <div class="heroSecondary">
+            <%- heroContentSecondary %>         
+        </div>
     </div>
 </div>
 <div class="container">
@@ -10,18 +15,63 @@
         <%- mainContent %>
     </div>
 </div>
+</div>
 
 <script>
 "use strict";
 
 window.onload = <%= onload %>;
 
-//change color of materialize icon
+//feedback on (un)bookmark meal
+function showMealToast(isAddition){
+    let txt= '';
+    if(isAddition){
+        txt += 'Meal has been bookmarked. <a href="#!">Show all bookmarks</a>';
+    } else{
+        txt += 'Meal removed from bookmarking list.'
+    };
+    M.toast({html: txt});
+};
+
+
+//feedback on (un)bookmark canteen
+function showCanteenToast(isAddition){
+    let txt= '';
+    if(isAddition){
+        txt += 'Canteen has been bookmarked. <a href="#!">Show notification preferences</a>';
+    } else{
+        txt += 'Canteen removed from bookmarking list.'
+    };
+    M.toast({html: txt});
+};
+
+// add/remove canteen to/from column "favourite Canteens"
+async function updateFavouriteCanteens(canteenId){
+    const oldFav = await getFavouriteCanteens();
+    let newFav = [];
+    let isAddition = true;
+    if(!oldFav.length || !oldFav.includes (canteenId)){
+        oldFav.push(canteenId);
+        newFav= [...oldFav];
+    } else{
+        newFav = oldFav.filter(item => item !== canteenId);
+        isAddition = false;
+    };
+    await db.userStore
+        .orderBy('id')
+        .modify(userData =>{
+            userData.favouriteCanteens = newFav.sort();
+        });
+    showCanteenToast(isAddition);
+};
+
+
+//change status of materialize icon
 function changeIconState(icon){
-    if(icon.classList.contains("icon-on")){
-        icon.classList.remove("icon-on");
+    if(icon.classList.contains("icon-active")){
+        icon.classList.remove("icon-active");
     } else {
-        icon.classList.add("icon-on");
+        icon.classList.add("icon-active");
     };  
 };
 
@@ -29,23 +79,40 @@ function changeIconState(icon){
 async function updatePlannedMeals(mealId){
     const oldMeals = await getPlannedMeals();
     let newMeals = [];
+    let isAddition = true;
     if (!oldMeals.length || !oldMeals.includes(mealId)){
         oldMeals.push(mealId);
         newMeals=[...oldMeals];
     } else {
         newMeals = oldMeals.filter(item => item !== mealId);
+        isAddition = false;
     };
     await db.userStore
         .orderBy('id')
         .modify(userData =>{
             userData.plannedMeals = newMeals.sort();
-        });    
+        });
+    showMealToast(isAddition);
 };
+
+//get favourite canteens from indb
+async function getFavouriteCanteens(){
+    const pref = await getUserPreferences();
+    return pref.favouriteCanteens;
+};
+
+
+//get User Preferences from Indb
+async function getUserPreferences(){
+    const pref = await db.userStore.toArray();
+    return pref[0];
+};
+
 
 //get user data from indb
 async function getPlannedMeals(){
-    const userData = await db.userStore.toArray();
-    return userData[0].plannedMeals;
+    const pref = await getUserPreferences();
+    return pref.plannedMeals;
 };
 
 
@@ -91,16 +158,6 @@ function getMealPricing(meal){
     return resultStr.slice(0, -3);
 };
 
-/*create collection element, collection title named after category
-function createMenuCollection(category){
-    let collection = document.createElement('ul');
-    collection.setAttribute('class','collection with-header');
-    let title = document.createElement('li');
-    title.setAttribute('class', 'collection-header');
-    title.innerText = category;
-    collection.appendChild(title);
-    return collection;
-};*/
 
 //create collapsible element
 function createMenuCollapsible(category){
@@ -114,74 +171,27 @@ function createMenuCollapsible(category){
     return collapsible;
 };
 
-//create menu collapsible entry
+//create menu entry for collapsible
 function createMenuCollapsibleItem(meal){
     let entry = document.createElement('li');
     let wrapper = document.createElement('div');
     wrapper.setAttribute('class', 'wrapper');
-
     let header = document.createElement('div');
     header.setAttribute('class', 'collapsible-header');
     header.innerText= meal.name;
-
     let icon = document.createElement('i');
-    icon.setAttribute('class', 'material-icons');
+    icon.setAttribute('class', 'material-icons icon-clickable');
     icon.setAttribute('onclick', `changeIconState(this); updatePlannedMeals(${meal.id})`);
     icon.innerHTML= 'bookmark_border';
-
-    wrapper.appendChild(header);
-    wrapper.appendChild(icon);
-
     let body = document.createElement('div');
     body.setAttribute('class', 'collapsible-body');
     body.innerHTML= getMealPricing(meal);
-
+    wrapper.appendChild(header);
+    wrapper.appendChild(icon);
     entry.appendChild(wrapper);
     entry.appendChild(body);
     return entry;
 };
-
-
-/*/ create entry for menu collection
-function createMenuCollectionItem(meal){
-    
-    
-    let entry = document.createElement('li');
-    entry.setAttribute('class', 'collection-item');
-    
-    //let icon = document.createElement('i');
-    //icon.setAttribute('class', 'material-icons');
-    //icon.innerHTML= 'bookmark_border';
-
-    let checkbox = document.createElement('input');
-    checkbox.setAttribute('class', 'filled-in');
-    checkbox.setAttribute('type', 'checkbox');
-    checkbox.setAttribute('onchange', `updatePlannedMeals(${meal.id})`);
-    let label = document.createElement('label');
-    let span = document.createElement('span');
-
-    let a = document.createElement('a');
-    a.href = '#';
-    a.setAttribute('class', 'secondary-content');
-
-    label.appendChild(checkbox);
-    label.appendChild(span);
-    a.appendChild(label);
-
-    let div = document.createElement('div');
-    let name = document.createElement('span');
-    name.setAttribute('class', 'title');
-    name.innerText= meal.name;
-    let prices = document.createElement('span');
-    prices.setAttribute('class', 'line-below');
-    prices.innerHTML= getMealPricing(meal);
-    div.appendChild(name);
-    div.appendChild(prices);
-    //a.appendChild(icon);
-    entry.appendChild(div);
-    entry.appendChild(a);
-    return entry;
-};*/
 
 
 //get Categories from menu
@@ -211,7 +221,7 @@ function populateDateBtn(date, id){
 };
 
 
-//adds business day data 
+//add business day data to DOM
 async function createOperationData(date, id){
     const opDays = await getDatesById(id);
     const opDay = opDays.find(element => element.date == date.toLocaleDateString("en-CA"));

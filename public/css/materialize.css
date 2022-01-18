@@ -903,7 +903,12 @@ i.large {
   font-size: 8rem;
 }
 
-.icon-on {
+.icon-clickable {
+  color: #bababa;
+  cursor: pointer;
+}
+
+.icon-active {
   color: #00695c !important;
 }
 
@@ -3149,16 +3154,12 @@ small {
   font-size: 1.1rem;
   font-weight: 300;
   color: #fff;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
   cursor: default;
+}
+
+.toast a {
+  color: #fff;
+  text-decoration: underline;
 }
 
 .toast .toast-action {
@@ -4017,8 +4018,6 @@ body.keyboard-focused .dropdown-content li:focus {
   font-size: 1.5rem;
   padding: 1rem 1rem 0 1rem;
   margin-left: 1rem;
-  color: #bababa;
-  cursor: pointer;
 }
 
 .collapsible-header {
@@ -7170,6 +7169,10 @@ input[type=range]::-ms-thumb {
   }
 }
 
+.h-100 {
+  height: 100%;
+}
+
 .d-flex {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -7192,6 +7195,10 @@ input[type=range]::-ms-thumb {
 
 .margin-bottom-3 {
   margin-bottom: 3rem;
+}
+
+.ml-auto {
+  margin-left: auto;
 }
 
 .justify-content-center {
@@ -7238,7 +7245,6 @@ h4 {
 }
 
 .heroPrimary {
-  height: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -7246,6 +7252,11 @@ h4 {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
+  padding-right: 1rem;
+}
+
+.heroSecondary {
+  margin-left: auto;
 }
 
 .btn-group {
