@@ -105,22 +105,45 @@ self.addEventListener("fetch", event => {
 });
 */
 //populate indexedDB, finalize indexedDB creation
-async function createDB(){
+async function createDB(){ 
+  await initCanteensStore();
+  await initUserStore();
+};
+
+//inititaliaze Canteens Table in indb
+async function initCanteensStore(){
   getCanteens().then(canteens =>{
-      canteens.forEach(canteen =>{
-          db.canteensStore.put({
-              id:canteen.id,
-              name: canteen.name,
-              city: canteen.city,
-              address: canteen.address,
-              coordinates: checkCoords(canteen.coordinates),
-              distance: 999
-          });
-      })
+    canteens.forEach(canteen =>{
+        db.canteensStore.put({
+            id:canteen.id,
+            name: canteen.name,
+            city: canteen.city,
+            address: canteen.address,
+            coordinates: checkCoords(canteen.coordinates),
+            distance: 999
+        });
+      });
+    }).then(() => {
+        return db.canteensStore;
+    }).catch(err => {
+        console.warn(`Oops... ${err}`);
+  });
+};
+
+//initialize user Table in indb
+async function initUserStore(){
+  db.userStore.put({
+    id: 1,
+    lastVisitedCanteen: '',
+    favouriteCanteens: [],
+    userDiet: '',
+    userAllergies: [],
+    plannedMeals: [],
+    notify: false
   }).then(() => {
-          return db.canteensStore;
-  }).catch(err => {
-          console.warn(`Oops... ${err}`);
+      return db.userStore;
+    }).catch(err => {
+      console.warn(`Oops... ${err}`);
   });
 };
 
