@@ -28,6 +28,7 @@
 </div>
 
 <script>
+"use strict";
 
 window.onload = <%= onload %>;
 
@@ -48,7 +49,7 @@ async function getNearestCanteens(x) {
 //show canteen search results
 async function showCanteensByCity(str){
     const results = await getCanteensByCity(str);
-    addToDOM(results);
+    addToDOM(results, false);
 };
 
 
@@ -56,18 +57,18 @@ async function showCanteensByCity(str){
 async function showCanteensByLocation(lat,lng,x){
     await addDistance(lat,lng);
     const results = await getNearestCanteens(x);
-    addToDOM(results);
+    addToDOM(results, true);
 };
 
 
 // append query results to DOM
-function addToDOM(results){
+function addToDOM(results, isLocation){
     let resultList = document.getElementById('searchResults');
     resultList.setAttribute('class','collection with-header');
     resultList.innerHTML= '';
     let title = document.createElement('li');
     title.setAttribute('class', 'collection-header');
-    if(addToDOM.caller.name == 'showCanteensByLocation'){
+    if(isLocation){
         title.innerText='Closest Canteens';
     } else {
         title.innerText='Canteens found';
@@ -89,7 +90,7 @@ function addToDOM(results){
         let address = document.createElement('span');
         address.setAttribute('class', 'line-below');
         address.innerHTML= result.address;
-        if(addToDOM.caller.name == 'showCanteensByLocation'){
+        if(isLocation){
             let dist = document.createElement('span');
             dist.setAttribute('class', 'line-above');
             dist.innerHTML= `${result.distance} km`;

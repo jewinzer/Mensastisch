@@ -1,8 +1,12 @@
 <%- include('partials/header.ejs') -%>
 
 <div class="container hero bg-light">
-    <div class="heroPrimary">
+    <div class="d-flex h-100">
+        <div class="heroPrimary">
             <%- heroContentPrimary %>         
+        </div>
+        <div class="heroSecondary">
+        </div>
     </div>
 </div>
 <div class="container">
@@ -10,18 +14,65 @@
         <%- mainContent %>
     </div>
 </div>
+</div>
 
 <script>
 "use strict";
 
 window.onload = <%= onload %>;
 
-//change color of materialize icon
+//feedback on (un)bookmark meal
+function showMealToast(isAddition){
+    let txt= '';
+    if(isAddition){
+        txt += 'Meal has been bookmarked. <a href="#!">Show all bookmarks</a>';
+    } else{
+        txt += 'Meal removed from bookmarking list.'
+    };
+    M.toast({html: txt});
+};
+
+
+//feedback on (un)bookmark canteen
+function showCanteenToast(isAddition){
+    let txt= '';
+    if(isAddition){
+        txt += 'Canteen has been bookmarked. <a href="#!">Show notification preferences</a>';
+    } else{
+        txt += 'Canteen removed from bookmarking list.'
+    };
+    M.toast({html: txt});
+};
+
+// add/remove canteen to/from column "favourite Canteens"
+async function updateFavouriteCanteens(canteenId){
+    const oldFav = await getFavouriteCanteens();
+    let newFav = [];
+    let isAddition = true;
+    if(!oldFav.length || !oldFav.includes (canteenId)){
+        oldFav.push(canteenId);
+        newFav= [...oldFav];
+    } else{
+        newFav = oldFav.filter(item => item !== canteenId);
+        isAddition = false;
+    };
+    db.transaction("rw", db.userStore, async ()=>{
+        await db.userStore.orderBy('id').modify({"favouriteCanteens": newFav.sort()});
+    }).catch(Dexie.ModifyError, error => {
+        console.error(`${error.failures.length} items failed to modify`);
+    }).catch( error =>{
+        console.error(`Generic Error ${error}`);
+    });
+    showCanteenToast(isAddition);
+};
+
+
+//change status of materialize icon
 function changeIconState(icon){
-    if(icon.classList.contains("icon-on")){
-        icon.classList.remove("icon-on");
+    if(icon.classList.contains("icon-active")){
+        icon.classList.remove("icon-active");
     } else {
-        icon.classList.add("icon-on");
+        icon.classList.add("icon-active");
     };  
 };
 
@@ -29,53 +80,73 @@ function changeIconState(icon){
 async function updatePlannedMeals(mealId){
     const oldMeals = await getPlannedMeals();
     let newMeals = [];
+    let isAddition = true;
     if (!oldMeals.length || !oldMeals.includes(mealId)){
         oldMeals.push(mealId);
         newMeals=[...oldMeals];
     } else {
         newMeals = oldMeals.filter(item => item !== mealId);
+        isAddition = false;
     };
-    await db.userStore
-        .orderBy('id')
-        .modify(userData =>{
-            userData.plannedMeals = newMeals.sort();
-        });    
+    db.transaction("rw", db.userStore, async ()=>{
+        await db.userStore.orderBy('id').modify({"plannedMeals": newMeals.sort()});
+    }).catch(Dexie.ModifyError, error => {
+        console.error(`${error.failures.length} items failed to modify`);
+    }).catch( error =>{
+        console.error(`Generic Error ${error}`);
+    });
+    showMealToast(isAddition);
 };
+
+//get favourite canteens from indb
+async function getFavouriteCanteens(){
+    const pref = await getUserPreferences();
+    return pref.favouriteCanteens;
+};
+
+
+//get User Preferences from Indb
+async function getUserPreferences(){
+    await db.open();
+    const pref = await db.userStore.toArray();
+    return pref[0];
+};
+
 
 //get user data from indb
 async function getPlannedMeals(){
-    const userData = await db.userStore.toArray();
-    return userData[0].plannedMeals;
+    const pref = await getUserPreferences();
+    return pref.plannedMeals;
 };
 
 
 //get canteen from indb by Id
-async function getCanteenById(id) {
-    const canteen = await db.canteensStore.where('id').equals(id).toArray();
+async function getCanteenById(canteenId) {
+    const canteen = await db.canteensStore.where('id').equals(canteenId).toArray();
     return canteen[0];
 };
 
 
 //add menu to DOM
-async function showMenu(date, id){
-    const menu = await getMenu(date, id);
-    console.log(date);
+async function showMenu(date, canteenId){
+    const menu = await getMenu(date, canteenId);
     let main = document.getElementById('mainContent');
     main.innerHTML= '';
     if (menu.length) {
+        const plannedMeals = await getPlannedMeals();
         const categories = getMenuCategories(menu);
         categories.forEach(category =>{
             let menuCategory = menu.filter(meal => meal.category == category);
             if (menuCategory.length){
                 let collection = createMenuCollapsible(category);
                 menuCategory.forEach(meal =>{   
-                    collection.append(createMenuCollapsibleItem(meal));       
+                    collection.append(createMenuCollapsibleItem(meal, plannedMeals));       
                 })
                 main.appendChild(collection);
             };
         })
     } else {
-        const operationMessage = await createOperationData(date,id);
+        const operationMessage = await getBusinessDays(date,canteenId);
         main.appendChild(operationMessage);
     };
 };
@@ -91,16 +162,6 @@ function getMealPricing(meal){
     return resultStr.slice(0, -3);
 };
 
-/*create collection element, collection title named after category
-function createMenuCollection(category){
-    let collection = document.createElement('ul');
-    collection.setAttribute('class','collection with-header');
-    let title = document.createElement('li');
-    title.setAttribute('class', 'collection-header');
-    title.innerText = category;
-    collection.appendChild(title);
-    return collection;
-};*/
 
 //create collapsible element
 function createMenuCollapsible(category){
@@ -114,74 +175,32 @@ function createMenuCollapsible(category){
     return collapsible;
 };
 
-//create menu collapsible entry
-function createMenuCollapsibleItem(meal){
+
+//create menu entry for collapsible
+function createMenuCollapsibleItem(meal, plannedMeals){
     let entry = document.createElement('li');
     let wrapper = document.createElement('div');
     wrapper.setAttribute('class', 'wrapper');
-
     let header = document.createElement('div');
     header.setAttribute('class', 'collapsible-header');
     header.innerText= meal.name;
-
     let icon = document.createElement('i');
-    icon.setAttribute('class', 'material-icons');
     icon.setAttribute('onclick', `changeIconState(this); updatePlannedMeals(${meal.id})`);
     icon.innerHTML= 'bookmark_border';
-
-    wrapper.appendChild(header);
-    wrapper.appendChild(icon);
-
+    if(plannedMeals.includes(meal.id)){
+        icon.setAttribute('class', 'material-icons icon-clickable icon-active');
+    } else {
+        icon.setAttribute('class', 'material-icons icon-clickable');
+    };
     let body = document.createElement('div');
     body.setAttribute('class', 'collapsible-body');
     body.innerHTML= getMealPricing(meal);
-
+    wrapper.appendChild(header);
+    wrapper.appendChild(icon);
     entry.appendChild(wrapper);
     entry.appendChild(body);
     return entry;
 };
-
-
-/*/ create entry for menu collection
-function createMenuCollectionItem(meal){
-    
-    
-    let entry = document.createElement('li');
-    entry.setAttribute('class', 'collection-item');
-    
-    //let icon = document.createElement('i');
-    //icon.setAttribute('class', 'material-icons');
-    //icon.innerHTML= 'bookmark_border';
-
-    let checkbox = document.createElement('input');
-    checkbox.setAttribute('class', 'filled-in');
-    checkbox.setAttribute('type', 'checkbox');
-    checkbox.setAttribute('onchange', `updatePlannedMeals(${meal.id})`);
-    let label = document.createElement('label');
-    let span = document.createElement('span');
-
-    let a = document.createElement('a');
-    a.href = '#';
-    a.setAttribute('class', 'secondary-content');
-
-    label.appendChild(checkbox);
-    label.appendChild(span);
-    a.appendChild(label);
-
-    let div = document.createElement('div');
-    let name = document.createElement('span');
-    name.setAttribute('class', 'title');
-    name.innerText= meal.name;
-    let prices = document.createElement('span');
-    prices.setAttribute('class', 'line-below');
-    prices.innerHTML= getMealPricing(meal);
-    div.appendChild(name);
-    div.appendChild(prices);
-    //a.appendChild(icon);
-    entry.appendChild(div);
-    entry.appendChild(a);
-    return entry;
-};*/
 
 
 //get Categories from menu
@@ -195,9 +214,9 @@ function getMenuCategories(menu){
 
 
 //get Menu by id, date
-async function getMenu(date, id){
-    let dateString = date.toLocaleDateString("en-CA");
-    const url = `https://openmensa.org/api/v2/canteens/${id}/days/${dateString}/meals`;
+async function getMenu(date, canteenId){
+    const dateString = date.toLocaleDateString("en-CA");
+    const url = `https://openmensa.org/api/v2/canteens/${canteenId}/days/${dateString}/meals`;
     const response = await fetch(url);
     const menu = await response.json();
     return menu;
@@ -205,15 +224,15 @@ async function getMenu(date, id){
 
 
 //populate date field
-function populateDateBtn(date, id){
+function populateDateBtn(date, canteenId){
     document.getElementById('dateBtn').innerHTML = date.toLocaleDateString("ru-RU");
-    showMenu(date,id);
+    showMenu(date,canteenId);
 };
 
 
-//adds business day data 
-async function createOperationData(date, id){
-    const opDays = await getDatesById(id);
+//add business day data to DOM
+async function getBusinessDays(date, canteenId){
+    const opDays = await getDatesById(canteenId);
     const opDay = opDays.find(element => element.date == date.toLocaleDateString("en-CA"));
     let opDiv = document.createElement('div');
     opDiv.setAttribute('class','operating-hours');
@@ -263,29 +282,40 @@ function getIdFromUrl(){
 
 
 //show canteen Data by Id
-async function showCanteenData(id){
-    const canteen = await getCanteenById(id);
-    let hero = document.querySelector('.heroPrimary');
+async function showCanteenData(canteenId){//TODO: show if canteen favourite
+    const canteen = await getCanteenById(canteenId);
+    const favouriteCanteens = await getFavouriteCanteens();
+    let heroPrimary = document.querySelector('.heroPrimary');
     let name = document.createElement('h4');
     name.innerText = canteen.name;
     let address = document.createElement('h5');
     address.innerText = canteen.address;
-    hero.appendChild(name);
-    hero.appendChild(address);
-    populateDateBtn(new Date(), id);
+    heroPrimary.appendChild(name);
+    heroPrimary.appendChild(address);
+    populateDateBtn(new Date(), canteenId);
+    let heroSecondary = document.querySelector('.heroSecondary');
+    let icon = document.createElement('i');
+    icon.innerText='notifications_none';
+    icon.setAttribute('onclick', `changeIconState(this); updateFavouriteCanteens(${canteenId})`);
+    if(favouriteCanteens.includes(canteenId)){
+        icon.setAttribute('class', 'material-icons icon-clickable icon-active');
+    } else {
+        icon.setAttribute('class', 'material-icons icon-clickable');
+    };
+    heroSecondary.appendChild(icon);
 };
 
 
 //get canteen from indb by Id
-async function getCanteenById(id) {
-    const canteen = await db.canteensStore.where('id').equals(id).toArray();
+async function getCanteenById(canteenId) {
+    const canteen = await db.canteensStore.where('id').equals(canteenId).toArray();
     return canteen[0];
 };
 
 
-//get canteen's opening dates by canteen id
-async function getDatesById(id) {
-    const url = `https://openmensa.org/api/v2/canteens/${id}/days`;
+//get canteen's business days by canteen id
+async function getDatesById(canteenId) {
+    const url = `https://openmensa.org/api/v2/canteens/${canteenId}/days`;
     const response = await fetch(url);
     const dates = await response.json();
     return dates;

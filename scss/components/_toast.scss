@@ -35,10 +35,12 @@
   font-size: 1.1rem;
   font-weight: 300;
   color: $toast-text-color;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   cursor: default;
+
+  a{
+    color: $toast-text-color;
+    text-decoration: underline;
+  }
 
   .toast-action {
     color: $toast-action-color;

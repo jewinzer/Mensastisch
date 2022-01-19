@@ -152,7 +152,11 @@ i {
     font-size: 8rem;
   }
 }
-.icon-on{
+.icon-clickable{
+  color: $grey-color-dark;
+  cursor: pointer;
+}
+.icon-active{
   color: $primary-color !important;
 }
 
