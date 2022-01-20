@@ -47,11 +47,24 @@ workbox.routing.registerRoute(
         })
       ]
     })
+);*/
+//cache css, js resources, serve from cache if available, update cache from network
+workbox.routing.registerRoute(
+  new RegExp('http:\/\/localhost:3000\/.*'),
+    new workbox.strategies.StaleWhileRevalidate({
+      "cacheName": "static-resources",
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 20,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        })
+      ]
+    })
 );
-*/
+
 //cache images, cache first, if !cache, fill cache, then serve from cache
 workbox.routing.registerRoute(
-  /\.(?:png|jpg|jpeg|svg)$/,
+  /\.(?:png|jpg|jpeg|svg|html)$/,
   new workbox.strategies.CacheFirst({
     "cacheName": "images",
     plugins: [

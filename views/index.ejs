@@ -44,6 +44,7 @@ function showCanteenToast(isAddition){
     M.toast({html: txt});
 };
 
+
 // add/remove canteen to/from column "favourite Canteens"
 async function updateFavouriteCanteens(canteenId){
     const oldFav = await getFavouriteCanteens();
@@ -76,6 +77,7 @@ function changeIconState(icon){
     };  
 };
 
+
 // add/remove meal to/from indb column "planned Meals"
 async function updatePlannedMeals(mealId){
     const oldMeals = await getPlannedMeals();
@@ -97,6 +99,7 @@ async function updatePlannedMeals(mealId){
     });
     showMealToast(isAddition);
 };
+
 
 //get favourite canteens from indb
 async function getFavouriteCanteens(){
@@ -150,6 +153,7 @@ async function showMenu(date, canteenId){
         main.appendChild(operationMessage);
     };
 };
+
 
 //return string of meal pricing
 function getMealPricing(meal){
@@ -235,24 +239,24 @@ async function getBusinessDays(date, canteenId){
     const opDays = await getDatesById(canteenId);
     const opDay = opDays.find(element => element.date == date.toLocaleDateString("en-CA"));
     let opDiv = document.createElement('div');
-    opDiv.setAttribute('class','operating-hours');
+    opDiv.setAttribute('class', 'operating-hours');
     let opIcon = document.createElement('i');
     let opMsg = document.createElement('h4');
     if (opDay === undefined){
         opIcon.setAttribute('class', 'large material-icons text-grey-dark');
-        opMsg.setAttribute('class','text-grey-dark');
-        opIcon.innerText= 'sentiment_very_dissatisfied';
-        opMsg.innerHTML='No Data.<br>Please pick another day.'
+        opMsg.setAttribute('class', 'text-grey-dark');
+        opIcon.innerText = 'sentiment_very_dissatisfied';
+        opMsg.innerHTML = 'No Data.<br>Please pick another day.';
     } else if (opDay.closed){
         opIcon.setAttribute('class', 'large material-icons text-grey-dark');
-        opMsg.setAttribute('class','text-grey-dark');
-        opIcon.innerText= 'sentiment_very_dissatisfied';
-        opMsg.innerHTML='Canteen closed.<br>Please pick another day.'
+        opMsg.setAttribute('class', 'text-grey-dark');
+        opIcon.innerText = 'sentiment_very_dissatisfied';
+        opMsg.innerHTML = 'Canteen closed.<br>Please pick another day.';
     } else {
         opIcon.setAttribute('class', 'large material-icons text-primary');
-        opIcon.innerText= 'sentiment_very_satisfied';
-        opMsg.innerHTML='Canteen OPEN.<br>Come along!'
-        opMsg.setAttribute('class','text-primary');
+        opIcon.innerText = 'sentiment_very_satisfied';
+        opMsg.innerHTML = 'Canteen OPEN.<br>Come along!';
+        opMsg.setAttribute('class', 'text-primary');
     }
     opDiv.appendChild(opIcon);
     opDiv.appendChild(opMsg);
@@ -263,13 +267,17 @@ async function getBusinessDays(date, canteenId){
 //refresh date field
 function refreshDateBtn(datestring, isAddition){
     const parts = datestring.split('.');
-    const oldDate = new Date(parts[2], parts[1], parts[0]);
+    const oldDate = new Date(parts[2], parts[1]-1, parts[0]);
     const newDate = new Date();
     if(isAddition){
         newDate.setDate(oldDate.getDate() + 1);
     } else {
         newDate.setDate(oldDate.getDate() - 1);
     }
+    console.log(`parts: ${parts}`);
+    console.log(`dateString: ${datestring}`);
+    console.log(`oldDate: ${oldDate}`);
+    console.log(`newDate: ${newDate}`);
     populateDateBtn(newDate, getIdFromUrl());
 };
 

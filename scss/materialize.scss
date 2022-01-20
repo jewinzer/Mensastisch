@@ -83,7 +83,7 @@
     padding: 1rem;
     margin-bottom: 2rem;
     overflow: hidden;
-}
+
     .input-field{
         margin: 0 0 1rem 0;
     }
@@ -93,6 +93,11 @@
     h4{
         margin: .5rem 0;
     }
+    .switch{
+        margin-top: 3.5rem;
+        margin-right: -1rem;
+    }
+}
 
 .heroPrimary{
     display: flex;
@@ -109,22 +114,23 @@
     width: fit-content;
     margin: auto 0 0 0;
     order: 2;
-}
+
     .btn-flat, .btn-flat:active{
         border-radius: 0;
         margin: 0;
         height: 2rem;
         line-height: 2rem;
-        background-color: $primary-color !important;
+        background-color: $primary-color;
         color: #fff;
         padding: 0 .5rem;
     }
     #dateBtn{
         color: inherit !important;
         margin:0 !important;
-        min-width: 7rem;    
+        min-width: 7rem;
+        background-color: transparent !important;    
     }
-
+}
 .operating-hours{
     display: flex;
     flex-direction: column;
