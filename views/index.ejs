@@ -269,15 +269,12 @@ function refreshDateBtn(datestring, isAddition){
     const parts = datestring.split('.');
     const oldDate = new Date(parts[2], parts[1]-1, parts[0]);
     const newDate = new Date();
+    newDate.setTime(oldDate.getTime());
     if(isAddition){
         newDate.setDate(oldDate.getDate() + 1);
     } else {
         newDate.setDate(oldDate.getDate() - 1);
     }
-    console.log(`parts: ${parts}`);
-    console.log(`dateString: ${datestring}`);
-    console.log(`oldDate: ${oldDate}`);
-    console.log(`newDate: ${newDate}`);
     populateDateBtn(newDate, getIdFromUrl());
 };
 
