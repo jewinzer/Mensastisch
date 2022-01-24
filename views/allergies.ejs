@@ -1,0 +1,74 @@
+<%- include('partials/header.ejs') -%>
+
+    <div class="container bg-light">
+        <ul class="collection with-header">
+            <li class="collection-header center-align">
+                <%- heroContentPrimary %>
+            </li>
+            <% list.forEach(function(item,index){ %>
+                <li class="collection-item">
+                    <div>
+                        <%= item %>
+                            <label class="secondary-content">
+                        <input type="checkbox" onchange="addAllergy(this.value)" value="<%= item %>"
+                            class="filled-in secondary-content"/>
+                        <span>
+                            
+                        </span>
+                    </label>
+                            <% }) %>
+                    </div>
+                </li>
+        </ul>
+    </div>
+
+    <script>
+        window.onload = updateCheckbox();
+        //set checkbox
+        async function updateCheckbox() {
+            const userAllergies = await getUserAllergies();
+            let checkboxes = document.querySelectorAll('input[type=checkbox]');
+            checkboxes.forEach(checkbox => {
+                if (userAllergies.includes(checkbox.value)) {
+                    checkbox.setAttribute('checked', 'checked');
+                };
+            })
+        };
+
+        //get user allergies from indb
+        async function getUserAllergies() {
+            const pref = await getUserPreferences();
+            return pref.userAllergies;
+        };
+
+        //get User Preferences from Indb
+        async function getUserPreferences() {
+            await db.open();
+            const pref = await db.userStore.toArray();
+            return pref[0];
+        };
+
+        // add/remove allergies to/from indb column "userAllergies"
+        async function addAllergy(allergy) {
+            const oldAllergies = await getUserAllergies();
+            let newAllergies = [];
+            let isAddition = true;
+            if (!oldAllergies.length || !oldAllergies.includes(allergy)) {
+                oldAllergies.push(allergy);
+                newAllergies = [...oldAllergies];
+            } else {
+                newAllergies = oldAllergies.filter(item => item !== allergy);
+                isAddition = false;
+            };
+            db.transaction("rw", db.userStore, async() => {
+                await db.userStore.orderBy('id').modify({
+                    "userAllergies": newAllergies.sort()
+                });
+            }).catch(Dexie.ModifyError, error => {
+                console.error(`${error.failures.length} items failed to modify`);
+            }).catch(error => {
+                console.error(`Generic Error ${error}`);
+            });
+        };
+    </script>
+    <%- include('partials/footer.ejs') -%>

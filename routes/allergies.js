@@ -15,8 +15,8 @@ router.get('', function(req, res) {
     const allergyList = ['Glutenhaltiges Getreide', 'Weizen', 'Roggen', 'Gerste', 'Hafer', 'Dinkel', 'Kamut', 'Krebstiere', 'Eier', 'Fisch', 'Erdnüsse', 'Schalenfrüchte', 'Mandeln', 'Haselnuss', 'Walnuss', 'Kaschunuss', 'Pacannuss', 'Paranuss', 'Pistazie', 'Macadamia', 'Sellerie', 'Soja', 'Senf', 'Milchprodukte', 'Sesam', 'Schwefeldioxid', 'Sulfide', 'Lupine', 'Weichtiere', 'Nitritpökelsalz', 'Hefe'];
 
 
-    //render diet.ejs
-    res.render('diet', {
+    //render allergies.ejs
+    res.render('allergies', {
         heroContentPrimary: '<h2>Allergy</h2>',
         // mainContent: '<ul id="allergyList"></ul>',
         list: allergyList,

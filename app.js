@@ -12,10 +12,12 @@ app.use(compression());
 
 //import and use routes
 const canteen = require('./routes/canteen.js');
-const diet = require('./routes/diet.js');
+const allergies = require('./routes/allergies.js');
+const additives = require('./routes/additives.js');
 const index = require('./routes/index.js');
 app.use('/canteen', canteen);
-app.use('/diet', diet);
+app.use('/allergies', allergies);
+app.use('/additives', additives);
 app.use('/', index);
 
 //set ejs template engine, folder

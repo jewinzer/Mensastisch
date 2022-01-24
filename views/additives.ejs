@@ -3,15 +3,14 @@
     <div class="container bg-light">
         <ul class="collection with-header">
             <li class="collection-header center-align">
-                <h3>
-                </h3>
+                <%- heroContentPrimary %>
             </li>
             <% list.forEach(function(item,index){ %>
                 <li class="collection-item">
                     <div>
                         <%= item %>
                             <label class="secondary-content">
-                        <input type="checkbox" onchange="addAllergy(this.value)" value="<%= item %>"
+                        <input type="checkbox" onchange="addAdditive(this.value)" value="<%= item %>"
                             class="filled-in secondary-content"/>
                         <span>
                             
@@ -27,19 +26,19 @@
         window.onload = updateCheckbox();
         //set checkbox
         async function updateCheckbox() {
-            const userAllergies = await getUserAllergies();
+            const userAdditives = await getUserAdditives();
             let checkboxes = document.querySelectorAll('input[type=checkbox]');
             checkboxes.forEach(checkbox => {
-                if (userAllergies.includes(checkbox.value)) {
+                if (userAdditives.includes(checkbox.value)) {
                     checkbox.setAttribute('checked', 'checked');
                 };
             })
         };
 
-        //get user allergies from indb
-        async function getUserAllergies() {
+        //get user additives from indb
+        async function getUserAdditives() {
             const pref = await getUserPreferences();
-            return pref.userAllergies;
+            return pref.userAdditives;
         };
 
         //get User Preferences from Indb
@@ -49,21 +48,21 @@
             return pref[0];
         };
 
-        // add/remove allergies to/from indb column "userAllergies"
-        async function addAllergy(allergy) {
-            const oldAllergies = await getUserAllergies();
-            let newAllergies = [];
+        // add/remove additives to/from indb column "userAdditives"
+        async function addAdditive(additive) {
+            const oldAdditives = await getUserAdditives();
+            let newAdditives = [];
             let isAddition = true;
-            if (!oldAllergies.length || !oldAllergies.includes(allergy)) {
-                oldAllergies.push(allergy);
-                newAllergies = [...oldAllergies];
+            if (!oldAdditives.length || !oldAdditives.includes(additive)) {
+                oldAdditives.push(additive);
+                newAdditives = [...oldAdditives];
             } else {
-                newAllergies = oldAllergies.filter(item => item !== allergy);
+                newAdditives = oldAdditives.filter(item => item !== additive);
                 isAddition = false;
             };
             db.transaction("rw", db.userStore, async() => {
                 await db.userStore.orderBy('id').modify({
-                    "userAllergies": newAllergies.sort()
+                    "userAdditives": newAdditives.sort()
                 });
             }).catch(Dexie.ModifyError, error => {
                 console.error(`${error.failures.length} items failed to modify`);
