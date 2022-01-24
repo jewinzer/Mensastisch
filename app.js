@@ -12,8 +12,10 @@ app.use(compression());
 
 //import and use routes
 const canteen = require('./routes/canteen.js');
+const diet = require('./routes/diet.js');
 const index = require('./routes/index.js');
 app.use('/canteen', canteen);
+app.use('/diet', diet);
 app.use('/', index);
 
 //set ejs template engine, folder
@@ -55,8 +57,3 @@ pool.query(`SELECT * FROM Users;`, (err, res) => {
     }
 });
 */
-
-
-
-
-

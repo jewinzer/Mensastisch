@@ -7,21 +7,21 @@ let router = express.Router();
 
 //middleware
 router.use(express.json());
-router.use(express.urlencoded({extended: true}));
+router.use(express.urlencoded({ extended: true }));
 
 
 //root route
 router.get('', function(req, res) {
-    if(req.query.canteenId){
+    if (req.query.canteenId) {
         const id = req.query.canteenId;
-        return res.render('index',{
-            heroContentPrimary: '<h2>Menu</h2>'+
-                                '<div class="btn-group">'+
-                                '<button class="btn-flat" onclick="refreshDateBtn(this.nextElementSibling.innerHTML, false)">'+
-                                '<i class="material-icons">chevron_left</i></button>'+
-                                '<button class ="btn-flat disabled" id="dateBtn"></button>'+
-                                '<button class="btn-flat" onclick="refreshDateBtn(this.previousElementSibling.innerHTML, true)">'+
-                                '<i class="material-icons">chevron_right</i></button></div>',
+        return res.render('index', {
+            heroContentPrimary: '<h2>Menu</h2>' +
+                '<div class="btn-group">' +
+                '<button class="btn-flat" onclick="refreshDateBtn(this.nextElementSibling.innerHTML, false)">' +
+                '<i class="material-icons">chevron_left</i></button>' +
+                '<button class ="btn-flat disabled" id="dateBtn"></button>' +
+                '<button class="btn-flat" onclick="refreshDateBtn(this.previousElementSibling.innerHTML, true)">' +
+                '<i class="material-icons">chevron_right</i></button></div>',
             mainContent: '<ul id="searchResults"></ul>',
             onload: `showCanteenData(${id})`
         });
