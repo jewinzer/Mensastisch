@@ -14,13 +14,14 @@
   // Text Label Style
   + span:not(.lever) {
     position: relative;
-    padding-left: 35px;
+    padding-left: 1.5rem;
     cursor: pointer;
     display: inline-block;
-    height: 25px;
-    line-height: 25px;
+    height: 1rem;
+    line-height: 1rem;
     font-size: 1rem;
     user-select: none;
+    margin: .25rem 0;
   }
 
   /* checkbox aspect */
@@ -33,7 +34,7 @@
     width: 18px;
     height: 18px;
     z-index: 0;
-    border: 2px solid $radio-empty-color;
+    border: 1px solid $grey-color-light;
     border-radius: 1px;
     margin-top: 3px;
     transition: .2s;
@@ -135,7 +136,7 @@
     height: 20px;
     width: 20px;
     background-color: transparent;
-    border: 2px solid $radio-empty-color;
+    border: 1px solid $grey-color-dark;
     top: 0px;
     z-index: 0;
   }
@@ -159,8 +160,8 @@
       top: 0;
       width: 20px;
       height: 20px;
-      border: 2px solid $secondary-color;
-      background-color: $secondary-color;
+      border: 2px solid $primary-color;
+      background-color: $primary-color;
       z-index: 0;
     }
   }

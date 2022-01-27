@@ -17,9 +17,9 @@ router.get('', function(req, res) {
 
     //render allergies.ejs
     res.render('allergies', {
-        heroContentPrimary: '<h2>Allergy</h2>',
+        heroContentPrimary: 'Allergene',
         // mainContent: '<ul id="allergyList"></ul>',
-        list: allergyList,
+        list: allergyList.sort(),
         // heroContentSecondary: '<h4>Here you can select your allergies, which filter your dishes.</h4>',
     })
 });

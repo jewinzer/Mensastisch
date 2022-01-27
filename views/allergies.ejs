@@ -9,12 +9,12 @@
                 <li class="collection-item">
                     <div>
                         <span class="title"><%=item%></span>
-                        <label class="secondary-content">
-                            <input type="checkbox" onchange="addAllergy(this.value)" value="<%=item%>"
-                            class="filled-in"/>
-                            <span></span>
-                        </label>
                     </div>
+                    <label class="secondary-content">
+                        <input type="checkbox" onchange="addAllergy(this.value)" value="<%=item%>"
+                        class="filled-in"/>
+                        <span></span>
+                    </label>
                 </li>
                 <% }) %>
         </ul>
@@ -28,7 +28,7 @@
             let checkboxes = document.querySelectorAll('input[type=checkbox]');
             checkboxes.forEach(checkbox => {
                 if (userAllergies.includes(checkbox.value)) {
-                    checkbox.setAttribute('checked', 'checked');
+                    checkbox.checked = true;
                 };
             })
         };

@@ -542,6 +542,7 @@ td, th{
       flex-flow: column nowrap;
       margin-right: 1rem;
       width: 100%;
+      justify-content: center;
     }
       .line-above{
         font-size: $h6-fontsize;
@@ -616,12 +617,11 @@ td, th{
   &.with-header {
     .collection-header {
       background-color: $collection-bg-color;
-      //border-bottom: 1px solid $collection-border-color;
       display: flex;
       flex-flow: row nowrap;
-      padding: .75rem 0 .75rem 0rem;
+      padding: 1rem;
       font-weight: 600;
-      font-size: 1.25rem
+      font-size: 1.5rem
     }
     .collection-item {
       padding: .75rem 0 .75rem 1rem;

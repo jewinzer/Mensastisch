@@ -17,8 +17,8 @@ router.get('', function(req, res) {
 
     //render allergies.ejs
     res.render('additives', {
-        heroContentPrimary: '<h2>Additives</h2>',
-        list: additivesList,
+        heroContentPrimary: 'Zusätze',
+        list: additivesList.sort(),
     })
 });
 

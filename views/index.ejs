@@ -24,9 +24,9 @@
         function showMealToast(isAddition) {
             let txt = '';
             if (isAddition) {
-                txt += 'Meal has been bookmarked. <a href="#!">Show all bookmarks</a>';
+                txt += 'Gericht zu Wochenplan hinzugefügt. <a href="#!">Zum Wochenplan</a>';
             } else {
-                txt += 'Meal removed from bookmarking list.'
+                txt += 'Gericht aus Wochenplan entfernt.'
             };
             M.toast({
                 html: txt
@@ -38,9 +38,9 @@
         function showCanteenToast(isAddition) {
             let txt = '';
             if (isAddition) {
-                txt += 'Canteen has been bookmarked. <a href="#!">Show notification preferences</a>';
+                txt += 'Mensa zu Favouriten hinzugefügt. <a href="#!">Zu den Benachrichtigungseinstellungen</a>';
             } else {
-                txt += 'Canteen removed from bookmarking list.'
+                txt += 'Mensa aus Favouriten entfernt.';
             };
             M.toast({
                 html: txt
@@ -141,7 +141,9 @@
         async function showMenu(date, canteenId) {
             const menu = await getMenu(date, canteenId);
             let main = document.getElementById('mainContent');
-            main.innerHTML = '';
+            main.innerHTML = ''
+            const filterSwitch = await createFilterSwitch();
+            main.appendChild(filterSwitch);
             if (menu.length) {
                 const plannedMeals = await getPlannedMeals();
                 const categories = getMenuCategories(menu);
@@ -161,6 +163,40 @@
             };
         };
 
+        // create menu filter switch
+        async function createFilterSwitch(){
+            let div = document.createElement('div');
+            div.setAttribute('class','switch');
+            let label = document.createElement('label');
+            label.innerText='Filter';
+            const input = await createFilterSwitchInput();
+            let span = document.createElement('span');
+            span.setAttribute('class', 'lever');
+            label.appendChild(input);
+            label.appendChild(span);
+            div.appendChild(label);
+            return div;
+        };
+
+
+        // create Filter Switch Input Element
+        async function createFilterSwitchInput(){
+            let input = document.createElement('input');
+            input.setAttribute('type','checkbox');
+            const allergies = await getUserAllergies();
+            if(!allergies.length){
+                input.disabled = true;
+            } else {
+                input.checked = true;
+            };
+            return input;
+        };
+
+        //get user allergies from indb
+        async function getUserAllergies() {
+            const pref = await getUserPreferences();
+            return pref.userAllergies;
+        };
 
         //return string of meal pricing
         function getMealPricing(meal) {
@@ -231,7 +267,11 @@
             const dateString = date.toLocaleDateString("en-CA");
             const url = `https://openmensa.org/api/v2/canteens/${canteenId}/days/${dateString}/meals`;
             const response = await fetch(url);
+            if (!response.ok){
+                return [];
+            };
             const menu = await response.json();
+            console.log(menu);
             return menu;
         };
 
@@ -239,8 +279,7 @@
         //populate date field
         function populateDateBtn(date, canteenId) {
             const weekdays = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-            const weekday = weekdays[date.getDay()];
-            document.getElementById('dateBtn').innerHTML = `${weekday}. ${date.toLocaleDateString("ru-RU")}`;
+            document.getElementById('dateBtn').innerHTML = `${weekdays[date.getDay()]}. ${date.toLocaleDateString("ru-RU")}`;
             showMenu(date, canteenId);
         };
 
@@ -257,16 +296,16 @@
                 opIcon.setAttribute('class', 'large material-icons text-grey-dark');
                 opMsg.setAttribute('class', 'text-grey-dark');
                 opIcon.innerText = 'sentiment_very_dissatisfied';
-                opMsg.innerHTML = 'No Data.<br>Please pick another day.';
+                opMsg.innerHTML = 'Keine Daten.<br>Bitte wähle einen anderen Tag<br>oder passe Deine Filter an.';
             } else if (opDay.closed) {
                 opIcon.setAttribute('class', 'large material-icons text-grey-dark');
                 opMsg.setAttribute('class', 'text-grey-dark');
                 opIcon.innerText = 'sentiment_very_dissatisfied';
-                opMsg.innerHTML = 'Canteen closed.<br>Please pick another day.';
+                opMsg.innerHTML = 'Mensa geschlossen.<br>Bitte wähle einen anderen Tag.';
             } else {
                 opIcon.setAttribute('class', 'large material-icons text-primary');
                 opIcon.innerText = 'sentiment_very_satisfied';
-                opMsg.innerHTML = 'Canteen OPEN.<br>Come along!';
+                opMsg.innerHTML = 'Mensa geöffnet.<br>Komm vorbei!';
                 opMsg.setAttribute('class', 'text-primary');
             }
             opDiv.appendChild(opIcon);
@@ -298,7 +337,7 @@
 
 
         //show canteen Data by Id
-        async function showCanteenData(canteenId) { //TODO: show if canteen favourite
+        async function showCanteenData(canteenId) {
             const canteen = await getCanteenById(canteenId);
             const favouriteCanteens = await getFavouriteCanteens();
             let heroPrimary = document.querySelector('.heroPrimary');

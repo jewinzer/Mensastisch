@@ -8,15 +8,13 @@
             <% list.forEach(function(item,index){ %>
                 <li class="collection-item">
                     <div>
-                        <%= item %>
-                            <label class="secondary-content">
-                        <input type="checkbox" onchange="addAdditive(this.value)" value="<%= item %>"
-                            class="filled-in secondary-content"/>
-                        <span>
-                            
-                        </span>
-                    </label>         
+                        <%= item %>        
                     </div>
+                    <label class="secondary-content">
+                        <input type="checkbox" onchange="addAdditive(this.value)" value="<%= item %>"
+                            class="filled-in"/>
+                        <span></span>
+                    </label> 
                 </li>
             <% }) %>
         </ul>
@@ -30,7 +28,7 @@
             let checkboxes = document.querySelectorAll('input[type=checkbox]');
             checkboxes.forEach(checkbox => {
                 if (userAdditives.includes(checkbox.value)) {
-                    checkbox.setAttribute('checked', 'checked');
+                    checkbox.checked = true;
                 };
             })
         };

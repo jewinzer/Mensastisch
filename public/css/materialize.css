@@ -1298,6 +1298,9 @@ td, th {
           flex-flow: column nowrap;
   margin-right: 1rem;
   width: 100%;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 
 .collection .collection-item .line-above {
@@ -1383,9 +1386,9 @@ td, th {
   -webkit-box-direction: normal;
       -ms-flex-flow: row nowrap;
           flex-flow: row nowrap;
-  padding: .75rem 0 .75rem 0rem;
+  padding: 1rem;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
 }
 
 .collection.with-header .collection-item {
@@ -4985,16 +4988,17 @@ textarea.materialize-textarea {
 
 [type="checkbox"] + span:not(.lever) {
   position: relative;
-  padding-left: 35px;
+  padding-left: 1.5rem;
   cursor: pointer;
   display: inline-block;
-  height: 25px;
-  line-height: 25px;
+  height: 1rem;
+  line-height: 1rem;
   font-size: 1rem;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  margin: .25rem 0;
 }
 
 [type="checkbox"] + span:not(.lever):before,
@@ -5006,7 +5010,7 @@ textarea.materialize-textarea {
   width: 18px;
   height: 18px;
   z-index: 0;
-  border: 2px solid #5a5a5a;
+  border: 1px solid #f7f7f7;
   border-radius: 1px;
   margin-top: 3px;
   -webkit-transition: .2s;
@@ -5110,7 +5114,7 @@ textarea.materialize-textarea {
   height: 20px;
   width: 20px;
   background-color: transparent;
-  border: 2px solid #5a5a5a;
+  border: 1px solid #bababa;
   top: 0px;
   z-index: 0;
 }
@@ -5134,8 +5138,8 @@ textarea.materialize-textarea {
   top: 0;
   width: 20px;
   height: 20px;
-  border: 2px solid #d4e157;
-  background-color: #d4e157;
+  border: 2px solid #00695c;
+  background-color: #00695c;
   z-index: 0;
 }
 
@@ -7201,6 +7205,11 @@ input[type=range]::-ms-thumb {
   margin-left: auto;
 }
 
+.mx-1 {
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
 .justify-content-center {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
@@ -7291,6 +7300,20 @@ input[type=range]::-ms-thumb {
   margin: 0 !important;
   min-width: 9rem;
   background-color: transparent !important;
+}
+
+#mainContent .switch {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+#mainContent .switch label span {
+  margin: 0 1.25rem 0 .75rem;
+  float: none;
 }
 
 .operating-hours {

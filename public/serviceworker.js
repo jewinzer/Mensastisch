@@ -64,7 +64,7 @@ workbox.routing.registerRoute(
 
 //cache images, cache first, if !cache, fill cache, then serve from cache
 workbox.routing.registerRoute(
-    /\.(?:png|jpg|jpeg|svg|html)$/,
+    /\.(?:png|jpg|jpeg|svg)$/,
     new workbox.strategies.CacheFirst({
         "cacheName": "images",
         plugins: [
@@ -123,7 +123,7 @@ async function createDB() {
     await initUserStore();
 };
 
-//inititaliaze Canteens Table in indb
+//initialiaze Canteens Table in indb
 async function initCanteensStore() {
     getCanteens().then(canteens => {
         canteens.forEach(canteen => {

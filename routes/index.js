@@ -15,7 +15,7 @@ router.get('', function(req, res) {
     if (req.query.canteenId) {
         const id = req.query.canteenId;
         return res.render('index', {
-            heroContentPrimary: '<h2>Menu</h2>' +
+            heroContentPrimary: '<h2>Menü</h2>' +
                 '<div class="btn-group">' +
                 '<button class="btn-flat" onclick="refreshDateBtn(this.nextElementSibling.innerHTML, false)">' +
                 '<i class="material-icons">chevron_left</i></button>' +
@@ -27,8 +27,8 @@ router.get('', function(req, res) {
         });
     }
     return res.render('index', {
-        heroContentPrimary: '<h1>Hello from EJS template engine</h1>',
-        mainContent: 'Index first view',
+        heroContentPrimary: '<h1>Startseite/h1>',
+        mainContent: 'Startseiten-Content',
         onload: 'null'
     })
 });
