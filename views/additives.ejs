@@ -15,10 +15,10 @@
                         <span>
                             
                         </span>
-                    </label>
-                            <% }) %>
+                    </label>         
                     </div>
                 </li>
+            <% }) %>
         </ul>
     </div>
 
@@ -52,13 +52,11 @@
         async function addAdditive(additive) {
             const oldAdditives = await getUserAdditives();
             let newAdditives = [];
-            let isAddition = true;
             if (!oldAdditives.length || !oldAdditives.includes(additive)) {
                 oldAdditives.push(additive);
                 newAdditives = [...oldAdditives];
             } else {
                 newAdditives = oldAdditives.filter(item => item !== additive);
-                isAddition = false;
             };
             db.transaction("rw", db.userStore, async() => {
                 await db.userStore.orderBy('id').modify({

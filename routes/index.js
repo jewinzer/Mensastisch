@@ -7,7 +7,7 @@ let router = express.Router();
 
 //middleware
 router.use(express.json());
-router.use(express.urlencoded({ extended: true }));
+router.use(express.urlencoded({extended:true}));
 
 
 //root route

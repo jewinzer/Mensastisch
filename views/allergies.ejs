@@ -2,23 +2,21 @@
 
     <div class="container bg-light">
         <ul class="collection with-header">
-            <li class="collection-header center-align">
+            <li class="collection-header">
                 <%- heroContentPrimary %>
             </li>
             <% list.forEach(function(item,index){ %>
                 <li class="collection-item">
                     <div>
-                        <%= item %>
-                            <label class="secondary-content">
-                        <input type="checkbox" onchange="addAllergy(this.value)" value="<%= item %>"
-                            class="filled-in secondary-content"/>
-                        <span>
-                            
-                        </span>
-                    </label>
-                            <% }) %>
+                        <span class="title"><%=item%></span>
+                        <label class="secondary-content">
+                            <input type="checkbox" onchange="addAllergy(this.value)" value="<%=item%>"
+                            class="filled-in"/>
+                            <span></span>
+                        </label>
                     </div>
                 </li>
+                <% }) %>
         </ul>
     </div>
 
@@ -52,13 +50,11 @@
         async function addAllergy(allergy) {
             const oldAllergies = await getUserAllergies();
             let newAllergies = [];
-            let isAddition = true;
             if (!oldAllergies.length || !oldAllergies.includes(allergy)) {
                 oldAllergies.push(allergy);
                 newAllergies = [...oldAllergies];
             } else {
                 newAllergies = oldAllergies.filter(item => item !== allergy);
-                isAddition = false;
             };
             db.transaction("rw", db.userStore, async() => {
                 await db.userStore.orderBy('id').modify({

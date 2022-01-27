@@ -7289,7 +7289,7 @@ input[type=range]::-ms-thumb {
 .btn-group #dateBtn {
   color: inherit !important;
   margin: 0 !important;
-  min-width: 7rem;
+  min-width: 9rem;
   background-color: transparent !important;
 }
 
