@@ -123,7 +123,7 @@ async function createDB() {
     await initUserStore();
 };
 
-//initialiaze Canteens Table in indb
+//initialiaze canteens table in indb
 async function initCanteensStore() {
     getCanteens().then(canteens => {
         canteens.forEach(canteen => {
@@ -143,7 +143,7 @@ async function initCanteensStore() {
     });
 };
 
-//initialize user Table in indb
+//initialize user table in indb
 async function initUserStore() {
     db.userStore.put({
         id: 1,
@@ -169,7 +169,7 @@ async function getCanteens() {
     return canteens;
 };
 
-//check Coords data in Canteens
+//check coords data in canteens
 function checkCoords(data) {
     if (data != null) {
         return data;
