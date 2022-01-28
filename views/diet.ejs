@@ -34,7 +34,7 @@
                         <i class="material-icons i-secondary" onclick="routeEditButton('<%=item%>')">edit</i>
                         <div class="switch">
                             <label>
-                                <input class="dietSwitch" type="checkbox" value="<%=item%>"
+                                <input class="customDietSwitch" type="checkbox" value="<%=item%>"
                                     onchange="updateUserDiet(this.value.toLowerCase())">
                                 <span class="lever"></span>
                             </label>
@@ -46,10 +46,10 @@
     </div>
 
     <script>
-        window.onload = updateDietSwitches();
+        window.onload = updateFilterView();
 
         // route edit buttons @ allergies, additives
-        function routeEditButton(item){
+        async function routeEditButton(item){
             switch(item.toLowerCase()){
                 case 'allergene':
                     document.location = '../allergies';
@@ -60,39 +60,59 @@
             };
         };
 
+        // look up indb, update switches and collection items
+        async function updateFilterView(){
+            const userDiet = await getUserDiet();
+            const allergs = await getUserAllergies();
+            const adds = await getUserAdditives();
+            updateDietSwitches(userDiet);
+            updateCustomDietSwitches(allergs, adds);
+            populateCustomDiets(allergs, adds)
+        };
+
         //populate user allergies and additives
-        function populateCustomDiet(allergenes, adds){
-            
-        }
+        function populateCustomDiets(allergs, adds){
+            let allergSpan= document.getElementById("Allergene").querySelector('.line-below');
+            allergSpan.innerText = allergs.join(', ');
+            let addSpan= document.getElementById("Zusatzstoffe").querySelector('.line-below');
+            addSpan.innerText = adds.join(', ');
+        };
+
 
         //set diet filter switches
-        async function updateDietSwitches() {
-            const userDiet = await getUserDiet();
-            const allergenes = await getUserAllergies();
-            const adds = await getUserAdditives();
+        function updateDietSwitches(userDiet) {
             let switches = document.querySelectorAll('.dietSwitch');
             switches.forEach(item => {
                 if (userDiet.includes(item.value.toLowerCase())) {
                     item.checked = true;
-                } else {
-                    disableCustomDietSwitches(item, allergenes, adds)
                 };
+            })
+        };
+
+        // set custom diet filter switches
+        function updateCustomDietSwitches(allergs, adds){
+            let switches = document.querySelectorAll('.customDietSwitch');
+            switches.forEach(item => {
+                disableCustomDietSwitches(item, allergs, adds)
             })
         };
 
 
         //disable custom switches if no values
-        function disableCustomDietSwitches(item, allergenes, adds){
+        function disableCustomDietSwitches(item, allergs, adds){
             switch (item.value.toLowerCase()){
                 case 'allergene':                            
-                    if(!allergenes.length){
-                        item.disabled = true;
+                    if(!allergs.length){
+                        item.checked = false;
+                        item.disabled = true;   
                     };
                     break;
                 case 'zusatzstoffe':                 
                     if(!adds.length){
-                        item.disabled = true;
-                    };         
+                        item.checked = false;
+                        item.disabled = true;   
+                    };
+                    break;     
             };
         }
 
