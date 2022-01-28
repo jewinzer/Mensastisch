@@ -27,7 +27,7 @@ router.get('', function(req, res) {
         });
     }
     return res.render('index', {
-        heroContentPrimary: '<h1>Startseite/h1>',
+        heroContentPrimary: '<h1>Startseite</h1>',
         mainContent: 'Startseiten-Content',
         onload: 'null'
     })

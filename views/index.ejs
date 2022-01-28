@@ -22,28 +22,29 @@
 
         //feedback on (un)bookmark meal
         function showMealToast(isAddition) {
-            let txt = '';
             if (isAddition) {
-                txt += 'Gericht zu Wochenplan hinzugefügt. <a href="#!">Zum Wochenplan</a>';
+                displayToast('Gericht zu Essensplan hinzugefügt. <a href="#!">Essensplan</a>');
             } else {
-                txt += 'Gericht aus Wochenplan entfernt.'
+                displayToast('Gericht aus Essensplan entfernt.');
             };
-            M.toast({
-                html: txt
-            });
         };
 
 
         //feedback on (un)bookmark canteen
         function showCanteenToast(isAddition) {
-            let txt = '';
             if (isAddition) {
-                txt += 'Mensa zu Favouriten hinzugefügt. <a href="#!">Zu den Benachrichtigungseinstellungen</a>';
+                displayToast('Mensa zu Favouriten hinzugefügt. <a href="#!">Benachrichtigungseinstellungen</a>');
             } else {
-                txt += 'Mensa aus Favouriten entfernt.';
+                displayToast('Mensa aus Favouriten entfernt.');
             };
+        };
+
+
+        //display Toast User Feedback
+        function displayToast(txt){
             M.toast({
-                html: txt
+                html: txt,
+                displayLength: 2000,
             });
         };
 
@@ -64,12 +65,13 @@
                 await db.userStore.orderBy('id').modify({
                     "favouriteCanteens": newFav.sort()
                 });
+            }).then(() =>{
+                showCanteenToast(isAddition);
             }).catch(Dexie.ModifyError, error => {
                 console.error(`${error.failures.length} items failed to modify`);
             }).catch(error => {
                 console.error(`Generic Error ${error}`);
             });
-            showCanteenToast(isAddition);
         };
 
 
@@ -99,12 +101,13 @@
                 await db.userStore.orderBy('id').modify({
                     "plannedMeals": newMeals.sort()
                 });
+            }).then(() => {
+                showMealToast(isAddition);
             }).catch(Dexie.ModifyError, error => {
                 console.error(`${error.failures.length} items failed to modify`);
             }).catch(error => {
                 console.error(`Generic Error ${error}`);
             });
-            showMealToast(isAddition);
         };
 
 
@@ -121,7 +124,12 @@
             const pref = await db.userStore.toArray();
             return pref[0];
         };
-
+        
+        // get user Diet entries from indb
+        async function getUserDiet(){
+            const pref = await getUserPreferences();
+            return pref.userDiet;
+        };
 
         //get user data from indb
         async function getPlannedMeals() {
@@ -141,7 +149,7 @@
         async function showMenu(date, canteenId) {
             const menu = await getMenu(date, canteenId);
             let main = document.getElementById('mainContent');
-            main.innerHTML = ''
+            main.innerHTML = '';
             const filterSwitch = await createFilterSwitch();
             main.appendChild(filterSwitch);
             if (menu.length) {
@@ -183,8 +191,8 @@
         async function createFilterSwitchInput(){
             let input = document.createElement('input');
             input.setAttribute('type','checkbox');
-            const allergies = await getUserAllergies();
-            if(!allergies.length){
+            const diet = await getUserDiet();
+            if(!diet.length){
                 input.disabled = true;
             } else {
                 input.checked = true;

@@ -15,9 +15,11 @@ const canteen = require('./routes/canteen.js');
 const allergies = require('./routes/allergies.js');
 const additives = require('./routes/additives.js');
 const index = require('./routes/index.js');
+const diet = require('./routes/diet.js');
 app.use('/canteen', canteen);
 app.use('/allergies', allergies);
 app.use('/additives', additives);
+app.use('/diet', diet);
 app.use('/', index);
 
 //set ejs template engine, folder

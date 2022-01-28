@@ -47,7 +47,7 @@ workbox.routing.registerRoute(
         })
       ]
     })
-);*/
+);
 //cache css, js resources, serve from cache if available, update cache from network
 workbox.routing.registerRoute(
     new RegExp('http:\/\/localhost:3000\/.*'),
@@ -61,7 +61,7 @@ workbox.routing.registerRoute(
         ]
     })
 );
-
+*/
 //cache images, cache first, if !cache, fill cache, then serve from cache
 workbox.routing.registerRoute(
     /\.(?:png|jpg|jpeg|svg)$/,
@@ -149,7 +149,7 @@ async function initUserStore() {
         id: 1,
         lastVisitedCanteen: '',
         favouriteCanteens: [],
-        userDiet: '',
+        userDiet: [],
         userAllergies: [],
         userAdditives: [],
         plannedMeals: [],

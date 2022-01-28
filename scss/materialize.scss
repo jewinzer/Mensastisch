@@ -23,18 +23,18 @@
 @import "components/waves";
 @import "components/modal";
 @import "components/collapsible";
-@import "components/chips";
+//@import "components/chips";
 @import "components/materialbox";
 @import "components/forms/forms";
-@import "components/table_of_contents";
-@import "components/sidenav";
-@import "components/preloader";
-@import "components/slider";
-@import "components/carousel";
-@import "components/tapTarget";
-@import "components/pulse";
-@import "components/datepicker";
-@import "components/timepicker";
+//@import "components/table_of_contents";
+//@import "components/sidenav";
+//@import "components/preloader";
+//@import "components/slider";
+//@import "components/carousel";
+//@import "components/tapTarget";
+//@import "components/pulse";
+//@import "components/datepicker";
+//@import "components/timepicker";
 
 
 
@@ -111,6 +111,14 @@
 .heroSecondary{
     margin-left: auto;
 }
+.hero-content{
+    .input-field {
+        margin: 1rem .5rem 0 .5rem;
+    }
+    label{
+        margin-top: 1.5rem;
+    }
+}
 
 .btn-group{
     border: 1px solid $primary-color;
@@ -156,7 +164,7 @@
 }
 
 #findCanteen{
-    margin: 0;
+    margin-top: 1.5rem;
 }
 
 .logo.right {

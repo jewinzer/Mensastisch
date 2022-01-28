@@ -1,0 +1,150 @@
+<%- include('partials/header.ejs') -%>
+
+    <div class="container">
+        <ul class="collection with-header">
+            <li class="collection-header">
+                <%- title1 %>
+            </li>
+            <% list1.forEach(function(item,index){ %>
+                <li class="collection-item">
+                    <div class="item-wrapper">
+                        <%= item %>        
+                    </div>
+                    <div class="switch secondary-content">
+                        <label>
+                            <input class="dietSwitch" type="checkbox" value="<%=item%>"
+                                onchange="updateUserDiet(this.value.toLowerCase())">
+                            <span class="lever"></span>
+                        </label>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+        <ul class="collection with-header">
+            <li class="collection-header">
+                <%- title2 %>
+            </li>
+            <% list2.forEach(function(item,index){ %>
+                <li class="collection-item" id="<%=item%>">
+                    <div class="item-wrapper">
+                        <span class="title"><%= item %></span>
+                        <span class="line-below"></span>   
+                    </div>
+                    <div class="secondary-content d-flex">
+                        <i class="material-icons i-secondary" onclick="routeEditButton('<%=item%>')">edit</i>
+                        <div class="switch">
+                            <label>
+                                <input class="dietSwitch" type="checkbox" value="<%=item%>"
+                                    onchange="updateUserDiet(this.value.toLowerCase())">
+                                <span class="lever"></span>
+                            </label>
+                        </div>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+
+    <script>
+        window.onload = updateDietSwitches();
+
+        // route edit buttons @ allergies, additives
+        function routeEditButton(item){
+            switch(item.toLowerCase()){
+                case 'allergene':
+                    document.location = '../allergies';
+                    break;
+                case 'zusatzstoffe':
+                    document.location = '../additives';
+                    break;
+            };
+        };
+
+        //populate user allergies and additives
+        function populateCustomDiet(allergenes, adds){
+            
+        }
+
+        //set diet filter switches
+        async function updateDietSwitches() {
+            const userDiet = await getUserDiet();
+            const allergenes = await getUserAllergies();
+            const adds = await getUserAdditives();
+            let switches = document.querySelectorAll('.dietSwitch');
+            switches.forEach(item => {
+                if (userDiet.includes(item.value.toLowerCase())) {
+                    item.checked = true;
+                } else {
+                    disableCustomDietSwitches(item, allergenes, adds)
+                };
+            })
+        };
+
+
+        //disable custom switches if no values
+        function disableCustomDietSwitches(item, allergenes, adds){
+            switch (item.value.toLowerCase()){
+                case 'allergene':                            
+                    if(!allergenes.length){
+                        item.disabled = true;
+                    };
+                    break;
+                case 'zusatzstoffe':                 
+                    if(!adds.length){
+                        item.disabled = true;
+                    };         
+            };
+        }
+
+
+        //get user additives from indb
+        async function getUserAdditives() {
+            const pref = await getUserPreferences();
+            return pref.userAdditives;
+        };
+
+
+        //get user allergies from indb
+        async function getUserAllergies() {
+            const pref = await getUserPreferences();
+            return pref.userAllergies;
+        };
+
+        // add/remove diet entries to/from indb column "userDiet"
+        async function updateUserDiet(diet) {
+            const oldDiet = await getUserDiet();
+            let newDiet = [];
+            if (!oldDiet.length || !oldDiet.includes(diet)) {
+                oldDiet.push(diet);
+                newDiet = [...oldDiet];
+            } else {
+                newDiet = oldDiet.filter(item => item !== diet);
+            };
+            db.transaction("rw", db.userStore, async() => {
+                await db.userStore.orderBy('id').modify({
+                    "userDiet": newDiet.sort()
+                });
+            }).catch(Dexie.ModifyError, error => {
+                console.error(`${error.failures.length} items failed to modify`);
+            }).catch(error => {
+                console.error(`Generic Error ${error}`);
+            });
+        };
+
+
+        // get user Diet entries from indb
+        async function getUserDiet(){
+            const pref = await getUserPreferences();
+            return pref.userDiet;
+        };
+
+
+        //get User Preferences from Indb
+        async function getUserPreferences() {
+            await db.open();
+            const pref = await db.userStore.toArray();
+            return pref[0];
+        };
+
+    </script>
+    <%- include('partials/footer.ejs') -%>

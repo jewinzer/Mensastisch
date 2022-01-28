@@ -11,17 +11,14 @@
                     <input id="allowGPS" type="checkbox" <%= checked %>
                         onchange="if (event.currentTarget.checked) {document.location = '../canteen/locate'}
                         else {document.location = '../canteen/search'}">
-                    <span class="lever"></span>
+                    <span class="lever right"></span>
                 </label>
             </div>
         </div>
     </div>
-    <div class ="row hero-content center-align">
-        <div>
-            <%- heroContent %>
-        </div>
+    <div class ="row hero-content">
+        <%- heroContent %>
     </div>
-
 </div>
 <div class="container">
     <%- mainContent %>
@@ -69,7 +66,7 @@ function addToDOM(results, isLocation){
     let title = document.createElement('li');
     title.setAttribute('class', 'collection-header');
     if(isLocation){
-        title.innerText='Nächstgelegene Mensen';
+        title.innerText='Mensen in der Nähe';
     } else {
         title.innerText='Gefundene Mensen';
     };
@@ -83,7 +80,8 @@ function addToDOM(results, isLocation){
         let a = document.createElement('a');
         a.href = `../?canteenId=${result.id}`;
         a.setAttribute('class', 'secondary-content');
-        let div = document.createElement('div');
+        let wrapper = document.createElement('div');
+        wrapper.setAttribute('class', 'item-wrapper');
         let name = document.createElement('span');
         name.setAttribute('class', 'title');
         name.innerText= result.name;
@@ -94,12 +92,12 @@ function addToDOM(results, isLocation){
             let dist = document.createElement('span');
             dist.setAttribute('class', 'line-above');
             dist.innerHTML= `${result.distance} km`;
-            div.appendChild(dist);
+            wrapper.appendChild(dist);
         };
-        div.appendChild(name);
-        div.appendChild(address);
+        wrapper.appendChild(name);
+        wrapper.appendChild(address);
         a.appendChild(icon);
-        entry.appendChild(div);
+        entry.appendChild(wrapper);
         entry.appendChild(a);
         resultList.appendChild(entry);
     })

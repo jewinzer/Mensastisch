@@ -537,19 +537,31 @@ td, th{
     display: flex;
     flex-flow: row nowrap;
 
-    div {
+    .switch {
+      margin-bottom: 0 !important;
+      label{
+        .lever{
+          float: none;
+          margin: .5rem 0 .5rem 0;
+
+        }
+      }
+    }
+
+    .item-wrapper {
       display: flex;
       flex-flow: column nowrap;
       margin-right: 1rem;
       width: 100%;
       justify-content: center;
-    }
+    
       .line-above{
         font-size: $h6-fontsize;
         line-height: $h4-fontsize;
       }
       .title{
         font-size: $h5-fontsize;
+        vertical-align: middle;
       }
       .line-below{
         font-size: $h6-fontsize;
@@ -558,10 +570,18 @@ td, th{
       p {
         margin: 0;
       }
-      .secondary-content {
-        margin: 0 1rem 0 auto;
-        align-self: center;
+    }
+    .secondary-content {
+      margin: 0 1rem 0 auto;
+      align-self: center;
+
+      .i-secondary{
+        padding: 0 .5rem;
+        margin-right: 2rem;
+        color: $grey-color-dark;
+        cursor: pointer;
       }
+    }
     // Avatar Collection
     &.avatar {
       min-height: 84px;
