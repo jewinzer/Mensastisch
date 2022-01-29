@@ -5378,16 +5378,22 @@ body.keyboard-focused .select-dropdown.dropdown-content li:focus {
   margin-left: 1rem;
 }
 
-.justify-content-center {
+.justify-center {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
 }
 
-.justify-content-end {
+.justify-end {
   -webkit-box-pack: end;
       -ms-flex-pack: end;
           justify-content: flex-end;
+}
+
+.justify-between {
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
 }
 
 .text-primary {
@@ -5441,6 +5447,23 @@ body.keyboard-focused .select-dropdown.dropdown-content li:focus {
   margin-left: auto;
 }
 
+.heroTertiary {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.heroTertiary .switch {
+  margin: .5rem .25rem .5rem 0;
+}
+
+.heroTertiary .switch .lever {
+  margin-left: .5rem;
+}
+
 .hero-content .input-field {
   margin: 1rem .5rem 0 .5rem;
 }
@@ -5455,10 +5478,7 @@ body.keyboard-focused .select-dropdown.dropdown-content li:focus {
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
-  margin: auto 0 0 0;
-  -webkit-box-ordinal-group: 3;
-      -ms-flex-order: 2;
-          order: 2;
+  margin: auto 0 .75rem 0;
 }
 
 .btn-group .btn-flat, .btn-group .btn-flat:active {

@@ -80,7 +80,7 @@ workbox.routing.registerRoute(
 workbox.routing.registerRoute(
     new RegExp('https:\/\/openmensa.org\/api\/v2\/canteens\/.*'),
     new workbox.strategies.NetworkFirst({
-        networkTimeoutSeconds: 3,
+        networkTimeoutSeconds: 2,
         cacheName: 'api-requests',
         plugins: [
             new workbox.expiration.ExpirationPlugin({

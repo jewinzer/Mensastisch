@@ -1,11 +1,16 @@
 <%- include('partials/header.ejs') -%>
 
 <div class="container hero bg-light">
-    <div class="d-flex h-100">
-        <div class="heroPrimary">
-            <%- heroContentPrimary %>
+    <div class="d-flex-column h-100 justify-between">
+        <div class="d-flex">
+            <div class="heroPrimary">
+                <%- heroContentPrimary %>
+            </div>
+            <div class="heroSecondary">
+            </div>
         </div>
-        <div class="heroSecondary">
+        <div class="heroTertiary">
+            <%- heroContentTertiary %>
         </div>
     </div>
 </div>
@@ -147,11 +152,11 @@ async function getCanteenById(canteenId) {
 
 //add menu to DOM
 async function showMenu(date, canteenId) {
-    const menu = await getMenu(date, canteenId);
+    const menuRaw = await getMenu(date, canteenId);
+    const menu = await filterMenu(menuRaw);
     let main = document.getElementById('mainContent');
     main.innerHTML = '';
-    const filterSwitch = await createFilterSwitch();
-    main.appendChild(filterSwitch);
+    getDateFromDateBtn();
     if (menu.length) {
         const plannedMeals = await getPlannedMeals();
         const categories = getMenuCategories(menu);
@@ -170,6 +175,49 @@ async function showMenu(date, canteenId) {
         main.appendChild(operationMessage);
     };
 };
+
+// Filter menu aginst userDiet
+async function filterMenu(menu){
+    if(isFilterChecked()){
+        const userDiet = await getUserDiet();
+        if(userDiet.includes('vegan')){
+            const menuVegan = menu.filter(function(meal){
+                return meal.notes.includes('vegan');
+            });
+            menu = [...menuVegan];
+        };
+        if(userDiet.includes('vegetarisch')){
+            const veggie = ['vegan','vegetarisch'];
+            const menuVeggie = menu.filter(function(meal){
+                return meal.notes.some(note => veggie.includes(note));
+            });
+            menu = [...menuVeggie];
+        };
+        if(userDiet.includes('allergene')){
+            const allergs = await getUserAllergies();
+            const menuAllergs = menu.filter(function(meal){
+                return meal.notes.some(note => !allergs.includes(note));
+            });
+            menu = [...menuAllergs];
+        };
+        if(userDiet.includes('zusatzstoffe')){
+            const adds = await getUserAdditives();
+            const menuAdds = menu.filter(function(meal){
+                return meal.notes.some(note => !adds.includes(note));
+            });
+            menu = [...menuAdds];
+        };
+    };
+    return menu;
+};
+
+
+// get user Diet entries from indb
+async function getUserDiet(){
+    const pref = await getUserPreferences();
+    return pref.userDiet;
+};
+
 
 // create menu filter switch
 async function createFilterSwitch(){
@@ -191,6 +239,8 @@ async function createFilterSwitch(){
 async function createFilterSwitchInput(){
     let input = document.createElement('input');
     input.setAttribute('type','checkbox');
+    input.setAttribute('id','filterSwitch');
+    input.setAttribute('onchange', 'showMenu(getDateFromDateBtn(), getIdFromUrl())');
     const diet = await getUserDiet();
     if(!diet.length){
         input.disabled = true;
@@ -199,6 +249,14 @@ async function createFilterSwitchInput(){
     };
     return input;
 };
+
+
+// see if filter switch checked
+function isFilterChecked(){
+    const filterSwitch = document.querySelector('#filterSwitch');
+    return filterSwitch.checked;
+};
+
 
 //get user allergies from indb
 async function getUserAllergies() {
@@ -292,6 +350,15 @@ function populateDateBtn(date, canteenId) {
 };
 
 
+// reads datestring from dateBtn, returns date
+function getDateFromDateBtn(){
+    const dateString = document.querySelector('#dateBtn').innerText;
+    const parts = dateString.split('.');
+    const date = new Date(parts[3], parts[2] - 1, parts[1]);
+    return date;
+};
+
+
 //add business day data to DOM
 async function getBusinessDays(date, canteenId) {
     const opDays = await getDatesById(canteenId);
@@ -323,9 +390,8 @@ async function getBusinessDays(date, canteenId) {
 
 
 //refresh date field
-function refreshDateBtn(datestring, isAddition) {
-    const parts = datestring.split('.');
-    const oldDate = new Date(parts[3], parts[2] - 1, parts[1]);
+function refreshDateBtn(isAddition) {
+    const oldDate = getDateFromDateBtn();
     const newDate = new Date();
     newDate.setTime(oldDate.getTime());
     if (isAddition) {
@@ -348,6 +414,7 @@ function getIdFromUrl() {
 async function showCanteenData(canteenId) {
     const canteen = await getCanteenById(canteenId);
     const favouriteCanteens = await getFavouriteCanteens();
+    const filterSwitch = await createFilterSwitch();
     let heroPrimary = document.querySelector('.heroPrimary');
     let name = document.createElement('h4');
     name.innerText = canteen.name;
@@ -366,6 +433,8 @@ async function showCanteenData(canteenId) {
         icon.setAttribute('class', 'material-icons icon-clickable');
     };
     heroSecondary.appendChild(icon);
+    let heroTertiary = document.querySelector('.heroTertiary');
+    heroTertiary.appendChild(filterSwitch);
 };
 
 
