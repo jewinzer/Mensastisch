@@ -5454,6 +5454,9 @@ body.keyboard-focused .select-dropdown.dropdown-content li:focus {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
 }
 
 .heroTertiary .switch {
@@ -5478,7 +5481,6 @@ body.keyboard-focused .select-dropdown.dropdown-content li:focus {
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
-  margin: auto 0 .75rem 0;
 }
 
 .btn-group .btn-flat, .btn-group .btn-flat:active {

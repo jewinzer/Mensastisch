@@ -1,0 +1,139 @@
+<%- include('partials/header.ejs') -%>
+
+<div class="container">
+    <ul class="collection with-header">
+        <li class="collection-header">
+            Erlauben
+        </li>
+        <li class="collection-item">
+            <div class="item-wrapper">
+                Push-Nachrichten
+            </div>
+            <div class="switch secondary-content">
+                <label>
+                    <input class="notificationSwitch" type="checkbox" value="notifications"
+                        onchange="updateNotificationsPref()">
+                    <span class="lever"></span>
+                </label>
+            </div>
+        </li>
+    </ul>
+    <ul class="collection with-header">
+        <li class="collection-header">
+            <%- title1 %>
+        </li>
+        <% list1.forEach(function(item,index){ %>
+            <li class="collection-item">
+                <div class="item-wrapper">
+                    <%=item.de%>      
+                </div>
+                <div class="switch secondary-content">
+                    <label>
+                        <input class="roleSwitch" type="checkbox" value="<%=JSON.stringify(item)%>"
+                            onchange="updateUserRoles(this.value)">
+                        <span class="lever"></span>
+                    </label>
+                </div>
+            </li>
+        <% }) %>
+    </ul>
+</div>
+
+<script>
+window.onload = updatePreferenceSwitches();
+
+
+// update all switch elements in view "user preferences"-DOM
+async function updatePreferenceSwitches(){
+    updateNotificationSwitch()
+    .then(updateUserRoleSwitches())
+    .catch(err => console.log (err));
+};
+
+
+// update status of user push notifications preference in indb
+async function updateNotificationsPref(){
+    const notify = await getNotificationsPref();
+    db.transaction("rw", db.userStore, async() => {
+        await db.userStore.orderBy('id').modify({
+            "notifyUser": !notify
+        });
+    }).catch(Dexie.ModifyError, error => {
+        console.error(`${error.failures.length} items failed to modify`);
+    }).catch(error => {
+        console.error(`Generic Error ${error}`);
+    });
+};
+
+
+// update status of user push notifications switch element in DOM
+async function updateNotificationSwitch(){
+    const notify = await getNotificationsPref();
+    const notificationSwitch = document.querySelector('.notificationSwitch');
+    if (notify) {
+        notificationSwitch.checked = true;
+    } else {
+        notificationSwitch.checked = false;
+    };
+};
+
+
+// add/remove role entries to/from indb column "userRoles"
+async function updateUserRoles(json) {
+    const role = JSON.parse(json);
+    const oldRoles = await getUserRoles();
+    let newRoles = [];
+    if (!oldRoles.length || !oldRoles.some(oldRole => oldRole.de === role.de)) {
+        oldRoles.push(role);
+        newRoles = [...oldRoles];
+    } else {
+        newRoles = oldRoles.filter(oldRole => oldRole.de !== (role.de));
+    };
+    db.transaction("rw", db.userStore, async() => {
+        await db.userStore.orderBy('id').modify({
+            "userRoles": newRoles
+        });
+    }).catch(Dexie.ModifyError, error => {
+        console.error(`${error.failures.length} items failed to modify`);
+    }).catch(error => {
+        console.error(`Generic Error ${error}`);
+    });
+};
+
+
+//update user role switches after looking up indb values
+async function updateUserRoleSwitches(){
+    const roles = await getUserRoles();
+    const roleSwitches = document.querySelectorAll('.roleSwitch');
+    roleSwitches.forEach(item => {
+        if(roles.some(role => role.de === JSON.parse(item.value).de)){
+            item.checked = true;
+        };
+    })
+};
+
+
+//get user push notifications preference from indb
+async function getUserRoles(){
+    const pref = await getUserPreferences();
+    return pref.userRoles;
+};
+
+
+//get user push notifications preference from indb
+async function getNotificationsPref(){
+    const pref = await getUserPreferences();
+    return pref.notifyUser;
+};
+
+
+//get User Preferences from Indb
+async function getUserPreferences() {
+    await db.open();
+    const pref = await db.userStore.toArray();
+    return pref[0];
+};
+
+
+</script>
+<%- include('partials/footer.ejs') -%>

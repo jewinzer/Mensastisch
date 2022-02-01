@@ -153,7 +153,8 @@ async function initUserStore() {
         userAllergies: [],
         userAdditives: [],
         plannedMeals: [],
-        notify: false
+        userRoles: [],
+        notifyUser: false
     }).then(() => {
         return db.userStore;
     }).catch(err => {

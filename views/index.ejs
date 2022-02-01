@@ -81,7 +81,7 @@ async function updateFavouriteCanteens(canteenId) {
 
 
 //change status of materialize icon
-function changeIconState(icon) {
+function updateIcon(icon) {
     if (icon.classList.contains("icon-active")) {
         icon.classList.remove("icon-active");
     } else {
@@ -165,7 +165,8 @@ async function showMenu(date, canteenId) {
             if (menuCategory.length) {
                 let collection = createMenuCollapsible(category);
                 menuCategory.forEach(meal => {
-                    collection.append(createMenuCollapsibleItem(meal, plannedMeals));
+                    createMenuCollapsibleItem(meal, plannedMeals)
+                    .then(item => collection.append(item));
                 })
                 main.appendChild(collection);
             };
@@ -176,7 +177,7 @@ async function showMenu(date, canteenId) {
     };
 };
 
-// Filter menu aginst userDiet
+// Filter menu against userDiet
 async function filterMenu(menu){
     if(isFilterChecked()){
         const userDiet = await getUserDiet();
@@ -264,15 +265,32 @@ async function getUserAllergies() {
     return pref.userAllergies;
 };
 
+
 //return string of meal pricing
-function getMealPricing(meal) {
-    let resultStr = '';
-    for (const [key, value] of Object.entries(meal.prices)) {
-        if (value) {
-            resultStr += `${value.toLocaleString("de-DE", {style: "currency", currency: "EUR" })}&nbsp;| `;
+async function getMealPricing(meal) {
+    const roles = await getUserRoles();
+    let result = [];
+    roles.forEach(role => {
+        if(meal.prices[role.en]){
+            result.push(`${role.de}: ${meal.prices[role.en].toLocaleString("de-DE", {style: "currency", currency: "EUR" })}`);
         };
-    };
-    return resultStr.slice(0, -3);
+    })
+    return result.join(' | ');
+};
+
+
+//get user push notifications preference from indb
+async function getUserRoles(){
+    const pref = await getUserPreferences();
+    return pref.userRoles;
+};
+
+
+//get User Preferences from Indb
+async function getUserPreferences() {
+    await db.open();
+    const pref = await db.userStore.toArray();
+    return pref[0];
 };
 
 
@@ -292,7 +310,7 @@ function createMenuCollapsible(category) {
 
 
 //create menu entry for collapsible
-function createMenuCollapsibleItem(meal, plannedMeals) {
+async function createMenuCollapsibleItem(meal, plannedMeals) {
     let entry = document.createElement('li');
     let wrapper = document.createElement('div');
     wrapper.setAttribute('class', 'wrapper');
@@ -300,7 +318,7 @@ function createMenuCollapsibleItem(meal, plannedMeals) {
     header.setAttribute('class', 'collapsible-header');
     header.innerText = meal.name;
     let icon = document.createElement('i');
-    icon.setAttribute('onclick', `changeIconState(this); updatePlannedMeals(${meal.id})`);
+    icon.setAttribute('onclick', `updateIcon(this); updatePlannedMeals(${meal.id})`);
     icon.innerHTML = 'bookmark_border';
     if (plannedMeals.includes(meal.id)) {
         icon.setAttribute('class', 'material-icons icon-clickable icon-active');
@@ -309,7 +327,7 @@ function createMenuCollapsibleItem(meal, plannedMeals) {
     };
     let body = document.createElement('div');
     body.setAttribute('class', 'collapsible-body');
-    body.innerHTML = getMealPricing(meal);
+    body.innerHTML = await getMealPricing(meal);
     wrapper.appendChild(header);
     wrapper.appendChild(icon);
     entry.appendChild(wrapper);
