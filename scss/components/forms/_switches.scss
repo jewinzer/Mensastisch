@@ -5,7 +5,6 @@
 .switch * {
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  margin-bottom: .75rem;
 }
 
 .switch label {
@@ -40,8 +39,6 @@
   border-radius: $switch-radius;
   transition: background 0.3s ease;
   vertical-align: middle;
-  margin: .25 .75rem 0 0;
-  float: right;
 
   &:before, &:after {
     content: "";

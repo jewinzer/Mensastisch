@@ -11,11 +11,11 @@ router.use(express.urlencoded({extended: true}));
 router.get('/search', function(req,res){
     res.render('canteen', {
         checked: '',
-        heroMessage: 'Allow location tracking via GPS',
+        heroMessage: 'GPS-Tracking erlauben',
         heroContent: '<div class="input-field">'+
                     '<input id="findCanteen" type="text" autocomplete="off" '+
                     'onkeyup="showCanteensByCity(this.value)"/>'+
-                    '<label class="active" for="findCanteen">Enter City</label></div>',
+                    '<label class="active" for="findCanteen">Stadt eingeben</label></div>',
         mainContent: '<ul id="searchResults"></ul>',
         onload: 'null'
     })
@@ -25,7 +25,7 @@ router.get('/search', function(req,res){
 router.get('/locate', function(req,res){
     res.render('canteen', {
         checked: 'checked',
-        heroMessage: 'Locating your device. Please bear with us.',
+        heroMessage: 'Lokalisiere. Einen Moment…',
         heroContent: '<div class="progress"><div class="indeterminate"></div></div>',
         mainContent: '',
         onload: 'getUserLocation()'
@@ -48,7 +48,7 @@ router.get('', function(req,res){
     const lng = req.query.lng;
     return res.render('canteen', {
         checked: 'checked',
-        heroMessage: 'Allow location tracking via GPS',
+        heroMessage: 'GPS-Tracking erlauben',
         heroContent: '',
         mainContent: '<ul id="searchResults"></ul>',
         onload: `showCanteensByLocation(${lat},${lng},${x})`

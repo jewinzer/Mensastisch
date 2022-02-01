@@ -1,0 +1,71 @@
+<%- include('partials/header.ejs') -%>
+
+<div class="container bg-light">
+    <ul class="collection with-header">
+        <li class="collection-header center-align">
+            <%- heroContentPrimary %>
+        </li>
+        <% list.forEach(function(item,index){ %>
+            <li class="collection-item">
+                <div>
+                    <%= item %>        
+                </div>
+                <label class="secondary-content">
+                    <input type="checkbox" onchange="addAdditive(this.value)" value="<%= item %>"
+                        class="filled-in"/>
+                    <span></span>
+                </label> 
+            </li>
+        <% }) %>
+    </ul>
+</div>
+
+<script>
+window.onload = updateCheckbox();
+
+//set checkbox
+async function updateCheckbox() {
+    const userAdditives = await getUserAdditives();
+    let checkboxes = document.querySelectorAll('input[type=checkbox]');
+    checkboxes.forEach(checkbox => {
+        if (userAdditives.includes(checkbox.value)) {
+            checkbox.checked = true;
+        };
+    })
+};
+
+//get user additives from indb
+async function getUserAdditives() {
+    const pref = await getUserPreferences();
+    return pref.userAdditives;
+};
+
+//get User Preferences from Indb
+async function getUserPreferences() {
+    await db.open();
+    const pref = await db.userStore.toArray();
+    return pref[0];
+};
+
+// add/remove additives to/from indb column "userAdditives"
+async function addAdditive(additive) {
+    const oldAdditives = await getUserAdditives();
+    let newAdditives = [];
+    if (!oldAdditives.length || !oldAdditives.includes(additive)) {
+        oldAdditives.push(additive);
+        newAdditives = [...oldAdditives];
+    } else {
+        newAdditives = oldAdditives.filter(item => item !== additive);
+    };
+    db.transaction("rw", db.userStore, async() => {
+        await db.userStore.orderBy('id').modify({
+            "userAdditives": newAdditives.sort()
+        });
+    }).catch(Dexie.ModifyError, error => {
+        console.error(`${error.failures.length} items failed to modify`);
+    }).catch(error => {
+        console.error(`Generic Error ${error}`);
+    });
+};
+</script>
+<%- include('partials/footer.ejs') -%>
