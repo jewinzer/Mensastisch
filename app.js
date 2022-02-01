@@ -42,7 +42,7 @@ app.listen(port, () => {
 
 
 
-
+/*
 //set up database connection
 const {Pool} = require('pg');
 const pool = new Pool({
@@ -62,3 +62,4 @@ pool.query(`SELECT * FROM Users;`, (err, res) => {
         console.log(res.rows);
     }
 });
+ */

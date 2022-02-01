@@ -21,5 +21,8 @@
         "workbox-precaching": "^6.4.2",
         "workbox-routing": "^6.4.2",
         "workbox-strategies": "^6.4.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.15"
     }
 }
