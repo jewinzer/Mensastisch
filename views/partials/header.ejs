@@ -1,15 +1,19 @@
 <%- include('head.ejs') %>
-<!-- Dropdown Menu Structure -->
-<ul id="dropdown-menu" class="dropdown-content">
-    <li><a href="/canteen/search">Find Canteen</a></li>
-    <li><a href="/diet">Diet</a></li>
-    <li><a href="/allergies">Allergies</a></li>
-    <li><a href="/additives">Additives</a></li>
-    <li><a href="/preferences">Einstellungen</a></li>
-    <li><a href="#!">Logout</a></li>
-</ul>
 
 <nav>
+    <div class="row center">
+        <div><a href="/" class="col s3 logo">
+            <svg id="mensastisch-logo">
+                <use xlink:href="/img/sprite.svg#logo"></use>
+            </svg></a>
+        <div>
+        <div><a href="/canteen/search"><i class="col s3 material-icons">location_on</i></a></div>
+        <div><a href="/diet"><i class="col s3 material-icons">filter_list</i></a></div>
+        <div><a href="/preferences"><i class="col s3 material-icons">settings</i></a></div> 
+    </div>
+  </nav>
+
+<!-- <nav>
     <div class="nav-wrapper">
         <a href="#" class="logo right">
             <svg id="mensastisch-logo">
@@ -23,4 +27,4 @@
                 <li><a href="/">Mensastisch</a></li>
             </ul>
     </div>
-</nav>
+</nav> -->

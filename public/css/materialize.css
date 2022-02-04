@@ -1430,6 +1430,13 @@ td, th {
   padding-left: 72px;
 }
 
+.headerContainer {
+  display: flex;
+  background-color: #00695c;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .secondary-content {
   margin-left: auto;
   color: #00695c;
@@ -1583,6 +1590,7 @@ td, th {
 
 .center, .center-align {
   text-align: center;
+  margin: auto
 }
 
 .left {
@@ -2721,6 +2729,7 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 }
 
 h1 {
+  font-family: 'Roboto: 300', Century Gothic;
   font-size: 2rem;
   line-height: 110%;
   margin: 1.33333rem 0 0.8rem 0;
