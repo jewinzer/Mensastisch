@@ -1590,7 +1590,6 @@ td, th {
 
 .center, .center-align {
   text-align: center;
-  margin: auto
 }
 
 .left {
@@ -2668,9 +2667,13 @@ nav .input-field label.active i {
 }
 
 .navbar-fixed {
-  position: relative;
+  position: fixed;
   height: 56px;
   z-index: 997;
+  overflow: hidden;
+  background-color: #00695c;
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
 }
 
 .navbar-fixed nav {
