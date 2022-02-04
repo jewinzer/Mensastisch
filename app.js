@@ -89,4 +89,4 @@ pool.query(`SELECT * FROM Users;`, (err, res) => {
         console.log(res.rows);
     }
 });
-*/
+ */
