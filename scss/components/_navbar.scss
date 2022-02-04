@@ -189,6 +189,8 @@ nav {
   position: relative;
   height: $navbar-height-mobile;
   z-index: 997;
+  display: flex;
+  justify-content: space-evenly;
 
   nav {
     position: fixed;

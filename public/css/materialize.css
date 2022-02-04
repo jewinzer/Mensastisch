@@ -326,13 +326,6 @@
   color: transparent !important;
 }
 
-.responsive {
-  width:"600";
-  height:"350";
-  max-width: 100%;
-  height: auto;
-}
-
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */
@@ -1428,13 +1421,6 @@ td, th {
 
 .collection.with-header .collection-item.avatar {
   padding-left: 72px;
-}
-
-.headerContainer {
-  display: flex;
-  background-color: #00695c;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .secondary-content {
@@ -2667,13 +2653,15 @@ nav .input-field label.active i {
 }
 
 .navbar-fixed {
-  position: fixed;
+  position: relative;
   height: 56px;
   z-index: 997;
-  overflow: hidden;
-  background-color: #00695c;
-  top: 0; /* Position the navbar at the top of the page */
-  width: 100%; /* Full width */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: space-evenly;
+      -ms-flex-pack: space-evenly;
+          justify-content: space-evenly;
 }
 
 .navbar-fixed nav {
@@ -2732,7 +2720,6 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 }
 
 h1 {
-  font-family: 'Roboto: 300', Century Gothic;
   font-size: 2rem;
   line-height: 110%;
   margin: 1.33333rem 0 0.8rem 0;
@@ -5445,6 +5432,6 @@ body.keyboard-focused .select-dropdown.dropdown-content li:focus {
   width: 3rem;
   height: 3rem;
   vertical-align: middle;
-  fill: #d4e157;
+  fill: white;
 }
 /*# sourceMappingURL=materialize.css.map */

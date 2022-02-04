@@ -17,9 +17,6 @@
         "ejs": "^3.1.6",
         "express": "^4.17.1",
         "pg": "^8.7.1",
-<<<<<<< HEAD
-        "web-push": "^3.4.5"
-=======
         "workbox-background-sync": "^6.4.2",
         "workbox-precaching": "^6.4.2",
         "workbox-routing": "^6.4.2",
@@ -27,6 +24,5 @@
     },
     "devDependencies": {
         "nodemon": "^2.0.15"
->>>>>>> e0c2bd3ba23068e05ba8869e3417172c0da20bc6
     }
 }
