@@ -6,27 +6,6 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox
 //import indexedDB script, initilialize indexedDB schema
 importScripts('../js/dexie.min.js');
 
-/*
-//set up cache
-const CACHE = "mensastischCache";
-
-//define files to be cached
-const filesToCache = [
-    '/',
-    '/css/materialize.css',
-    '/js/script.js',
-    'js/dexie.min.js',
-    'js/manifest.json',
-    'img/mensastisch-192.png',
-    'img/mensastisch-512.png',
-    'img/mensastisch.svg'
-  ];
-
-//populate cache on sw installation
-self.addEventListener("install", async event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(filesToCache)));
-});
-*/
 
 //finalize indexedDB creation on sw activation
 self.addEventListener('activate', async event => {
@@ -34,6 +13,18 @@ self.addEventListener('activate', async event => {
         createDB()
     );
 });
+
+
+//register click events for scheduled notifications
+self.addEventListener('notificationclick', event => {
+    if (event.action === 'close') {
+      event.notification.close();
+    } else {
+      self.clients.openWindow('/');
+    }
+});
+
+
 /*
 //cache css, js resources, serve from cache if available, update cache from network
 workbox.routing.registerRoute(
@@ -62,6 +53,8 @@ workbox.routing.registerRoute(
     })
 );
 */
+
+
 //cache images, cache first, if !cache, fill cache, then serve from cache
 workbox.routing.registerRoute(
     /\.(?:png|jpg|jpeg|svg)$/,
@@ -75,6 +68,7 @@ workbox.routing.registerRoute(
         ],
     })
 );
+
 
 //cache external api requests: network first
 workbox.routing.registerRoute(
@@ -93,7 +87,6 @@ workbox.routing.registerRoute(
 
 
 /*
-
 //manage fetch requests online/offline
 self.addEventListener("fetch", event => {
   if (event.request.mode === "navigate") {

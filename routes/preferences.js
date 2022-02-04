@@ -6,7 +6,7 @@ let router = express.Router();
 
 
 
-//create additives list
+//create roles list
 router.get('', function(req, res) {
     const roles = [
         {de: "Studierende", en: "students"},
@@ -15,7 +15,7 @@ router.get('', function(req, res) {
         {de: "Gäste", en: "others"}
     ];
 
-    //render allergies.ejs
+    //render preferences.ejs
     res.render('preferences', {
         title1: 'Preisanzeige für',
         list1: roles

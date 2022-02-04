@@ -11,13 +11,13 @@
     
     <!-- register service worker -->
     <script>
-        (function() {
+        (() => {
             //check for service worker support
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register('/serviceworker.js').then(function(reg) {
-                        console.log('service worker registered successfully', reg);
-                    }).catch(function(error) {
-                        console.log(`service worker registration failed with ${error}`);
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/serviceworker.js').then(registration => {
+                        console.log('service worker registered successfully', registration);
+                    }).catch(error => {
+                        console.error(`service worker registration failed with ${error}`);
                     });
             }
         })();;

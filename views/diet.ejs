@@ -3,9 +3,9 @@
 <div class="container">
     <ul class="collection with-header">
         <li class="collection-header">
-            <%- title1 %>
+            Ich ernähre mich
         </li>
-        <% list1.forEach(function(item,index){ %>
+        <% ['Vegetarisch', 'Vegan'].forEach(item => { %>
             <li class="collection-item">
                 <div class="item-wrapper">
                     <%= item %>        
@@ -22,9 +22,9 @@
     </ul>
     <ul class="collection with-header">
         <li class="collection-header">
-            <%- title2 %>
+            Ich verzichte auf
         </li>
-        <% list2.forEach(function(item,index){ %>
+        <% ['Allergene', 'Zusatzstoffe'].forEach(item => { %>
             <li class="collection-item" id="<%=item%>">
                 <div class="item-wrapper">
                     <span class="title"><%= item %></span>

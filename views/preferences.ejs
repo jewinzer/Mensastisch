@@ -53,7 +53,8 @@ async function updatePreferenceSwitches(){
 
 // update status of user push notifications preference in indb
 async function updateNotificationsPref(){
-    const notify = await getNotificationsPref();
+    const notifyOld = await getNotificationsPref();
+    const notify = await getNotificationPermission(notifyOld);
     db.transaction("rw", db.userStore, async() => {
         await db.userStore.orderBy('id').modify({
             "notifyUser": !notify
@@ -65,15 +66,36 @@ async function updateNotificationsPref(){
     });
 };
 
+//ask for notifications permission if not granted
+async function getNotificationPermission(notify){
+    if(!notify){
+        if(Notification.permission !== 'granted'){
+            Notification.requestPermission()
+            .then(permission => {
+                if(permission !== 'granted'){
+                    document.querySelector('.notificationSwitch').checked = false;
+                    return false;
+                };
+            });  
+        };
+    } else {
+        return true;
+    };
+};
+
 
 // update status of user push notifications switch element in DOM
 async function updateNotificationSwitch(){
-    const notify = await getNotificationsPref();
     const notificationSwitch = document.querySelector('.notificationSwitch');
-    if (notify) {
-        notificationSwitch.checked = true;
+    if (!('Notification' in window) || !('showTrigger' in Notification.prototype)){
+        notificationSwitch.disabled = true;
     } else {
-        notificationSwitch.checked = false;
+        const notify = await getNotificationsPref();
+        if(notify){
+            notificationSwitch.checked = true;
+        } else {
+            notificationSwitch.checked = false;
+        };
     };
 };
 
@@ -87,7 +109,7 @@ async function updateUserRoles(json) {
         oldRoles.push(role);
         newRoles = [...oldRoles];
     } else {
-        newRoles = oldRoles.filter(oldRole => oldRole.de !== (role.de));
+        newRoles = oldRoles.filter(oldRole => oldRole.de !== role.de);
     };
     db.transaction("rw", db.userStore, async() => {
         await db.userStore.orderBy('id').modify({

@@ -66,11 +66,11 @@ async function updateFavouriteCanteens(canteenId) {
         newFav = oldFav.filter(item => item !== canteenId);
         isAddition = false;
     };
-    db.transaction("rw", db.userStore, async() => {
+    db.transaction("rw", db.userStore, async () => {
         await db.userStore.orderBy('id').modify({
             "favouriteCanteens": newFav.sort()
         });
-    }).then(() =>{
+    }).then(() => {
         showCanteenToast(isAddition);
     }).catch(Dexie.ModifyError, error => {
         console.error(`${error.failures.length} items failed to modify`);
@@ -96,9 +96,11 @@ async function updatePlannedMeals(mealId) {
     let newMeals = [];
     let isAddition = true;
     if (!oldMeals.length || !oldMeals.includes(mealId)) {
+        await createNotification(mealId);
         oldMeals.push(mealId);
         newMeals = [...oldMeals];
     } else {
+        await deleteNotification(mealId);
         newMeals = oldMeals.filter(item => item !== mealId);
         isAddition = false;
     };
@@ -110,9 +112,54 @@ async function updatePlannedMeals(mealId) {
         showMealToast(isAddition);
     }).catch(Dexie.ModifyError, error => {
         console.error(`${error.failures.length} items failed to modify`);
-    }).catch(error => {
-        console.error(`Generic Error ${error}`);
-    });
+    }).catch(error => 
+        console.error(`Generic Error ${error}`)
+    );
+};
+
+
+//create a scheduled push notification
+// credits: Nico Martin, https://css-tricks.com/creating-scheduled-push-notifications/
+async function createNotification(mealId){
+    if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                registration.showNotification('Vorgemerkt für heute', {
+                    tag: mealId,
+                    body: mealId,
+                    showTrigger: scheduleNotification(),
+                    data: {
+                        url: window.location.href
+                    },
+                    //badge: './assets/badge.png',
+                    //icon: './assets/icon.png',
+                    actions: [
+                        {action: 'open', title: 'Open app'},
+                        {action: 'close', title: 'Close notification'}
+                    ]
+                });
+            }).catch(error => console.error(error));
+        };  
+    };
+};
+
+
+// remove push notification from propagation list
+async function deleteNotification(mealId){
+    navigator.serviceWorker.getRegistration().then(registration => {
+        registration.getNotifications({
+            tag: mealId,
+            includeTriggered: true,
+        }).then(notifications => 
+            notifications.forEach(notification => 
+                notification.close()));
+    }).catch(error => console.error(error)); 
+};
+
+
+//scheduled time to show notification
+function scheduleNotification(){
+    return new TimestampTrigger(new Date().getTime() + 3 * 1000); // now plus 3000ms
 };
 
 
@@ -176,6 +223,7 @@ async function showMenu(date, canteenId) {
         main.appendChild(operationMessage);
     };
 };
+
 
 // Filter menu against userDiet
 async function filterMenu(menu){
@@ -444,7 +492,7 @@ async function showCanteenData(canteenId) {
     let heroSecondary = document.querySelector('.heroSecondary');
     let icon = document.createElement('i');
     icon.innerText = 'notifications_none';
-    icon.setAttribute('onclick', `changeIconState(this); updateFavouriteCanteens(${canteenId})`);
+    icon.setAttribute('onclick', `updateIcon(this); updateFavouriteCanteens(${canteenId})`);
     if (favouriteCanteens.includes(canteenId)) {
         icon.setAttribute('class', 'material-icons icon-clickable icon-active');
     } else {
@@ -471,4 +519,4 @@ async function getDatesById(canteenId) {
     return dates;
 };
 </script>
-    <%- include('partials/footer.ejs') -%>
+<%- include('partials/footer.ejs') -%>
