@@ -25,11 +25,13 @@ const additives = require('./routes/additives.js');
 const index = require('./routes/index.js');
 const diet = require('./routes/diet.js');
 const preferences = require('./routes/preferences.js');
+const calendar = require('./routes/calendar.js');
 app.use('/canteen', canteen);
 app.use('/allergies', allergies);
 app.use('/additives', additives);
 app.use('/diet', diet);
 app.use('/preferences', preferences);
+app.use('/calendar', calendar);
 app.use('/', index);
 
 //set ejs template engine, folder
@@ -40,53 +42,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 
-
-//subscribe route
-app.post('/subscribe', (req, res)=>{
-    //get push subscription object from the request
-    const subscription = req.body;
-
-    //send status 201 for the request
-    res.status(201).json({})
-
-    //create paylod: specified the details of the push notification
-    const payload = JSON.stringify({title: 'Section.io Push Notification' });
-
-    //pass the object into sendNotification function and catch any error
-    webpush.sendNotification(subscription,payload).catch(err=> console.error(err));
-});
-
-
-
-
 //start server listening for requests
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`server listening on port ${port}`);
 });
-
-
-
-
-
-/*
-//set up database connection
-const {Pool} = require('pg');
-const pool = new Pool({
- connectionString: process.env.DATABASE_URL,
- ssl: {
- rejectUnauthorized: false
- }
-});
-
-// query db, console.log entries
-pool.query(`SELECT * FROM Users;`, (err, res) => {
-    if (err) {
-        console.log("Error - Failed to select all from Users");
-        console.log(err);
-    }
-    else{
-        console.log(res.rows);
-    }
-});
- */

@@ -11,7 +11,7 @@
             </div>
             <div class="switch secondary-content">
                 <label>
-                    <input class="notificationSwitch" type="checkbox" value="notifications"
+                    <input class="notificationSwitch waves-light" type="checkbox" value="notifications"
                         onchange="updateNotificationsPref()">
                     <span class="lever"></span>
                 </label>
@@ -53,17 +53,19 @@ async function updatePreferenceSwitches(){
 
 // update status of user push notifications preference in indb
 async function updateNotificationsPref(){
-    const notifyOld = await getNotificationsPref();
-    const notify = await getNotificationPermission(notifyOld);
-    db.transaction("rw", db.userStore, async() => {
-        await db.userStore.orderBy('id').modify({
-            "notifyUser": !notify
+    if (('Notification' in window) && ('showTrigger' in Notification.prototype)){
+        const notifyIn = await getNotificationsPref();
+        const notifyOut = await getNotificationPermission(notifyIn);
+        db.transaction("rw", db.userStore, async() => {
+            await db.userStore.orderBy('id').modify({
+                "notifyUser": !notifyOut
+            });
+        }).catch(Dexie.ModifyError, error => {
+            console.error(`${error.failures.length} items failed to modify`);
+        }).catch(error => {
+            console.error(`Generic Error ${error}`);
         });
-    }).catch(Dexie.ModifyError, error => {
-        console.error(`${error.failures.length} items failed to modify`);
-    }).catch(error => {
-        console.error(`Generic Error ${error}`);
-    });
+    };
 };
 
 //ask for notifications permission if not granted

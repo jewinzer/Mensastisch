@@ -1,0 +1,24 @@
+<%- include('partials/header.ejs') -%>
+
+<div class="container">
+    
+</div>
+
+
+<script>
+//get user data from indb
+async function getPlannedMeals() {
+    const pref = await getUserPreferences();
+    return pref.plannedMeals;
+};
+
+
+//get User Preferences from Indb
+async function getUserPreferences() {
+    await db.open();
+    const pref = await db.userStore.toArray();
+    return pref[0];
+};
+
+</script>
+<%- include('partials/footer.ejs') -%>

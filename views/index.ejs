@@ -25,176 +25,11 @@
 
 window.onload = <%= onload %>;
 
-//feedback on (un)bookmark meal
-function showMealToast(isAddition) {
-    if (isAddition) {
-        displayToast('Gericht zu Essensplan hinzugefügt. <a href="#!">Essensplan</a>');
-    } else {
-        displayToast('Gericht aus Essensplan entfernt.');
-    };
-};
 
+//////////////////////////////////////////////////////////////////////////////////////////
+///Menu LIST
+/////////////////////////////////////////////////////////////////////////////////////////
 
-//feedback on (un)bookmark canteen
-function showCanteenToast(isAddition) {
-    if (isAddition) {
-        displayToast('Mensa zu Favouriten hinzugefügt. <a href="#!">Benachrichtigungseinstellungen</a>');
-    } else {
-        displayToast('Mensa aus Favouriten entfernt.');
-    };
-};
-
-
-//display Toast User Feedback
-function displayToast(txt){
-    M.toast({
-        html: txt,
-        displayLength: 2000,
-    });
-};
-
-
-// add/remove canteen to/from column "favourite Canteens"
-async function updateFavouriteCanteens(canteenId) {
-    const oldFav = await getFavouriteCanteens();
-    let newFav = [];
-    let isAddition = true;
-    if (!oldFav.length || !oldFav.includes(canteenId)) {
-        oldFav.push(canteenId);
-        newFav = [...oldFav];
-    } else {
-        newFav = oldFav.filter(item => item !== canteenId);
-        isAddition = false;
-    };
-    db.transaction("rw", db.userStore, async () => {
-        await db.userStore.orderBy('id').modify({
-            "favouriteCanteens": newFav.sort()
-        });
-    }).then(() => {
-        showCanteenToast(isAddition);
-    }).catch(Dexie.ModifyError, error => {
-        console.error(`${error.failures.length} items failed to modify`);
-    }).catch(error => {
-        console.error(`Generic Error ${error}`);
-    });
-};
-
-
-//change status of materialize icon
-function updateIcon(icon) {
-    if (icon.classList.contains("icon-active")) {
-        icon.classList.remove("icon-active");
-    } else {
-        icon.classList.add("icon-active");
-    };
-};
-
-
-// add/remove meal to/from indb column "planned Meals"
-async function updatePlannedMeals(mealId) {
-    const oldMeals = await getPlannedMeals();
-    let newMeals = [];
-    let isAddition = true;
-    if (!oldMeals.length || !oldMeals.includes(mealId)) {
-        await createNotification(mealId);
-        oldMeals.push(mealId);
-        newMeals = [...oldMeals];
-    } else {
-        await deleteNotification(mealId);
-        newMeals = oldMeals.filter(item => item !== mealId);
-        isAddition = false;
-    };
-    db.transaction("rw", db.userStore, async() => {
-        await db.userStore.orderBy('id').modify({
-            "plannedMeals": newMeals.sort()
-        });
-    }).then(() => {
-        showMealToast(isAddition);
-    }).catch(Dexie.ModifyError, error => {
-        console.error(`${error.failures.length} items failed to modify`);
-    }).catch(error => 
-        console.error(`Generic Error ${error}`)
-    );
-};
-
-
-//create a scheduled push notification
-// credits: Nico Martin, https://css-tricks.com/creating-scheduled-push-notifications/
-async function createNotification(mealId){
-    if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-            navigator.serviceWorker.getRegistration().then(registration => {
-                registration.showNotification('Vorgemerkt für heute', {
-                    tag: mealId,
-                    body: mealId,
-                    showTrigger: scheduleNotification(),
-                    data: {
-                        url: window.location.href
-                    },
-                    //badge: './assets/badge.png',
-                    //icon: './assets/icon.png',
-                    actions: [
-                        {action: 'open', title: 'Open app'},
-                        {action: 'close', title: 'Close notification'}
-                    ]
-                });
-            }).catch(error => console.error(error));
-        };  
-    };
-};
-
-
-// remove push notification from propagation list
-async function deleteNotification(mealId){
-    navigator.serviceWorker.getRegistration().then(registration => {
-        registration.getNotifications({
-            tag: mealId,
-            includeTriggered: true,
-        }).then(notifications => 
-            notifications.forEach(notification => 
-                notification.close()));
-    }).catch(error => console.error(error)); 
-};
-
-
-//scheduled time to show notification
-function scheduleNotification(){
-    return new TimestampTrigger(new Date().getTime() + 3 * 1000); // now plus 3000ms
-};
-
-
-//get favourite canteens from indb
-async function getFavouriteCanteens() {
-    const pref = await getUserPreferences();
-    return pref.favouriteCanteens;
-};
-
-
-//get User Preferences from Indb
-async function getUserPreferences() {
-    await db.open();
-    const pref = await db.userStore.toArray();
-    return pref[0];
-};
-
-// get user Diet entries from indb
-async function getUserDiet(){
-    const pref = await getUserPreferences();
-    return pref.userDiet;
-};
-
-//get user data from indb
-async function getPlannedMeals() {
-    const pref = await getUserPreferences();
-    return pref.plannedMeals;
-};
-
-
-//get canteen from indb by Id
-async function getCanteenById(canteenId) {
-    const canteen = await db.canteensStore.where('id').equals(canteenId).toArray();
-    return canteen[0];
-};
 
 
 //add menu to DOM
@@ -212,7 +47,7 @@ async function showMenu(date, canteenId) {
             if (menuCategory.length) {
                 let collection = createMenuCollapsible(category);
                 menuCategory.forEach(meal => {
-                    createMenuCollapsibleItem(meal, plannedMeals)
+                    createMenuCollapsibleItem(meal, plannedMeals, date, canteenId)
                     .then(item => collection.append(item));
                 })
                 main.appendChild(collection);
@@ -261,10 +96,289 @@ async function filterMenu(menu){
 };
 
 
-// get user Diet entries from indb
-async function getUserDiet(){
-    const pref = await getUserPreferences();
-    return pref.userDiet;
+
+//create collapsible element
+function createMenuCollapsible(category) {
+    let collapsible = document.createElement('ul');
+    collapsible.setAttribute('class', 'collapsible');
+    let title = document.createElement('li');
+    title.setAttribute('class', 'collapsible-title');
+    title.innerText = category;
+    collapsible.appendChild(title);
+    M.Collapsible.init(collapsible, {
+        accordion: true
+    });
+    return collapsible;
+};
+
+
+//create menu entry for collapsible
+async function createMenuCollapsibleItem(meal, plannedMeals, date, canteenId) {
+    let entry = document.createElement('li');
+    let wrapper = document.createElement('div');
+    wrapper.setAttribute('class', 'wrapper');
+    let header = document.createElement('div');
+    header.setAttribute('class', 'collapsible-header');
+    header.innerText = meal.name;
+    let icon = document.createElement('i');
+    icon.setAttribute('onclick', `updateIcon(this); updatePlannedMeals(${JSON.stringify(meal)},${JSON.stringify(date)}, ${JSON.stringify(canteenId)})`);
+    icon.innerHTML = 'bookmark_border';
+    if (plannedMeals.some(item => item.id === meal.id)) {
+        icon.setAttribute('class', 'material-icons icon-clickable icon-active');
+    } else {
+        icon.setAttribute('class', 'material-icons icon-clickable');
+    };
+    let body = document.createElement('div');
+    body.setAttribute('class', 'collapsible-body');
+    body.innerHTML = await getMealPricing(meal);
+    wrapper.appendChild(header);
+    wrapper.appendChild(icon);
+    entry.appendChild(wrapper);
+    entry.appendChild(body);
+    return entry;
+};
+
+
+
+//return string of meal pricing
+async function getMealPricing(meal) {
+    const roles = await getUserRoles();
+    let result = [];
+    roles.forEach(role => {
+        if(meal.prices[role.en]){
+            result.push(`${role.de}: ${meal.prices[role.en].toLocaleString("de-DE", {style: "currency", currency: "EUR" })}`);
+        };
+    })
+    return result.join(' | ');
+};
+
+
+
+// add/remove meal to/from indb column "planned Meals"
+async function updatePlannedMeals(meal, date, canteenId) {
+    meal.date = date;
+    meal.canteenId = canteenId;
+    console.log(meal);
+    const oldMeals = await getPlannedMeals();
+    let newMeals = [];
+    let isAddition = true;//if (vendors.some(e => e.Name === 'Magenic'))
+    if (!oldMeals.length || !oldMeals.some(item => item.id === meal.id)){
+        await createNotification(meal);
+        oldMeals.push(meal);
+        newMeals = [...oldMeals];
+    } else {
+        await deleteNotification(meal);
+        newMeals = oldMeals.filter(item => item.id !== meal.id);
+        isAddition = false;
+    };
+    db.transaction("rw", db.userStore, async() => {
+        await db.userStore.orderBy('id').modify({
+            "plannedMeals": newMeals.sort()
+        });
+    }).then(() => {
+        showMealToast(isAddition);
+    }).catch(Dexie.ModifyError, error => {
+        console.error(`${error.failures.length} items failed to modify`);
+    }).catch(error => 
+        console.error(`Generic Error ${error}`)
+    );
+};
+
+
+//create a scheduled push notification for each bookmarked canteen
+// credits: Nico Martin, https://css-tricks.com/creating-scheduled-push-notifications/
+async function createNotification(meal){
+    if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                registration.showNotification(meal.name, {
+                    tag: meal.id,
+                    body: `Vorgemerkt für ${getLocalDate(meal.date)}`,
+                    showTrigger: scheduleNotification(),
+                    data: {
+                        url: `${window.location.href}?canteenId=${meal.canteenId}`
+                    },
+                    //badge: './assets/badge.png',
+                    icon: './img/mensastisch-512.png',
+                    actions: [
+                        {action: 'open', title: 'Open app'},
+                        {action: 'close', title: 'Close notification'}
+                    ]
+                });
+            }).catch(error => console.error(error));
+        };  
+    };
+};
+
+function getLocalDate(date){
+    return new Date(date).toLocaleDateString("de-DE");
+};
+
+//scheduled time to show notification
+function scheduleNotification(date){
+    //return new TimestampTrigger(new Date(date).getTime() + 10 * 60 * 60 * 1000); // Day x at 10am
+    return new TimestampTrigger(new Date().getTime() + 3 * 1000); // now plus 3000ms for Testing
+};
+
+
+// remove push notification from propagation list
+async function deleteNotification(mealId){
+    navigator.serviceWorker.getRegistration().then(registration => {
+        registration.getNotifications({
+            tag: mealId,
+            includeTriggered: true,
+        }).then(notifications => 
+            notifications.forEach(notification => 
+                notification.close()));
+    }).catch(error => console.error(error)); 
+};
+
+
+//feedback on (un)bookmark meal
+function showMealToast(isAddition) {
+    if (isAddition) {
+        displayToast('Gericht zu Essensplan hinzugefügt. <a href="#!">Essensplan</a>');
+    } else {
+        displayToast('Gericht aus Essensplan entfernt.');
+    };
+};
+
+//feedback on (un)bookmark canteen
+function showCanteenToast(isAddition) {
+    if (isAddition) {
+        displayToast('Mensa zu Favouriten hinzugefügt. <a href="#!">Benachrichtigungseinstellungen</a>');
+    } else {
+        displayToast('Mensa aus Favouriten entfernt.');
+    };
+};
+
+//display Toast User Feedback
+function displayToast(txt){
+    M.toast({
+        html: txt,
+        displayLength: 2000,
+    });
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+///Canteen Header
+/////////////////////////////////////////////////////////////////////////////////////////
+
+//add business day data to DOM
+async function getBusinessDays(date, canteenId) {
+    const opDays = await getDatesById(canteenId);
+    const opDay = opDays.find(element => element.date == date.toLocaleDateString("en-CA"));
+    let opDiv = document.createElement('div');
+    opDiv.setAttribute('class', 'operating-hours');
+    let opIcon = document.createElement('i');
+    let opMsg = document.createElement('h4');
+    if (opDay === undefined) {
+        opIcon.setAttribute('class', 'large material-icons text-grey-dark');
+        opMsg.setAttribute('class', 'text-grey-dark');
+        opIcon.innerText = 'sentiment_very_dissatisfied';
+        opMsg.innerHTML = 'Keine Daten.<br>Bitte wähle einen anderen Tag<br>oder passe Deine Filter an.';
+    } else if (opDay.closed) {
+        opIcon.setAttribute('class', 'large material-icons text-grey-dark');
+        opMsg.setAttribute('class', 'text-grey-dark');
+        opIcon.innerText = 'sentiment_very_dissatisfied';
+        opMsg.innerHTML = 'Mensa geschlossen.<br>Bitte wähle einen anderen Tag.';
+    } else {
+        opIcon.setAttribute('class', 'large material-icons text-primary');
+        opIcon.innerText = 'sentiment_very_satisfied';
+        opMsg.innerHTML = 'Mensa geöffnet.<br>Komm vorbei!';
+        opMsg.setAttribute('class', 'text-primary');
+    }
+    opDiv.appendChild(opIcon);
+    opDiv.appendChild(opMsg);
+    return opDiv;
+};
+
+
+// add/remove canteen to/from column "favourite Canteens"
+async function updateFavouriteCanteens(canteenId) {
+    const oldFav = await getFavouriteCanteens();
+    let newFav = [];
+    let isAddition = true;
+    if (!oldFav.length || !oldFav.includes(canteenId)) {
+        oldFav.push(canteenId);
+        newFav = [...oldFav];
+    } else {
+        newFav = oldFav.filter(item => item !== canteenId);
+        isAddition = false;
+    };
+    db.transaction("rw", db.userStore, async () => {
+        await db.userStore.orderBy('id').modify({
+            "favouriteCanteens": newFav.sort()
+        });
+    }).then(() => {
+        showCanteenToast(isAddition);
+    }).catch(Dexie.ModifyError, error => {
+        console.error(`${error.failures.length} items failed to modify`);
+    }).catch(error => {
+        console.error(`Generic Error ${error}`);
+    });
+};
+
+
+//show canteen Data by Id
+async function showCanteenData(canteenId) {
+    const canteen = await getCanteenById(canteenId);
+    const favouriteCanteens = await getFavouriteCanteens();
+    const filterSwitch = await createFilterSwitch();
+    let heroPrimary = document.querySelector('.heroPrimary');
+    let name = document.createElement('h4');
+    name.innerText = canteen.name;
+    let address = document.createElement('h5');
+    address.innerText = canteen.address;
+    heroPrimary.appendChild(name);
+    heroPrimary.appendChild(address);
+    populateDateBtn(new Date(), canteenId);
+    let heroSecondary = document.querySelector('.heroSecondary');
+    let icon = document.createElement('i');
+    icon.innerText = 'notifications_none';
+    icon.setAttribute('onclick', `updateIcon(this); updateFavouriteCanteens(${canteenId})`);
+    if (favouriteCanteens.includes(canteenId)) {
+        icon.setAttribute('class', 'material-icons icon-clickable icon-active');
+    } else {
+        icon.setAttribute('class', 'material-icons icon-clickable');
+    };
+    heroSecondary.appendChild(icon);
+    let heroTertiary = document.querySelector('.heroTertiary');
+    heroTertiary.appendChild(filterSwitch);
+};
+
+
+
+//populate date field
+function populateDateBtn(date, canteenId) {
+    const weekdays = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+    document.getElementById('dateBtn').innerHTML = `${weekdays[date.getDay()]}. ${date.toLocaleDateString("ru-RU")}`;
+    showMenu(date, canteenId);
+};
+
+
+// reads datestring from dateBtn, returns date
+function getDateFromDateBtn(){
+    const dateString = document.querySelector('#dateBtn').innerText;
+    const parts = dateString.split('.');
+    const date = new Date(parts[3], parts[2] - 1, parts[1]);
+    return date;
+};
+
+
+//refresh date field
+function refreshDateBtn(isAddition) {
+    const oldDate = getDateFromDateBtn();
+    const newDate = new Date();
+    newDate.setTime(oldDate.getTime());
+    if (isAddition) {
+        newDate.setDate(oldDate.getDate() + 1);
+    } else {
+        newDate.setDate(oldDate.getDate() - 1);
+    }
+    populateDateBtn(newDate, getIdFromUrl());
 };
 
 
@@ -300,6 +414,11 @@ async function createFilterSwitchInput(){
 };
 
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+///HELPERS
+/////////////////////////////////////////////////////////////////////////////////////////
+
 // see if filter switch checked
 function isFilterChecked(){
     const filterSwitch = document.querySelector('#filterSwitch');
@@ -307,23 +426,47 @@ function isFilterChecked(){
 };
 
 
+//change status of materialize icon
+function updateIcon(icon) {
+    if (icon.classList.contains("icon-active")) {
+        icon.classList.remove("icon-active");
+    } else {
+        icon.classList.add("icon-active");
+    };
+};
+
+
+//get favourite canteens from indb
+async function getFavouriteCanteens() {
+    const pref = await getUserPreferences();
+    return pref.favouriteCanteens;
+};
+
+
+// get user Diet entries from indb
+async function getUserDiet(){
+    const pref = await getUserPreferences();
+    return pref.userDiet;
+};
+
+//get user data from indb
+async function getPlannedMeals() {
+    const pref = await getUserPreferences();
+    return pref.plannedMeals;
+};
+
+
+//get canteen from indb by Id
+async function getCanteenById(canteenId) {
+    const canteen = await db.canteensStore.where('id').equals(canteenId).toArray();
+    return canteen[0];
+};
+
+
 //get user allergies from indb
 async function getUserAllergies() {
     const pref = await getUserPreferences();
     return pref.userAllergies;
-};
-
-
-//return string of meal pricing
-async function getMealPricing(meal) {
-    const roles = await getUserRoles();
-    let result = [];
-    roles.forEach(role => {
-        if(meal.prices[role.en]){
-            result.push(`${role.de}: ${meal.prices[role.en].toLocaleString("de-DE", {style: "currency", currency: "EUR" })}`);
-        };
-    })
-    return result.join(' | ');
 };
 
 
@@ -339,48 +482,6 @@ async function getUserPreferences() {
     await db.open();
     const pref = await db.userStore.toArray();
     return pref[0];
-};
-
-
-//create collapsible element
-function createMenuCollapsible(category) {
-    let collapsible = document.createElement('ul');
-    collapsible.setAttribute('class', 'collapsible');
-    let title = document.createElement('li');
-    title.setAttribute('class', 'collapsible-title');
-    title.innerText = category;
-    collapsible.appendChild(title);
-    M.Collapsible.init(collapsible, {
-        accordion: true
-    });
-    return collapsible;
-};
-
-
-//create menu entry for collapsible
-async function createMenuCollapsibleItem(meal, plannedMeals) {
-    let entry = document.createElement('li');
-    let wrapper = document.createElement('div');
-    wrapper.setAttribute('class', 'wrapper');
-    let header = document.createElement('div');
-    header.setAttribute('class', 'collapsible-header');
-    header.innerText = meal.name;
-    let icon = document.createElement('i');
-    icon.setAttribute('onclick', `updateIcon(this); updatePlannedMeals(${meal.id})`);
-    icon.innerHTML = 'bookmark_border';
-    if (plannedMeals.includes(meal.id)) {
-        icon.setAttribute('class', 'material-icons icon-clickable icon-active');
-    } else {
-        icon.setAttribute('class', 'material-icons icon-clickable');
-    };
-    let body = document.createElement('div');
-    body.setAttribute('class', 'collapsible-body');
-    body.innerHTML = await getMealPricing(meal);
-    wrapper.appendChild(header);
-    wrapper.appendChild(icon);
-    entry.appendChild(wrapper);
-    entry.appendChild(body);
-    return entry;
 };
 
 
@@ -403,69 +504,7 @@ async function getMenu(date, canteenId) {
         return [];
     };
     const menu = await response.json();
-    console.log(menu);
     return menu;
-};
-
-
-//populate date field
-function populateDateBtn(date, canteenId) {
-    const weekdays = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-    document.getElementById('dateBtn').innerHTML = `${weekdays[date.getDay()]}. ${date.toLocaleDateString("ru-RU")}`;
-    showMenu(date, canteenId);
-};
-
-
-// reads datestring from dateBtn, returns date
-function getDateFromDateBtn(){
-    const dateString = document.querySelector('#dateBtn').innerText;
-    const parts = dateString.split('.');
-    const date = new Date(parts[3], parts[2] - 1, parts[1]);
-    return date;
-};
-
-
-//add business day data to DOM
-async function getBusinessDays(date, canteenId) {
-    const opDays = await getDatesById(canteenId);
-    const opDay = opDays.find(element => element.date == date.toLocaleDateString("en-CA"));
-    let opDiv = document.createElement('div');
-    opDiv.setAttribute('class', 'operating-hours');
-    let opIcon = document.createElement('i');
-    let opMsg = document.createElement('h4');
-    if (opDay === undefined) {
-        opIcon.setAttribute('class', 'large material-icons text-grey-dark');
-        opMsg.setAttribute('class', 'text-grey-dark');
-        opIcon.innerText = 'sentiment_very_dissatisfied';
-        opMsg.innerHTML = 'Keine Daten.<br>Bitte wähle einen anderen Tag<br>oder passe Deine Filter an.';
-    } else if (opDay.closed) {
-        opIcon.setAttribute('class', 'large material-icons text-grey-dark');
-        opMsg.setAttribute('class', 'text-grey-dark');
-        opIcon.innerText = 'sentiment_very_dissatisfied';
-        opMsg.innerHTML = 'Mensa geschlossen.<br>Bitte wähle einen anderen Tag.';
-    } else {
-        opIcon.setAttribute('class', 'large material-icons text-primary');
-        opIcon.innerText = 'sentiment_very_satisfied';
-        opMsg.innerHTML = 'Mensa geöffnet.<br>Komm vorbei!';
-        opMsg.setAttribute('class', 'text-primary');
-    }
-    opDiv.appendChild(opIcon);
-    opDiv.appendChild(opMsg);
-    return opDiv;
-};
-
-
-//refresh date field
-function refreshDateBtn(isAddition) {
-    const oldDate = getDateFromDateBtn();
-    const newDate = new Date();
-    newDate.setTime(oldDate.getTime());
-    if (isAddition) {
-        newDate.setDate(oldDate.getDate() + 1);
-    } else {
-        newDate.setDate(oldDate.getDate() - 1);
-    }
-    populateDateBtn(newDate, getIdFromUrl());
 };
 
 
@@ -473,34 +512,6 @@ function refreshDateBtn(isAddition) {
 function getIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get("canteenId");
-};
-
-
-//show canteen Data by Id
-async function showCanteenData(canteenId) {
-    const canteen = await getCanteenById(canteenId);
-    const favouriteCanteens = await getFavouriteCanteens();
-    const filterSwitch = await createFilterSwitch();
-    let heroPrimary = document.querySelector('.heroPrimary');
-    let name = document.createElement('h4');
-    name.innerText = canteen.name;
-    let address = document.createElement('h5');
-    address.innerText = canteen.address;
-    heroPrimary.appendChild(name);
-    heroPrimary.appendChild(address);
-    populateDateBtn(new Date(), canteenId);
-    let heroSecondary = document.querySelector('.heroSecondary');
-    let icon = document.createElement('i');
-    icon.innerText = 'notifications_none';
-    icon.setAttribute('onclick', `updateIcon(this); updateFavouriteCanteens(${canteenId})`);
-    if (favouriteCanteens.includes(canteenId)) {
-        icon.setAttribute('class', 'material-icons icon-clickable icon-active');
-    } else {
-        icon.setAttribute('class', 'material-icons icon-clickable');
-    };
-    heroSecondary.appendChild(icon);
-    let heroTertiary = document.querySelector('.heroTertiary');
-    heroTertiary.appendChild(filterSwitch);
 };
 
 
@@ -518,5 +529,7 @@ async function getDatesById(canteenId) {
     const dates = await response.json();
     return dates;
 };
+
+
 </script>
 <%- include('partials/footer.ejs') -%>
