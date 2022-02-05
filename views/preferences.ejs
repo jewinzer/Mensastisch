@@ -70,11 +70,11 @@ async function updateNotificationsPref(){
 async function getNotificationPermission(notify){
     if(!notify){
         if(Notification.permission !== 'granted'){
-            Notification.requestPermission()
+            return Notification.requestPermission()
             .then(permission => {
                 if(permission !== 'granted'){
                     document.querySelector('.notificationSwitch').checked = false;
-                    return false;
+                    return true;
                 };
             });  
         };
