@@ -168,6 +168,20 @@
         } 
     }
 }
+.offline{
+    margin-top: 3.5rem;
+    text-align: center;
+    i {
+        color: $grey-color-dark;
+        margin: 2rem;
+        font-size: 10rem;
+    }
+    a {
+        color: $primary-color;
+        line-height: 2rem;
+    }
+    
+}
 
 .operating-hours{
     display: flex;

@@ -29,6 +29,23 @@
 
 window.onload = <%= onload %>;
 
+
+function routeCanteens(){
+    const params = new URLSearchParams(window.location.search);
+    if (url.searchParams.get('lat') && url.searchParams.get('lat')) {
+
+}
+}
+
+//return Url search parameters
+function getParamsFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const lat = params.get('lat');
+    const lng = params.get('lng');
+    console.log(lat,lng);
+};
+
+
 //get canteens from indb by City
 async function getCanteensByCity(str) {
     const results = await db.canteensStore.where('city').startsWithIgnoreCase(str).toArray();
@@ -52,6 +69,7 @@ async function showCanteensByCity(str){
 
 //show canteen geolocation results
 async function showCanteensByLocation(lat,lng,x){
+    getParamsFromUrl();
     await addDistance(lat,lng);
     const results = await getNearestCanteens(x);
     addToDOM(results, true);

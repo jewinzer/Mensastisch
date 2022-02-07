@@ -1,11 +1,11 @@
 "use strict";
 
-// import Workbox
+// import Workbox, Dexie.js
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-sw.js');
-
-//import indexedDB script, initilialize indexedDB schema
 importScripts('../js/dexie.min.js');
 
+//define offlinefallback resources
+const pageFallback = '/offline';
 
 //finalize indexedDB creation on sw activation
 self.addEventListener('activate', async event => {
@@ -13,6 +13,24 @@ self.addEventListener('activate', async event => {
         createDB()
     );
 });
+
+
+self.addEventListener('install', event => {
+  const files = [pageFallback];
+  event.waitUntil(self.caches.open('workbox-offline-fallbacks')
+    .then(cache => cache.addAll(files)));
+});
+
+const handler = async (options) => {
+    const cache = await self.caches.open('workbox-offline-fallbacks');
+    if(options.request.destination === 'document') {
+        return (await cache.match(pageFallback)) || Response.error();
+    }
+    return Response.error();
+};
+
+
+
 
 
 //register click events for scheduled notifications
@@ -24,8 +42,28 @@ self.addEventListener('notificationclick', event => {
     }
 });
 
+// precache files vital for offline use
+workbox.precaching.precacheAndRoute([
+    {url: '/', revision: null },
+    {url: '/canteen/search', revision: null },
+    {url: '/canteen/locate', revision: null },
+    {url: '/calendar', revision: null },
+    {url: '/diet', revision: null },
+    {url: '/allergies', revision: null },
+    {url: '/additives', revision: null },
+    {url: '/preferences', revision: null },
+    {url: '/css/materialize.css', revision: null },
+    {url: '/img/sprite.svg', revision: null },
+    {url: '/js/dexie.min.js', revision: null }
+    // ... other entries ...
+  ]);
 
-/*
+workbox.routing.setDefaultHandler(
+    new workbox.strategies.NetworkOnly()
+  );
+
+workbox.routing.setCatchHandler(handler);
+
 //cache css, js resources, serve from cache if available, update cache from network
 workbox.routing.registerRoute(
     /\.(?:css|js|json)$/,
@@ -39,25 +77,11 @@ workbox.routing.registerRoute(
       ]
     })
 );
-//cache css, js resources, serve from cache if available, update cache from network
-workbox.routing.registerRoute(
-    new RegExp('http:\/\/localhost:3000\/.*'),
-    new workbox.strategies.StaleWhileRevalidate({
-        "cacheName": "static-resources",
-        plugins: [
-            new workbox.expiration.ExpirationPlugin({
-                maxEntries: 20,
-                maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
-            })
-        ]
-    })
-);
-*/
 
 
 //cache images, cache first, if !cache, fill cache, then serve from cache
 workbox.routing.registerRoute(
-    /\.(?:png|jpg|jpeg|svg)$/,
+    /\.(?:png|svg)$/,
     new workbox.strategies.CacheFirst({
         "cacheName": "images",
         plugins: [
@@ -85,7 +109,6 @@ workbox.routing.registerRoute(
     })
 );
 
-
 /*
 //manage fetch requests online/offline
 self.addEventListener("fetch", event => {
@@ -110,11 +133,13 @@ self.addEventListener("fetch", event => {
   }
 });
 */
+
 //populate indexedDB, finalize indexedDB creation
 async function createDB() {
     await initCanteensStore();
     await initUserStore();
 };
+
 
 //initialiaze canteens table in indb
 async function initCanteensStore() {
@@ -136,6 +161,7 @@ async function initCanteensStore() {
     });
 };
 
+
 //initialize user table in indb
 async function initUserStore() {
     db.userStore.put({
@@ -155,6 +181,7 @@ async function initUserStore() {
     });
 };
 
+
 //return JSON of all listed canteens
 async function getCanteens() {
     const url = 'https://openmensa.org/api/v2/canteens';
@@ -162,6 +189,7 @@ async function getCanteens() {
     const canteens = await response.json();
     return canteens;
 };
+
 
 //check coords data in canteens
 function checkCoords(data) {

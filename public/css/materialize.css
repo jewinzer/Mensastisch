@@ -5393,6 +5393,22 @@ body.keyboard-focused .select-dropdown.dropdown-content li:focus {
   float: none;
 }
 
+.offline {
+  margin-top: 3.5rem;
+  text-align: center;
+}
+
+.offline i {
+  color: #bababa;
+  margin: 2rem;
+  font-size: 10rem;
+}
+
+.offline a {
+  color: #00695c;
+  line-height: 2rem;
+}
+
 .operating-hours {
   display: -webkit-box;
   display: -ms-flexbox;
