@@ -4,8 +4,18 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-sw.js');
 importScripts('../js/dexie.min.js');
 
-//define offlinefallback resources
+
+//define offline fallback pages
 const pageFallback = '/offline';
+
+
+//populate cache on sw installation
+self.addEventListener('install', event => {
+  const files = [pageFallback];
+  event.waitUntil(self.caches.open('workbox-offline-fallbacks')
+    .then(cache => cache.addAll(files)));
+});
+
 
 //finalize indexedDB creation on sw activation
 self.addEventListener('activate', async event => {
@@ -15,38 +25,10 @@ self.addEventListener('activate', async event => {
 });
 
 
-self.addEventListener('install', event => {
-  const files = [pageFallback];
-  event.waitUntil(self.caches.open('workbox-offline-fallbacks')
-    .then(cache => cache.addAll(files)));
-});
-
-const handler = async (options) => {
-    const cache = await self.caches.open('workbox-offline-fallbacks');
-    if(options.request.destination === 'document') {
-        return (await cache.match(pageFallback)) || Response.error();
-    }
-    return Response.error();
-};
-
-
-
-
-
-//register click events for scheduled notifications
-self.addEventListener('notificationclick', event => {
-    if (event.action === 'close') {
-      event.notification.close();
-    } else {
-      self.clients.openWindow('/');
-    }
-});
-
 // precache files vital for offline use
 workbox.precaching.precacheAndRoute([
     {url: '/', revision: null },
     {url: '/canteen/search', revision: null },
-    {url: '/canteen/locate', revision: null },
     {url: '/calendar', revision: null },
     {url: '/diet', revision: null },
     {url: '/allergies', revision: null },
@@ -55,20 +37,22 @@ workbox.precaching.precacheAndRoute([
     {url: '/css/materialize.css', revision: null },
     {url: '/img/sprite.svg', revision: null },
     {url: '/js/dexie.min.js', revision: null }
-    // ... other entries ...
   ]);
 
+
+
+// default routing  
 workbox.routing.setDefaultHandler(
-    new workbox.strategies.NetworkOnly()
+    new workbox.strategies.NetworkFirst()
   );
 
-workbox.routing.setCatchHandler(handler);
+
 
 //cache css, js resources, serve from cache if available, update cache from network
 workbox.routing.registerRoute(
     /\.(?:css|js|json)$/,
     new workbox.strategies.StaleWhileRevalidate({
-      "cacheName": "static-resources",
+      'cacheName': 'static-resources',
       plugins: [
         new workbox.expiration.ExpirationPlugin({
           maxEntries: 20,
@@ -83,7 +67,7 @@ workbox.routing.registerRoute(
 workbox.routing.registerRoute(
     /\.(?:png|svg)$/,
     new workbox.strategies.CacheFirst({
-        "cacheName": "images",
+        'cacheName': 'images',
         plugins: [
             new workbox.expiration.ExpirationPlugin({
                 maxEntries: 20,
@@ -102,37 +86,40 @@ workbox.routing.registerRoute(
         cacheName: 'api-requests',
         plugins: [
             new workbox.expiration.ExpirationPlugin({
-                maxEntries: 2000,
+                maxEntries: 200,
                 maxAgeSeconds: 7 * 24 * 60 * 60 // 1 week
             }),
         ],
     })
 );
 
-/*
-//manage fetch requests online/offline
-self.addEventListener("fetch", event => {
-  if (event.request.mode === "navigate") {
-    event.respondWith(
-      (async () => {
-        try {
-          const preloadResp = await event.preloadResponse;
-          if (preloadResp) {
-            return preloadResp;
-          }
-          const networkResp = await fetch(event.request);
-          return networkResp;
-        }
-        catch (error) {
-          const cache = await caches.open(CACHE);
-          const cachedResp = await cache.match(filesToCache);
-          return cachedResp;
-        }
-      })()
-    );
-  }
+
+
+//offline handler
+const offlineHandler = async (options) => {
+    const cache = await self.caches.open('workbox-offline-fallbacks');
+    if(options.request.destination === 'document') {
+        return (await cache.match(pageFallback)) || Response.error();
+    }
+    return Response.error();
+};
+
+
+
+//offline fallback routing
+workbox.routing.setCatchHandler(offlineHandler);
+
+
+
+//register click events for scheduled notifications
+self.addEventListener('notificationclick', event => {
+    if (event.action === 'close') {
+      event.notification.close();
+    } else {
+      self.clients.openWindow('/');
+    }
 });
-*/
+
 
 //populate indexedDB, finalize indexedDB creation
 async function createDB() {
@@ -141,7 +128,7 @@ async function createDB() {
 };
 
 
-//initialiaze canteens table in indb
+//initialize canteens table in indb
 async function initCanteensStore() {
     getCanteens().then(canteens => {
         canteens.forEach(canteen => {

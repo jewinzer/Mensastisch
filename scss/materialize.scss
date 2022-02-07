@@ -14,13 +14,13 @@
 @import "components/navbar";
 @import "components/typography";
 @import "components/transitions";
-@import "components/cards";
+//@import "components/cards";
 @import "components/toast";
 @import "components/tabs";
 //@import "components/tooltip";
 @import "components/buttons";
-@import "components/dropdown";
-@import "components/waves";
+//@import "components/dropdown";
+//@import "components/waves";
 //@import "components/modal";
 @import "components/collapsible";
 //@import "components/chips";
@@ -89,6 +89,9 @@
     padding: 1rem;
     margin-bottom: 2rem;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     .input-field{
         margin: 0 0 1rem 0;
@@ -102,6 +105,9 @@
     .switch{
         margin-top: 3.5rem;
         margin-right: -1rem;
+    }
+    .row{
+        margin:0 0 1rem 0;
     }
 }
 
@@ -117,8 +123,6 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-
-
     .switch{
         margin: .5rem .25rem .5rem 0;
         .lever{
@@ -128,10 +132,10 @@
 }
 .hero-content{
     .input-field {
-        margin: 1rem .5rem 0 .5rem;
+        margin: auto .5rem 0 .5rem;
     }
     label{
-        margin-top: 1.5rem;
+        margin-top: .25rem;
     }
 }
 
@@ -190,10 +194,6 @@
     margin-top: 5rem;
 }
 
-#findCanteen{
-    margin-top: 1.5rem;
-}
-
 .logo.right {
     display: inline-block;
     height: 100%;
@@ -216,5 +216,5 @@
     width: 3rem;
     height: 3rem;
     vertical-align: middle;
-    fill: white;
+    fill: #fff;
 }

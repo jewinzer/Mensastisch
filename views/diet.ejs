@@ -68,7 +68,6 @@ async function updateFilterView(){
     const allergs = await getUserAllergies();
     const adds = await getUserAdditives();
     updateDietSwitches(userDiet);
-    //updateCustomDietSwitches(allergs, adds);
     populateCustomDiets(allergs, adds)
 };
 

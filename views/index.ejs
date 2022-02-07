@@ -237,7 +237,7 @@ async function deleteNotification(mealId){
 //feedback on (un)bookmark meal
 function showMealToast(isAddition) {
     if (isAddition) {
-        displayToast('Gericht zu Essensplan hinzugefügt. <a href="#!">Essensplan</a>');
+        displayToast('Gericht zu Essensplan hinzugefügt. <a href="/calendar">Essensplan</a>');
     } else {
         displayToast('Gericht aus Essensplan entfernt.');
     };
@@ -246,7 +246,7 @@ function showMealToast(isAddition) {
 //feedback on (un)bookmark canteen
 function showCanteenToast(isAddition) {
     if (isAddition) {
-        displayToast('Mensa zu Favouriten hinzugefügt. <a href="#!">Benachrichtigungseinstellungen</a>');
+        displayToast('Mensa zu Favouriten hinzugefügt. <a href="/preferences">Benachrichtigungseinstellungen</a>');
     } else {
         displayToast('Mensa aus Favouriten entfernt.');
     };

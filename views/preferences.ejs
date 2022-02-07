@@ -11,7 +11,7 @@
             </div>
             <div class="switch secondary-content">
                 <label>
-                    <input class="notificationSwitch waves-light" type="checkbox" value="notifications"
+                    <input class="notificationSwitch" type="checkbox" value="notifications"
                         onchange="updateNotificationsPref()">
                     <span class="lever"></span>
                 </label>
@@ -68,7 +68,8 @@ async function updateNotificationsPref(){
     };
 };
 
-//ask for notifications permission if not granted
+
+//ask for notifications permission if not already granted
 async function getNotificationPermission(notify){
     if(!notify){
         if(Notification.permission !== 'granted'){
