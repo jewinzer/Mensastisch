@@ -1,24 +1,244 @@
 <%- include('partials/header.ejs') -%>
 
-<div class="container">
-    
-</div>
+    <div class="container hero bg-light">
+        <div class="d-flex-column h-100 justify-between">
+            <div class="d-flex">
+                <div class="heroPrimary">
+                    <%- heroContentPrimary %>
+                </div>
+                <div class="heroSecondary">
+                </div>
+            </div>
+            <div class="heroTertiary">
+                <%- heroContentTertiary %>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row" id="mainContent">
+            <%- mainContent %>
+        </div>
+    </div>
 
 
-<script>
-//get user data from indb
-async function getPlannedMeals() {
-    const pref = await getUserPreferences();
-    return pref.plannedMeals;
-};
+    <script>
+        window.onload = showPlanedMeals();
+        //show planed meals from user
+        async function showPlanedMeals(date, canteenId) {
+            const userPlanedMeals = await getUserPlanedMeals();
+            const weekdays = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
+            let main = document.getElementById('mainContent');
+            main.innerHTML = '';
+            if (userPlanedMeals.length) {
+                // const plannedMeals = await getPlannedMeals();
+                weekdays.forEach(weekday => {
 
+                    // userPlanedMeals.forEach(meal => {
 
-//get User Preferences from Indb
-async function getUserPreferences() {
-    await db.open();
-    const pref = await db.userStore.toArray();
-    return pref[0];
-};
+                    let menuCategory = userPlanedMeals.filter(meal => getWeekdayOfMeal(meal) == weekday);
+                    // console.log(menuCategory);
 
-</script>
-<%- include('partials/footer.ejs') -%>
+                    if (menuCategory.length) {
+                        let collection = createDayCollapsible(weekday);
+                        menuCategory.forEach(meal => {
+                            createMenuCollapsibleItem(meal, userPlanedMeals, date, canteenId)
+                                .then(item => collection.append(item));
+                        })
+                        main.appendChild(collection);
+                    }
+
+                    // });
+
+                });
+            }
+        };
+
+        //get weekday as string from meal
+        function getWeekdayOfMeal(meal) {
+            let weekdayMeal = new Date(meal.date)
+            let weekday = weekdayMeal.toLocaleDateString("de-DE", {
+                weekday: 'long'
+            })
+            return weekday;
+        };
+
+        //create collapsible element
+        function createDayCollapsible(weekday) {
+            let collapsible = document.createElement('ul');
+            collapsible.setAttribute('class', 'collapsible');
+            let title = document.createElement('li');
+            title.setAttribute('class', 'collapsible-title');
+            title.innerText = weekday;
+            collapsible.appendChild(title);
+            M.Collapsible.init(collapsible, {
+                accordion: true
+            });
+            return collapsible;
+        };
+
+        //create menu entry for collapsible
+        async function createMenuCollapsibleItem(meal, plannedMeals, date, canteenId) {
+            let entry = document.createElement('li');
+            let wrapper = document.createElement('div');
+            wrapper.setAttribute('class', 'wrapper');
+            let header = document.createElement('div');
+            header.setAttribute('class', 'collapsible-header');
+            header.innerText = meal.name;
+            let icon = document.createElement('i');
+            icon.setAttribute('onclick', `updateIcon(this); updatePlannedMeals(${JSON.stringify(meal)},${JSON.stringify(date)}, ${JSON.stringify(canteenId)})`);
+            icon.innerHTML = 'bookmark_border';
+            if (plannedMeals.some(item => item.id === meal.id)) {
+                icon.setAttribute('class', 'material-icons icon-clickable icon-active');
+            } else {
+                icon.setAttribute('class', 'material-icons icon-clickable');
+            };
+            let body = document.createElement('div');
+            body.setAttribute('class', 'collapsible-body');
+            body.innerHTML = await getMealPricing(meal);
+            wrapper.appendChild(header);
+            wrapper.appendChild(icon);
+            entry.appendChild(wrapper);
+            entry.appendChild(body);
+            return entry;
+        };
+
+        //get user data from indb
+        async function getPlannedMeals() {
+            const pref = await getUserPreferences();
+            return pref.plannedMeals;
+        };
+
+        // remove push notification from propagation list
+        async function deleteNotification(mealId) {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                registration.getNotifications({
+                    tag: mealId,
+                    includeTriggered: true,
+                }).then(notifications =>
+                    notifications.forEach(notification =>
+                        notification.close()));
+            }).catch(error => console.error(error));
+        };
+
+        //feedback on (un)bookmark meal
+        function showMealToast(isAddition) {
+            if (isAddition) {
+                displayToast('Gericht zu Essensplan hinzugefügt. <a href="/calendar">Essensplan</a>');
+            } else {
+                displayToast('Gericht aus Essensplan entfernt.');
+            };
+        };
+
+        //create a scheduled push notification for each bookmarked canteen
+        // credits: Nico Martin, https://css-tricks.com/creating-scheduled-push-notifications/
+        async function createNotification(meal) {
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    navigator.serviceWorker.getRegistration().then(registration => {
+                        registration.showNotification(meal.name, {
+                            tag: meal.id,
+                            body: `Vorgemerkt für ${getLocalDate(meal.date)}`,
+                            showTrigger: scheduleNotification(),
+                            data: {
+                                url: `${window.location.href}?canteenId=${meal.canteenId}`
+                            },
+                            //badge: './assets/badge.png',
+                            icon: './img/mensastisch-512.png',
+                            actions: [{
+                                action: 'open',
+                                title: 'Open app'
+                            }, {
+                                action: 'close',
+                                title: 'Close notification'
+                            }]
+                        });
+                    }).catch(error => console.error(error));
+                };
+            };
+        };
+
+        //scheduled time to show notification
+        function scheduleNotification(date) {
+            //return new TimestampTrigger(new Date(date).getTime() + 10 * 60 * 60 * 1000); // Day x at 10am
+            return new TimestampTrigger(new Date().getTime() + 3 * 1000); // now plus 3000ms for Testing
+        };
+
+        //display Toast User Feedback
+        function displayToast(txt) {
+            M.toast({
+                html: txt,
+                displayLength: 2000,
+            });
+        };
+
+        // add/remove meal to/from indb column "planned Meals"
+        async function updatePlannedMeals(meal, date, canteenId) {
+            meal.date = date;
+            meal.canteenId = canteenId;
+            console.log(meal);
+            const oldMeals = await getPlannedMeals();
+            let newMeals = [];
+            let isAddition = true; //if (vendors.some(e => e.Name === 'Magenic'))
+            if (!oldMeals.length || !oldMeals.some(item => item.id === meal.id)) {
+                await createNotification(meal);
+                oldMeals.push(meal);
+                newMeals = [...oldMeals];
+            } else {
+                await deleteNotification(meal);
+                newMeals = oldMeals.filter(item => item.id !== meal.id);
+                isAddition = false;
+            };
+            db.transaction("rw", db.userStore, async() => {
+                await db.userStore.orderBy('id').modify({
+                    "plannedMeals": newMeals.sort()
+                });
+            }).then(() => {
+                showMealToast(isAddition);
+            }).catch(Dexie.ModifyError, error => {
+                console.error(`${error.failures.length} items failed to modify`);
+            }).catch(error =>
+                console.error(`Generic Error ${error}`)
+            );
+        };
+
+        //change status of materialize icon
+        function updateIcon(icon) {
+            if (icon.classList.contains("icon-active")) {
+                icon.classList.remove("icon-active");
+            } else {
+                icon.classList.add("icon-active");
+            };
+        };
+
+        //return string of meal pricing
+        async function getMealPricing(meal) {
+            const roles = await getUserRoles();
+            let result = [];
+            roles.forEach(role => {
+                if (meal.prices[role.en]) {
+                    result.push(`${role.de}: ${meal.prices[role.en].toLocaleString("de-DE", { style: "currency", currency: "EUR" })}`);
+                };
+            })
+            return result.join(' | ');
+        };
+
+        //get user push notifications preference from indb
+        async function getUserRoles() {
+            const pref = await getUserPreferences();
+            return pref.userRoles;
+        };
+
+        //get user planed meals from indb
+        async function getUserPlanedMeals() {
+            const pref = await getUserPreferences();
+            return pref.plannedMeals;
+        };
+
+        //get User Preferences from Indb
+        async function getUserPreferences() {
+            await db.open();
+            const pref = await db.userStore.toArray();
+            return pref[0];
+        };
+    </script>
+    <%- include('partials/footer.ejs') -%>
