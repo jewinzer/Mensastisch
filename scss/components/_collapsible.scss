@@ -23,7 +23,7 @@
   &:focus {
     outline: 0
   }
-
+  font-weight: 400;
   flex-grow: 4;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -45,9 +45,20 @@
 
 .collapsible-body {
   display: none;
-  //border-bottom: 1px solid $collapsible-border-color;
   box-sizing: border-box;
   padding: 0 1rem 1rem 1rem;
+
+  .meal-details{
+    font-weight: 300;
+    color: #949494;
+    margin-bottom: 1rem;
+    line-height: 1rem;
+
+  }
+  .meal-pricing{
+    font-weight: 300;
+    font-style: italic;
+  }
 }
 
 // Sidenav collapsible styling

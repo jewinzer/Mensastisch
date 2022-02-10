@@ -13,16 +13,12 @@ app.use(compression());
 
 //import and use routes
 const canteen = require('./routes/canteen.js');
-const allergies = require('./routes/allergies.js');
-const additives = require('./routes/additives.js');
 const index = require('./routes/index.js');
 const diet = require('./routes/diet.js');
 const preferences = require('./routes/preferences.js');
 const calendar = require('./routes/calendar.js');
 const offline = require('./routes/offline.js');
 app.use('/canteen', canteen);
-app.use('/allergies', allergies);
-app.use('/additives', additives);
 app.use('/diet', diet);
 app.use('/preferences', preferences);
 app.use('/calendar', calendar);

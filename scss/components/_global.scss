@@ -526,7 +526,6 @@ td, th{
   margin: $element-top-margin 0 $element-bottom-margin 0;
   //border: 1px solid $collection-border-color;
   border-radius: 2px;
-  overflow: hidden;
   position: relative;
 
   .collection-item {
@@ -556,7 +555,7 @@ td, th{
       justify-content: center;
     
       .line-above{
-        font-size: $h6-fontsize;
+        font-size: .8rem;
         line-height: $h4-fontsize;
       }
       .title{
@@ -564,7 +563,9 @@ td, th{
         vertical-align: middle;
       }
       .line-below{
-        font-size: $h6-fontsize;
+        font-style: italic;
+        font-weight: 300;
+        font-size: .8rem;
         line-height: $h4-fontsize;
       }
       p {
@@ -636,12 +637,13 @@ td, th{
 
   &.with-header {
     .collection-header {
-      background-color: $collection-bg-color;
+      background-color: #fff;
       display: flex;
       flex-flow: row nowrap;
       padding: 1rem;
       font-weight: 600;
-      font-size: 1.5rem
+      font-size: 1.5rem;
+      justify-content: space-between;
     }
     .collection-item {
       padding: .75rem 0 .75rem 1rem;
@@ -650,6 +652,11 @@ td, th{
     }
     .collection-item.avatar {
       padding-left: 72px;
+    }
+    .sticky{
+      position: sticky;
+      top: 4rem;
+      z-index: 500;
     }
   }
 

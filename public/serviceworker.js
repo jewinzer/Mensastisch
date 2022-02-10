@@ -18,7 +18,7 @@ self.addEventListener('install', event => {
 
 
 //finalize indexedDB creation on sw activation
-self.addEventListener('activate', async event => {
+self.addEventListener('activate', event => {
     event.waitUntil(
         createDB()
     );
@@ -31,12 +31,9 @@ workbox.precaching.precacheAndRoute([
     {url: '/canteen/search', revision: null },
     {url: '/calendar', revision: null },
     {url: '/diet', revision: null },
-    {url: '/allergies', revision: null },
-    {url: '/additives', revision: null },
-    {url: '/preferences', revision: null },
-    {url: '/css/materialize.css', revision: null },
-    {url: '/img/sprite.svg', revision: null },
-    {url: '/js/dexie.min.js', revision: null }
+    {url: '/diet/allergies', revision: null },
+    {url: '/diet/additives', revision: null },
+    {url: '/preferences', revision: null }
   ]);
 
 
@@ -44,7 +41,36 @@ workbox.precaching.precacheAndRoute([
 // default routing  
 workbox.routing.setDefaultHandler(
     new workbox.strategies.NetworkFirst()
-  );
+    );
+
+
+
+// Cache the Google Fonts stylesheets with a stale-while-revalidate strategy.
+workbox.routing.registerRoute(
+    ({url}) => url.origin === 'https://fonts.googleapis.com',
+    new workbox.strategies.StaleWhileRevalidate({
+        cacheName: 'google-fonts-stylesheets',
+    })
+);
+
+
+
+// Cache the Google Font font files with a cache-first strategy for 1 year.
+workbox.routing.registerRoute(
+    ({url}) => url.origin === 'https://fonts.gstatic.com',
+    new workbox.strategies.CacheFirst({
+        cacheName: 'google-fonts-webfonts',
+        plugins: [
+            new workbox.cacheableResponse.CacheableResponsePlugin({
+            statuses: [0, 200],
+            }),
+            new workbox.expiration.ExpirationPlugin({
+            maxAgeSeconds: 60 * 60 * 24 * 365,
+            maxEntries: 30,
+            })
+        ]
+    })
+);
 
 
 
@@ -55,10 +81,10 @@ workbox.routing.registerRoute(
       'cacheName': 'static-resources',
       plugins: [
         new workbox.expiration.ExpirationPlugin({
-          maxEntries: 20,
-          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
-        })
-      ]
+            maxEntries: 20,
+            maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+            })
+        ]
     })
 );
 
@@ -159,7 +185,7 @@ async function initUserStore() {
         userAllergies: [],
         userAdditives: [],
         plannedMeals: [],
-        userRoles: [],
+        userRoles: [{de: "Studierende", en: "students"}],
         notifyUser: false
     }).then(() => {
         return db.userStore;

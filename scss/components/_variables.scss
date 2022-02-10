@@ -42,19 +42,19 @@ $grey-color: color("grey", "lighten-2") !default;
 $grey-color-light: lighten($grey-color, 9%) !default;
 $grey-color-dark: darken($grey-color, 15%) !default;
 
-$secondary-color: color("lime", "lighten-1") !default;
+$secondary-color: color("teal", "darken-3")  !default;
 
-$success-color: color("green", "base") !default;
+$success-color: color("teal", "darken-3")  !default;
 
-$error-color: color("red", "base") !default;
+$error-color: color("teal", "darken-3")  !default;
 
-$link-color: color("light-blue", "darken-1") !default;
+$link-color: color("teal", "darken-3") !default;
 
 
 // 2. Badges
 // ==========================================================================
 
-$badge-bg-color: $secondary-color !default;
+//$badge-bg-color: $secondary-color !default;
 $badge-height: 22px !default;
 
 
@@ -96,7 +96,7 @@ $button-flat-color: #343434 !default;
 $button-flat-disabled-color: lighten(#999, 10%) !default;
 
 // Floating buttons
-$button-floating-background: $secondary-color !default;
+$button-floating-background: $primary-color !default;
 $button-floating-background-hover: $button-floating-background !default;
 $button-floating-color: #fff !default;
 $button-floating-size: 40px !default;
@@ -140,7 +140,7 @@ $chip-margin: 5px !default;
 
 // 8. Date + Time Picker
 // ==========================================================================
-
+/*
 $datepicker-display-font-size: 2.8rem;
 $datepicker-calendar-header-color: #999;
 $datepicker-weekday-color: rgba(0, 0, 0, .87) !default;
@@ -156,7 +156,7 @@ $datepicker-disabled-day-color: rgba(0, 0, 0, .3) !default;
 $timepicker-clock-color: rgba(0, 0, 0, .87) !default;
 $timepicker-clock-plate-bg: #eee !default;
 
-
+*/
 // 9. Dropdown
 // ==========================================================================
 
@@ -190,7 +190,7 @@ $input-icon-size: 2rem;
 $placeholder-text-color: $input-border-color !default;
 
 // Radio Buttons
-$radio-fill-color: $secondary-color !default;
+$radio-fill-color: $primary-color !default;
 $radio-empty-color: #5a5a5a !default;
 $radio-border: 2px solid $radio-fill-color !default;
 
@@ -202,7 +202,7 @@ $track-height: 3px !default;
 // Select
 $select-border: 1px solid #f2f2f2 !default;
 $select-background: rgba(255, 255, 255, 0.90) !default;
-$select-focus: 1px solid lighten($secondary-color, 47%) !default;
+$select-focus: 1px solid lighten($primary-color, 47%) !default;
 $select-option-hover: rgba(0,0,0,.08) !default;
 $select-option-focus: rgba(0,0,0,.08) !default;
 $select-option-selected: rgba(0,0,0,.03) !default;
@@ -280,7 +280,7 @@ $slider-indicator-color: color('green', 'base') !default;
 // 16. Spinners | Loaders
 // ==========================================================================
 
-$spinner-default-color: $secondary-color !default;
+$spinner-default-color: $primary-color !default;
 
 
 // 17. Tabs
@@ -313,12 +313,12 @@ $toast-action-color: #eeff41;
 $font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !default;
 $off-black: rgba(0, 0, 0, 0.87) !default;
 // Header Styles
-$h1-fontsize: 2rem !default;
-$h2-fontsize: 1.75rem !default;
-$h3-fontsize: 1.5rem !default;
+$h1-fontsize: 1.5rem !default;
+$h2-fontsize: 1.5rem !default;
+$h3-fontsize: 1.25rem !default;
 $h4-fontsize: 1.25rem !default;
 $h5-fontsize: 1rem !default;
-$h6-fontsize: .8rem !default;
+$h6-fontsize: 1rem !default;
 
 
 // 21. Footer
@@ -344,7 +344,7 @@ $interval-size: $range / $intervals !default;
 $collection-border-color: #e0e0e0 !default;
 $collection-bg-color: #fff !default;
 $collection-active-bg-color: $primary-color !default;
-$collection-active-color: lighten($secondary-color, 55%) !default;
+$collection-active-color: lighten($primary-color, 55%) !default;
 $collection-hover-bg-color: #ddd !default;
 $collection-link-color: $primary-color !default;
 $collection-line-height: 1.5rem !default;
@@ -353,4 +353,4 @@ $collection-line-height: 1.5rem !default;
 // 24. Progress Bar
 // ==========================================================================
 
-$progress-bar-color: $secondary-color !default;
+$progress-bar-color: $primary-color !default;

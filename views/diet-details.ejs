@@ -1,30 +1,45 @@
 <%- include('partials/header.ejs') -%>
 
-<div class="container bg-light">
+<div class="container">
     <ul class="collection with-header">
-        <li class="collection-header center-align">
-            <%- heroContentPrimary %>
+        <li class="collection-header sticky">
+            <%- header %>
+            <a class="btn-small" href="/diet">anwenden</a>
         </li>
         <% list.forEach(function(item,index){ %>
             <li class="collection-item">
                 <div>
-                    <%= item %>        
+                    <span class="title"><%=item%></span>
                 </div>
                 <label class="secondary-content">
-                    <input type="checkbox" onchange="addAdditive(this.value)" value="<%= item %>"
-                        class="filled-in"/>
+                    <input type="checkbox" onchange="<%= onchange %>" value="<%=item%>"
+                    class="filled-in"/>
                     <span></span>
-                </label> 
+                </label>
             </li>
         <% }) %>
     </ul>
 </div>
 
 <script>
-window.onload = updateCheckbox();
+window.onload = <%= onload %>;
+
+
+
+//set alergies checkboxes
+async function updateAllergiesCheckboxes() {
+    const userAllergies = await getUserAllergies();
+    let checkboxes = document.querySelectorAll('input[type=checkbox]');
+    checkboxes.forEach(checkbox => {
+        if (userAllergies.includes(checkbox.value)) {
+            checkbox.checked = true;
+        };
+    })
+};
+
 
 //set checkbox
-async function updateCheckbox() {
+async function updateAdditivesCheckboxes() {
     const userAdditives = await getUserAdditives();
     let checkboxes = document.querySelectorAll('input[type=checkbox]');
     checkboxes.forEach(checkbox => {
@@ -32,6 +47,12 @@ async function updateCheckbox() {
             checkbox.checked = true;
         };
     })
+};
+
+//get user allergies from indb
+async function getUserAllergies() {
+    const pref = await getUserPreferences();
+    return pref.userAllergies;
 };
 
 //get user additives from indb
@@ -47,8 +68,29 @@ async function getUserPreferences() {
     return pref[0];
 };
 
+// add/remove allergies to/from indb column "userAllergies"
+async function updateAllergy(allergy) {
+    const oldAllergies = await getUserAllergies();
+    let newAllergies = [];
+    if (!oldAllergies.length || !oldAllergies.includes(allergy)) {
+        oldAllergies.push(allergy);
+        newAllergies = [...oldAllergies];
+    } else {
+        newAllergies = oldAllergies.filter(item => item !== allergy);
+    };
+    db.transaction("rw", db.userStore, async() => {
+        await db.userStore.orderBy('id').modify({
+            "userAllergies": newAllergies.sort()
+        });
+    }).catch(Dexie.ModifyError, error => {
+        console.error(`${error.failures.length} items failed to modify`);
+    }).catch(error => {
+        console.error(`Generic Error ${error}`);
+    });
+};
+
 // add/remove additives to/from indb column "userAdditives"
-async function addAdditive(additive) {
+async function updateAdditive(additive) {
     const oldAdditives = await getUserAdditives();
     let newAdditives = [];
     if (!oldAdditives.length || !oldAdditives.includes(additive)) {

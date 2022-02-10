@@ -3,7 +3,7 @@
     <div class ="row d-flex">
         <div class="col s6 offset-s3 center-align">
             <i class="small material-icons text-primary">place</i>
-            <h5 id="msgGPS"><%- heroMessage %></h5>
+            <h6 id="msgGPS"><%- heroMessage %></h6>
         </div>
         <div class="col s3 d-flex-column">
             <div class="switch">
@@ -94,7 +94,7 @@ function addToDOM(results, isLocation){
         entry.setAttribute('class', 'collection-item');
         let icon = document.createElement('i');
         icon.setAttribute('class', 'material-icons');
-        icon.innerHTML= 'chevron_right';
+        icon.innerHTML= 'play_arrow';
         let a = document.createElement('a');
         a.href = `../?canteenId=${result.id}`;
         a.setAttribute('class', 'secondary-content');

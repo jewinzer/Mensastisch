@@ -1,4 +1,7 @@
 nav {
+  position: sticky;
+  top:0;
+  z-index: 1000;
   &.nav-extended {
     height: auto;
 
@@ -17,8 +20,8 @@ nav {
   @extend .z-depth-1;
   background-color: $primary-color;
   width: 100%;
-  height: $navbar-height-mobile;
-  line-height: $navbar-line-height-mobile;
+  line-height: 3.5rem;
+  padding: .25rem 1rem;
 
   a { color: $navbar-font-color; }
 
@@ -26,9 +29,6 @@ nav {
   [class^="mdi-"], [class*="mdi-"],
   i.material-icons {
     display: block;
-    font-size: 24px;
-    height: $navbar-height-mobile;
-    line-height: $navbar-line-height-mobile;
   }
 
   .nav-wrapper {
@@ -90,12 +90,6 @@ nav {
       padding: 0;
     }
 
-    i,
-    [class^="mdi-"], [class*="mdi-"],
-    i.material-icons {
-      float: left;
-      margin-right: 15px;
-    }
   }
 
 
@@ -186,14 +180,10 @@ nav {
 
 // Fixed Navbar
 .navbar-fixed {
-  position: relative;
-  height: $navbar-height-mobile;
-  z-index: 997;
   display: flex;
-  justify-content: space-evenly;
-
-  nav {
-    position: fixed;
+  justify-content: space-between;
+  i {
+  padding: 1rem;
   }
 }
 @media #{$medium-and-up} {
@@ -201,8 +191,6 @@ nav {
     min-height: $navbar-height;
   }
   nav, nav .nav-wrapper i, nav a.sidenav-trigger, nav a.sidenav-trigger i {
-    height: $navbar-height;
-    line-height: $navbar-line-height;
   }
   .navbar-fixed {
     height: $navbar-height;

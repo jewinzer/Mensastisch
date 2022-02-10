@@ -1,7 +1,6 @@
 <%- include('partials/header.ejs') -%>
 
 <div class="container hero bg-light">
-    <div class="d-flex-column h-100 justify-between">
         <div class="d-flex">
             <div class="heroPrimary">
                 <%- heroContentPrimary %>
@@ -12,7 +11,6 @@
         <div class="heroTertiary">
             <%- heroContentTertiary %>
         </div>
-    </div>
 </div>
 <div class="container">
     <div class="row" id="mainContent">
@@ -24,6 +22,15 @@
 "use strict";
 
 window.onload = <%= onload %>;
+
+
+//show last visited canteen if found in indb
+async function showLastVisitedCanteen(){
+    const last = await getLastVisitedCanteen().catch(error => console.log("First visit. Rendering welcome page."));
+    if(last){
+        document.location = '/?canteenId='+last;
+    };
+};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +70,7 @@ async function showMenu(date, canteenId) {
 // Filter menu against userDiet
 async function filterMenu(menu){
     if(isFilterChecked()){
-        const userDiet = await getUserDiet();
+        const userDiet = await getUserDiet().catch(error => console.log('Indb not ready yet. Please refresh page.'));
         if(userDiet.includes('vegan')){
             const menuVegan = menu.filter(function(meal){
                 return meal.notes.includes('vegan');
@@ -122,7 +129,7 @@ async function createMenuCollapsibleItem(meal, plannedMeals, date, canteenId) {
     header.innerText = meal.name;
     let icon = document.createElement('i');
     icon.setAttribute('onclick', `updateIcon(this); updatePlannedMeals(${JSON.stringify(meal)},${JSON.stringify(date)}, ${JSON.stringify(canteenId)})`);
-    icon.innerHTML = 'bookmark_border';
+    icon.innerHTML = 'notifications_none';
     if (plannedMeals.some(item => item.id === meal.id)) {
         icon.setAttribute('class', 'material-icons icon-clickable icon-active');
     } else {
@@ -130,14 +137,21 @@ async function createMenuCollapsibleItem(meal, plannedMeals, date, canteenId) {
     };
     let body = document.createElement('div');
     body.setAttribute('class', 'collapsible-body');
-    body.innerHTML = await getMealPricing(meal);
+    let details = document.createElement('div');//
+    details.setAttribute('class', 'meal-details');//
+    details.innerHTML = meal.notes.join(', ');//
+    let pricing = document.createElement('div');//
+    pricing.innerHTML = await getMealPricing(meal);//
+    pricing.setAttribute('class', 'meal-pricing');//
+    body.appendChild(details);//
+    body.appendChild(pricing);//
     wrapper.appendChild(header);
     wrapper.appendChild(icon);
     entry.appendChild(wrapper);
     entry.appendChild(body);
+    console.log();
     return entry;
 };
-
 
 
 //return string of meal pricing
@@ -153,7 +167,6 @@ async function getMealPricing(meal) {
 };
 
 
-
 // add/remove meal to/from indb column "planned Meals"
 async function updatePlannedMeals(meal, date, canteenId) {
     meal.date = date;
@@ -161,7 +174,7 @@ async function updatePlannedMeals(meal, date, canteenId) {
     console.log(meal);
     const oldMeals = await getPlannedMeals();
     let newMeals = [];
-    let isAddition = true;//if (vendors.some(e => e.Name === 'Magenic'))
+    let isAddition = true;
     if (!oldMeals.length || !oldMeals.some(item => item.id === meal.id)){
         await createNotification(meal);
         oldMeals.push(meal);
@@ -210,11 +223,13 @@ async function createNotification(meal){
     };
 };
 
+
+//convert date to german local date
 function getLocalDate(date){
     return new Date(date).toLocaleDateString("de-DE");
 };
 
-//scheduled time to show notification
+//schedule time to show notification
 function scheduleNotification(date){
     //return new TimestampTrigger(new Date(date).getTime() + 10 * 60 * 60 * 1000); // Day x at 10am
     return new TimestampTrigger(new Date().getTime() + 3 * 1000); // now plus 3000ms for Testing
@@ -246,9 +261,9 @@ function showMealToast(isAddition) {
 //feedback on (un)bookmark canteen
 function showCanteenToast(isAddition) {
     if (isAddition) {
-        displayToast('Mensa zu Favouriten hinzugefügt. <a href="/preferences">Benachrichtigungseinstellungen</a>');
+        displayToast('Mensa zu Favoriten hinzugefügt. <a href="/preferences">Benachrichtigungseinstellungen</a>');
     } else {
-        displayToast('Mensa aus Favouriten entfernt.');
+        displayToast('Mensa aus Favoriten entfernt.');
     };
 };
 
@@ -322,22 +337,39 @@ async function updateFavouriteCanteens(canteenId) {
 };
 
 
+//update last visited canteen in indb
+async function updateLastVisitedCanteen(canteenId){
+    const last = await getLastVisitedCanteen();
+    if(canteenId !== last){
+        db.transaction("rw", db.userStore, async () => {
+            await db.userStore.orderBy('id').modify({
+                "lastVisitedCanteen": canteenId
+            });
+        }).catch(Dexie.ModifyError, error => {
+            console.error(`${error.failures.length} items failed to modify`);
+        }).catch(error => {
+            console.error(`Generic Error ${error}`);
+        });
+    };
+};
+
+
 //show canteen Data by Id
 async function showCanteenData(canteenId) {
     const canteen = await getCanteenById(canteenId);
-    const favouriteCanteens = await getFavouriteCanteens();
+    const favouriteCanteens = await getFavouriteCanteens().catch(error => console.log('Indb not ready yet. Please refresh page.'));
     const filterSwitch = await createFilterSwitch();
     let heroPrimary = document.querySelector('.heroPrimary');
-    let name = document.createElement('h4');
+    let name = document.createElement('h3');
     name.innerText = canteen.name;
-    let address = document.createElement('h5');
+    let address = document.createElement('h6');
     address.innerText = canteen.address;
     heroPrimary.appendChild(name);
     heroPrimary.appendChild(address);
     populateDateBtn(new Date(), canteenId);
     let heroSecondary = document.querySelector('.heroSecondary');
     let icon = document.createElement('i');
-    icon.innerText = 'notifications_none';
+    icon.innerText = 'favorite_border';
     icon.setAttribute('onclick', `updateIcon(this); updateFavouriteCanteens(${canteenId})`);
     if (favouriteCanteens.includes(canteenId)) {
         icon.setAttribute('class', 'material-icons icon-clickable icon-active');
@@ -347,6 +379,7 @@ async function showCanteenData(canteenId) {
     heroSecondary.appendChild(icon);
     let heroTertiary = document.querySelector('.heroTertiary');
     heroTertiary.appendChild(filterSwitch);
+    updateLastVisitedCanteen(canteenId);
 };
 
 
@@ -404,7 +437,7 @@ async function createFilterSwitchInput(){
     input.setAttribute('type','checkbox');
     input.setAttribute('id','filterSwitch');
     input.setAttribute('onchange', 'showMenu(getDateFromDateBtn(), getIdFromUrl())');
-    const diet = await getUserDiet();
+    const diet = await getUserDiet().catch(error => console.log('Indb not ready yet. Please refresh page.'));
     if(!diet.length){
         input.disabled = true;
     } else {
@@ -433,6 +466,12 @@ function updateIcon(icon) {
     } else {
         icon.classList.add("icon-active");
     };
+};
+
+//get last visited canteen
+async function getLastVisitedCanteen(){
+    const pref = await getUserPreferences();
+    return pref.lastVisitedCanteen;
 };
 
 
