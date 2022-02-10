@@ -149,7 +149,6 @@ async function createMenuCollapsibleItem(meal, plannedMeals, date, canteenId) {
     wrapper.appendChild(icon);
     entry.appendChild(wrapper);
     entry.appendChild(body);
-    console.log();
     return entry;
 };
 
@@ -171,7 +170,6 @@ async function getMealPricing(meal) {
 async function updatePlannedMeals(meal, date, canteenId) {
     meal.date = date;
     meal.canteenId = canteenId;
-    console.log(meal);
     const oldMeals = await getPlannedMeals();
     let newMeals = [];
     let isAddition = true;

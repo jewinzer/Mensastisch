@@ -124,7 +124,6 @@ function addToDOM(results, isLocation){
 
 //get user's GPS coordinates
 function getUserLocation(){
-    console.log('locating User');
     if("geolocation" in navigator){
         navigator.geolocation.getCurrentPosition(geo_success, geo_error, {
             enableHighAccuracy: false, 
