@@ -94,7 +94,14 @@ async function createMenuCollapsibleItem(meal, plannedMeals, date, canteenId) {
     };
     let body = document.createElement('div');
     body.setAttribute('class', 'collapsible-body');
-    body.innerHTML = await getMealPricing(meal);
+    let details = document.createElement('div');//
+    details.setAttribute('class', 'meal-details');//
+    details.innerHTML = meal.notes.join(', ');//
+    let pricing = document.createElement('div');//
+    pricing.innerHTML = await getMealPricing(meal);//
+    pricing.setAttribute('class', 'meal-pricing');//
+    body.appendChild(details);//
+    body.appendChild(pricing);//
     wrapper.appendChild(header);
     wrapper.appendChild(icon);
     entry.appendChild(wrapper);
