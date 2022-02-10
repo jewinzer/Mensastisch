@@ -199,7 +199,7 @@ async function updatePlannedMeals(meal, date, canteenId) {
 //create a scheduled push notification for each bookmarked canteen
 // credits: Nico Martin, https://css-tricks.com/creating-scheduled-push-notifications/
 async function createNotification(meal){
-    if ('Notification' in window) {
+    if (('Notification' in window) && ('showTrigger' in Notification.prototype)) {
         if (Notification.permission === 'granted') {
             navigator.serviceWorker.getRegistration().then(registration => {
                 registration.showNotification(meal.name, {
@@ -218,7 +218,9 @@ async function createNotification(meal){
                 });
             }).catch(error => console.error(error));
         };  
-    };
+    } else {
+        console.log('Your Browser does not support Push Notifications.')
+    }
 };
 
 

@@ -65,7 +65,9 @@ async function updateNotificationsPref(){
         }).catch(error => {
             console.error(`Generic Error ${error}`);
         });
-    };
+    } else {
+        console.log('Your Browser does not support Push Notifications.');
+    }
 };
 
 

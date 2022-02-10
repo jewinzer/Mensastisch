@@ -207,11 +207,11 @@
 	body{
         margin-top: 10vh;
         min-height: 90vh;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 25px 25px;
     }
     html{
         background-image: url("/img/food.jpg");
-        background-repeat: no-repeat;
-        background-size: cover;
+        background-position: center top;
+        background-size: 100% auto;
     }
 }
