@@ -91,7 +91,7 @@ workbox.routing.registerRoute(
 
 //cache images, cache first, if !cache, fill cache, then serve from cache
 workbox.routing.registerRoute(
-    /\.(?:png|svg)$/,
+    /\.(?:png|jpg|svg)$/,
     new workbox.strategies.CacheFirst({
         'cacheName': 'images',
         plugins: [
