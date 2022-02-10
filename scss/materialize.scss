@@ -202,3 +202,17 @@
     vertical-align: middle;
     fill: #fff;
 }
+
+@media (min-width: 600px) {
+	body{
+        margin-top: 10vh;
+        min-height: 90vh;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    }
+    html{
+        background-image: url("/img/food.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        backdrop-filter: blur(10px);
+    }
+}
