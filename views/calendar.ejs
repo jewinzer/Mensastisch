@@ -23,6 +23,7 @@
 
     <script>
         window.onload = showPlanedMeals();
+
         //show planed meals from user
         async function showPlanedMeals(date, canteenId) {
             const userPlanedMeals = await getUserPlanedMeals();
@@ -30,14 +31,9 @@
             let main = document.getElementById('mainContent');
             main.innerHTML = '';
             if (userPlanedMeals.length) {
-                // const plannedMeals = await getPlannedMeals();
                 weekdays.forEach(weekday => {
-
-                    // userPlanedMeals.forEach(meal => {
-
                     let menuCategory = userPlanedMeals.filter(meal => getWeekdayOfMeal(meal) == weekday);
-                    // console.log(menuCategory);
-
+                    // let allMenuCategory = allMenuCategory.filter(meal => checkCurrentWeek(meal) == currentWeekNumber());
                     if (menuCategory.length) {
                         let collection = createDayCollapsible(weekday);
                         menuCategory.forEach(meal => {
@@ -46,12 +42,26 @@
                         })
                         main.appendChild(collection);
                     }
-
-                    // });
-
                 });
             }
         };
+
+        // //generate current week number
+        // function currentWeekNumber() {
+        //     let today = Date.now()
+        //     let currentWeekNumber = taday.getWeek()
+        //     console.log(currentWeekNumber)
+        //     return currentWeekNumber
+        // }
+
+        // //check if the date is in the current week
+        // function checkCurrentWeek(meal) {
+        //     let weekdayMeal = new Date(meal.date)
+        //     weekNumber =
+        //     console.log()
+        //     let weeknumber = weekdayMeal.getWeek()
+        //     return weeknumber
+        // }
 
         //get weekday as string from meal
         function getWeekdayOfMeal(meal) {
