@@ -17,7 +17,7 @@ router.get('', function(req, res) {
     res.render('calendar', {
         heroContentPrimary: '<h1>Essensplan</h1>',
         heroContentTertiary: 'Hier siehst du deine ausgewählten Gerichte für die aktuelle Woche.',
-        mainContent: '<p class="center-align">Bisher keine Einträge.<p>',
+        mainContent: '',
     })
 });
 

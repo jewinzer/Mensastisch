@@ -30,6 +30,7 @@
 window.onload = <%= onload %>;
 
 
+
 //get canteens from indb by City
 async function getCanteensByCity(str) {
     const results = await db.canteensStore.where('city').startsWithIgnoreCase(str).toArray();
@@ -53,7 +54,6 @@ async function showCanteensByCity(str){
 
 //show canteen geolocation results
 async function showCanteensByLocation(lat,lng,x){
-    getParamsFromUrl();
     await addDistance(lat,lng);
     const results = await getNearestCanteens(x);
     addToDOM(results, true);
