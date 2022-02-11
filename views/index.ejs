@@ -170,6 +170,7 @@ async function getMealPricing(meal) {
 async function updatePlannedMeals(meal, date, canteenId) {
     meal.date = date;
     meal.canteenId = canteenId;
+    console.log(meal);
     const oldMeals = await getPlannedMeals();
     let newMeals = [];
     let isAddition = true;
@@ -200,7 +201,8 @@ async function updatePlannedMeals(meal, date, canteenId) {
 // credits: Nico Martin, https://css-tricks.com/creating-scheduled-push-notifications/
 async function createNotification(meal){
     if (('Notification' in window) && ('showTrigger' in Notification.prototype)) {
-        if (Notification.permission === 'granted') {
+        const notify = await getNotificationsPref();
+        if (Notification.permission === 'granted' && notify) {
             navigator.serviceWorker.getRegistration().then(registration => {
                 registration.showNotification(meal.name, {
                     tag: meal.id,
@@ -217,10 +219,12 @@ async function createNotification(meal){
                     ]
                 });
             }).catch(error => console.error(error));
-        };  
-    } else {
-        console.log('Your Browser does not support Push Notifications.')
-    }
+        } else {
+            console.log('Push Notifications disabled. See settings.')
+        }; 
+    } else{
+        console.log('Push Notifications not supported by Browser.')
+    };
 };
 
 
@@ -451,6 +455,13 @@ async function createFilterSwitchInput(){
 //////////////////////////////////////////////////////////////////////////////////////////
 ///HELPERS
 /////////////////////////////////////////////////////////////////////////////////////////
+
+//get user push notifications preference from indb
+async function getNotificationsPref(){
+    const pref = await getUserPreferences();
+    return pref.notifyUser;
+};
+
 
 // see if filter switch checked
 function isFilterChecked(){

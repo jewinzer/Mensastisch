@@ -45,7 +45,7 @@ workbox.routing.setDefaultHandler(
 
 
 
-// Cache the Google Fonts stylesheets with a stale-while-revalidate strategy.
+// Cache Google Fonts stylesheets with a stale-while-revalidate strategy.
 workbox.routing.registerRoute(
     ({url}) => url.origin === 'https://fonts.googleapis.com',
     new workbox.strategies.StaleWhileRevalidate({
@@ -55,7 +55,7 @@ workbox.routing.registerRoute(
 
 
 
-// Cache the Google Font font files with a cache-first strategy for 1 year.
+// Cache Google Font font files with a cache-first strategy for 1 year.
 workbox.routing.registerRoute(
     ({url}) => url.origin === 'https://fonts.gstatic.com',
     new workbox.strategies.CacheFirst({

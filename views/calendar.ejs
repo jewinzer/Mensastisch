@@ -39,13 +39,15 @@ async function showPlannedMeals(date, canteenId) {
             if (menuCategory.length) {
                 let collection = createDayCollapsible(weekday);
                 menuCategory.forEach(meal => {
-                    createMenuCollapsibleItem(meal, userPlannedMeals, date, canteenId)
+                    createMenuCollapsibleItem(meal, userPlannedMeals, meal.date, canteenId)
                         .then(item => collection.append(item));
                 })
                 main.appendChild(collection);
             }
         });
-    }
+    } else {
+        main.innerHTML='Bisher keine Einträge';
+    };
 };
 
 //get weekday as string from meal
@@ -109,11 +111,13 @@ async function createMenuCollapsibleItem(meal, plannedMeals, date, canteenId) {
     return entry;
 };
 
+
 //get user data from indb
 async function getPlannedMeals() {
     const pref = await getUserPreferences();
     return pref.plannedMeals;
 };
+
 
 // remove push notification from propagation list
 async function deleteNotification(mealId) {
@@ -127,6 +131,7 @@ async function deleteNotification(mealId) {
     }).catch(error => console.error(error));
 };
 
+
 //feedback on (un)bookmark meal
 function showMealToast(isAddition) {
     if (isAddition) {
@@ -138,9 +143,11 @@ function showMealToast(isAddition) {
 
 //create a scheduled push notification for each bookmarked canteen
 // credits: Nico Martin, https://css-tricks.com/creating-scheduled-push-notifications/
-async function createNotification(meal) {
-    if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
+async function createNotification(meal){
+    if (('Notification' in window) && ('showTrigger' in Notification.prototype)) {
+        const notify = await getNotificationsPref();
+        if (Notification.permission === 'granted' && notify) {
+            console.log(meal);
             navigator.serviceWorker.getRegistration().then(registration => {
                 registration.showNotification(meal.name, {
                     tag: meal.id,
@@ -151,18 +158,26 @@ async function createNotification(meal) {
                     },
                     //badge: './assets/badge.png',
                     icon: './img/mensastisch-512.png',
-                    actions: [{
-                        action: 'open',
-                        title: 'Open app'
-                    }, {
-                        action: 'close',
-                        title: 'Close notification'
-                    }]
+                    actions: [
+                        {action: 'open', title: 'Open app'},
+                        {action: 'close', title: 'Close notification'}
+                    ]
                 });
             }).catch(error => console.error(error));
-        };
+        } else {
+            console.log('Push Notifications disabled. See settings.')
+        }; 
+    } else{
+        console.log('Push Notifications not supported by Browser.')
     };
 };
+
+
+//convert date to german local date
+function getLocalDate(date){
+    return new Date(date).toLocaleDateString("de-DE");
+};
+
 
 //scheduled time to show notification
 function scheduleNotification(date) {
@@ -228,17 +243,27 @@ async function getMealPricing(meal) {
     return result.join(' | ');
 };
 
+
 //get user push notifications preference from indb
+async function getNotificationsPref(){
+    const pref = await getUserPreferences();
+    return pref.notifyUser;
+};
+
+
+//get user roles from indb
 async function getUserRoles() {
     const pref = await getUserPreferences();
     return pref.userRoles;
 };
+
 
 //get user planed meals from indb
 async function getUserPlannedMeals() {
     const pref = await getUserPreferences();
     return pref.plannedMeals;
 };
+
 
 //get User Preferences from Indb
 async function getUserPreferences() {
