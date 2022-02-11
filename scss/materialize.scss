@@ -16,7 +16,7 @@
 @import "components/transitions";
 //@import "components/cards";
 @import "components/toast";
-@import "components/tabs";
+//@import "components/tabs";
 //@import "components/tooltip";
 @import "components/buttons";
 //@import "components/dropdown";
@@ -24,7 +24,7 @@
 //@import "components/modal";
 @import "components/collapsible";
 //@import "components/chips";
-@import "components/materialbox";
+//@import "components/materialbox";
 @import "components/forms/forms";
 //@import "components/table_of_contents";
 //@import "components/sidenav";
@@ -212,6 +212,8 @@
     html{
         background-image: url("/img/food.jpg");
         background-position: center top;
+        background-repeat: no-repeat;
         background-size: 100% auto;
+        background-color: #f7f7f7;
     }
 }
