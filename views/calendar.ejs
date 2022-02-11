@@ -147,7 +147,6 @@ async function createNotification(meal){
     if (('Notification' in window) && ('showTrigger' in Notification.prototype)) {
         const notify = await getNotificationsPref();
         if (Notification.permission === 'granted' && notify) {
-            console.log(meal);
             navigator.serviceWorker.getRegistration().then(registration => {
                 registration.showNotification(meal.name, {
                     tag: meal.id,

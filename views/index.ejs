@@ -170,7 +170,6 @@ async function getMealPricing(meal) {
 async function updatePlannedMeals(meal, date, canteenId) {
     meal.date = date;
     meal.canteenId = canteenId;
-    console.log(meal);
     const oldMeals = await getPlannedMeals();
     let newMeals = [];
     let isAddition = true;
