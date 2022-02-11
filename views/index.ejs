@@ -72,30 +72,24 @@ async function filterMenu(menu){
     if(isFilterChecked()){
         const userDiet = await getUserDiet().catch(error => console.log('Indb not ready yet. Please refresh page.'));
         if(userDiet.includes('vegan')){
-            const menuVegan = menu.filter(function(meal){
-                return meal.notes.includes('vegan');
-            });
+            const menuVegan = menu.filter(meal => meal.notes.includes('vegan'));
             menu = [...menuVegan];
         };
         if(userDiet.includes('vegetarisch')){
             const veggie = ['vegan','vegetarisch'];
-            const menuVeggie = menu.filter(function(meal){
-                return meal.notes.some(note => veggie.includes(note));
-            });
+            const menuVeggie = menu.filter(meal => meal.notes.some(note => veggie.includes(note)));
             menu = [...menuVeggie];
         };
         if(userDiet.includes('allergene')){
             const allergs = await getUserAllergies();
-            const menuAllergs = menu.filter(function(meal){
-                return meal.notes.some(note => !allergs.includes(note));
-            });
+            console.log('allergs: '+allergs);
+            const menuAllergs = menu.filter(meal => !meal.notes.some(note => allergs.includes(note)));
             menu = [...menuAllergs];
         };
         if(userDiet.includes('zusatzstoffe')){
             const adds = await getUserAdditives();
-            const menuAdds = menu.filter(function(meal){
-                return meal.notes.some(note => !adds.includes(note));
-            });
+            console.log('adds: '+adds);
+            const menuAdds = menu.filter(meal => !meal.notes.some(note => adds.includes(note)));
             menu = [...menuAdds];
         };
     };
@@ -137,14 +131,14 @@ async function createMenuCollapsibleItem(meal, plannedMeals, date, canteenId) {
     };
     let body = document.createElement('div');
     body.setAttribute('class', 'collapsible-body');
-    let details = document.createElement('div');//
-    details.setAttribute('class', 'meal-details');//
-    details.innerHTML = meal.notes.join(', ');//
-    let pricing = document.createElement('div');//
-    pricing.innerHTML = await getMealPricing(meal);//
-    pricing.setAttribute('class', 'meal-pricing');//
-    body.appendChild(details);//
-    body.appendChild(pricing);//
+    let details = document.createElement('div');
+    details.setAttribute('class', 'meal-details');
+    details.innerHTML = meal.notes.join(', ');
+    let pricing = document.createElement('div');
+    pricing.innerHTML = await getMealPricing(meal);
+    pricing.setAttribute('class', 'meal-pricing');
+    body.appendChild(details);
+    body.appendChild(pricing);
     wrapper.appendChild(header);
     wrapper.appendChild(icon);
     entry.appendChild(wrapper);
@@ -461,6 +455,12 @@ async function getNotificationsPref(){
     return pref.notifyUser;
 };
 
+
+//get user additives from indb
+async function getUserAdditives() {
+    const pref = await getUserPreferences();
+    return pref.userAdditives;
+};
 
 // see if filter switch checked
 function isFilterChecked(){

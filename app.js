@@ -1,6 +1,7 @@
 //set up environment variables
 require('dotenv').config();
 
+
 //create express app
 const express = require('express');
 const app = express();
@@ -10,6 +11,7 @@ const path = require('path');
 //import and use compression
 var compression = require('compression');
 app.use(compression());
+
 
 //import and use routes
 const canteen = require('./routes/canteen.js');
@@ -30,11 +32,10 @@ app.use('/offline', offline);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+
 //set static path, use express-static middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
-
-
 
 
 //start server listening for requests
