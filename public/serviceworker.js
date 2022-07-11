@@ -6,7 +6,7 @@ importScripts('../js/dexie.min.js');
 
 
 //define offline fallback pages
-const pageFallback = '/offline';
+const pageFallback = 'offline';
 
 
 //populate cache on sw installation
@@ -41,7 +41,7 @@ workbox.precaching.precacheAndRoute([
 // default routing  
 workbox.routing.setDefaultHandler(
     new workbox.strategies.NetworkFirst()
-    );
+);
 
 
 

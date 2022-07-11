@@ -82,13 +82,11 @@ async function filterMenu(menu){
         };
         if(userDiet.includes('allergene')){
             const allergs = await getUserAllergies();
-            console.log('allergs: '+allergs);
             const menuAllergs = menu.filter(meal => !meal.notes.some(note => allergs.includes(note)));
             menu = [...menuAllergs];
         };
         if(userDiet.includes('zusatzstoffe')){
             const adds = await getUserAdditives();
-            console.log('adds: '+adds);
             const menuAdds = menu.filter(meal => !meal.notes.some(note => adds.includes(note)));
             menu = [...menuAdds];
         };
