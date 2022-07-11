@@ -7,7 +7,7 @@ Technologies used include:
 - Routing: Express
 - Templates: EJS
 - SCSS: Materialize
-– Service Worker: Workbox
+- Service Worker: Workbox
 - IndexedDB: Dexie.js
 - Notification Triggers API
 – Geolocation API
